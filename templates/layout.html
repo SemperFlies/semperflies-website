@@ -1,0 +1,32 @@
+<style>
+  nav > button {
+    margin: 0rem 1rem;
+    color: whitesmoke;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: "Tattoo";
+    transition: all ease-in-out 200ms;
+  }
+  nav > button:hover {
+    color: var(--primary-dark);
+    background-color: whitesmoke;
+  }
+</style>
+<div>
+  <nav x-style="md|font-size:2.5rem; font-size:1rem;">
+    <button>About Us</button>
+    <button>Resources</button>
+    <button>Store</button>
+    <button>Fallen Brothers</button>
+  </nav>
+  <div
+    x-style="overflow:hidden; flex; flex-grow;"
+    id="route-content"
+    hx-target="this"
+    hx-trigger="load"
+    hx-swap="innerHtml transition:true"
+    hx-get="{{path}}{{params}}"
+    hx-push-url="true"
+  ></div>
+</div>

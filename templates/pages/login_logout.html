@@ -1,0 +1,48 @@
+<div
+  x-data="{logged_in: {{logged_in}}, toggle_logged_in() { this.logged_in = !this.logged_in; }}"
+>
+  <button
+    x-show="logged_in"
+    hx-post="/data/auth/logout"
+    hx-push-url="false"
+    hx-swap="none"
+    class="button"
+    @htmx:after-request="if ($event.detail.successful) { toggle_logged_in() }"
+  >
+    Log me out
+  </button>
+  <form
+    x-show="logged_in == false"
+    hx-post="/data/auth/login"
+    hx-include="[name='password']"
+    hx-push-url="false"
+    hx-target="#login-response"
+    hx-swap="none"
+    @htmx:after-request="
+     $el.querySelector('input[name=password]').value = '';
+     if ($event.detail.successful) { toggle_logged_in(); }"
+  >
+    <h1>Login</h1>
+    <input
+      type="password"
+      placeholder="password"
+      name="password"
+      autocomplete="off"
+    />
+    <button class="button">Submit</button>
+  </form>
+  <div
+    x-init="$watch('status', value=> setTimeout(() => status = '', 3000))"
+    x-data="{status: ''}"
+    id="login-response"
+    @htmx:before-swap="status = JSON.parse($event.detail.serverResponse).status.toLowerCase();"
+  >
+    <div x-show="status === 'success'" x-style="color: green;">
+      <p>You have been logged in</p>
+    </div>
+
+    <div x-show="status === 'error'" x-style="color: red;">
+      <p>Incorrect Password</p>
+    </div>
+  </div>
+</div>

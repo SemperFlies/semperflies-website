@@ -1,0 +1,45 @@
+@font-face {
+  font-family: "Tattoo";
+  src: url("/public/fonts/Tattoo/TattooInk.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Tinos";
+  src: url("/public/fonts/Tinos/Tinos-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Tinos";
+  src: url("/public/fonts/Tinos/Tinos-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Tinos";
+  src: url("/public/fonts/Tinos/Tinos-Italic.ttf") format("truetype");
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Tinos";
+  src: url("/public/fonts/Tinos/Tinos-BoldItalic.ttf") format("truetype");
+  font-weight: bold;
+  font-style: italic;
+}
+
+:root {
+  --primary-dark: #232323;
+}
+
+html,
+body {
+  font-family: "Tinos";
+  color: whitesmoke;
+  background-color: var(--primary-dark);
+}

@@ -1,0 +1,31 @@
+[package]
+name = "semperflies"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = { version = "0.7.5", features = ["form", "json", "query", "multipart"]}
+askama = "0.12.1"
+tokio = { version = "1.37.0", features = ["full"] }
+
+axum-htmx = "0.4.0"
+axum-macros = "0.3.8"
+tracing = "0.1.40"
+tracing-log = "0.2.0"
+tracing-subscriber = {version= "0.3.17", features=["env-filter"]}
+tracing-bunyan-formatter = "0.3.9"
+tower-http = {version = "0.5.2", features=["fs", "cors"]}
+dotenv = "0.15.0"
+sqlx = {version = "0.7.4", features=["runtime-async-std-native-tls", "postgres", "chrono", "uuid"]}
+serde = "1.0.201"
+axum-extra = {version = "0.9.3", features=['cookie']}
+jsonwebtoken = "9.3.0"
+serde_json = "1.0.117"
+thiserror = "1.0.61"
+reqwest = "0.12.4"
+rand = "0.8.5"
+anyhow = "1.0.86"
+chrono = "0.4.38"
+time = "0.3.36"
+uuid = {version="1.10.0", features=["v4"]}
+
