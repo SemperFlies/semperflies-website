@@ -1,10 +1,12 @@
-<div>
+<div x-style="flex; flex-col; flex-grow; justify-items:center;">
   <h1 class="tattoo">Videos</h1>
-  <div x-style="grid-cols; gap:1rem; p:1rem;">
-    {% for url in video_urls %}
+  <div x-style="grid; grid-cols; gap:2rem; p:2rem;  justify-self:center;">
+    {% for vid in videos %}
+    <h1 x-style="text:lg">{{vid.title}}</h1>
     <iframe
-      x-style="w:100% h:auto; aspect-ratio:16/9; border:none;"
-      src="{{url}}"
+      x-style="w:100%; h:auto; lg|w:500px; border:none; justify-self:center;"
+      style="aspect-ratio: 16/9"
+      src="{{vid.url}}"
     >
     </iframe>
     {% endfor %}

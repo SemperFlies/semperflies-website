@@ -15,6 +15,8 @@ struct PlaylistItem {
 #[derive(Debug, Deserialize)]
 struct Snippet {
     resourceId: ResourceId,
+    title: String,
+    description: String,
 }
 
 #[allow(non_snake_case)]
@@ -29,9 +31,26 @@ struct ApiResponse {
     items: Vec<PlaylistItem>,
 }
 
+#[derive(Debug)]
+struct VideoInfo {
+    url: String,
+    title: String,
+    description: String,
+}
+
+impl From<Snippet> for VideoInfo {
+    fn from(value: Snippet) -> Self {
+        Self {
+            url: format!("https://www.youtube.com/embed/{}", value.resourceId.videoId),
+            title: value.title,
+            description: value.description,
+        }
+    }
+}
+
 const PLAYLIST_ID: &str = "PLsPUh22kYmNAmjsHke4pd8S9z6m_hVRur";
 
-async fn get_video_urls() -> anyhow::Result<Vec<String>> {
+async fn get_video_urls() -> anyhow::Result<Vec<VideoInfo>> {
     dotenv().ok();
     let api_key = env::var("YOUTUBE_API_KEY").expect("failed to get youtube api key");
 
@@ -45,30 +64,25 @@ async fn get_video_urls() -> anyhow::Result<Vec<String>> {
     let body: ApiResponse = response.json().await?;
 
     debug!("Got response: {:?}", body);
-    let video_urls: Vec<String> = body
+    let videos: Vec<VideoInfo> = body
         .items
         .into_iter()
-        .map(|item| {
-            format!(
-                "https://www.youtube.com/embed/{}",
-                item.snippet.resourceId.videoId
-            )
-        })
+        .map(|item| VideoInfo::from(item.snippet))
         .collect();
 
-    debug!("Got urls: {:?}", video_urls);
-    Ok(video_urls)
+    debug!("Got infos: {:?}", videos);
+    Ok(videos)
 }
 
 #[derive(Template, Debug)]
 #[template(path = "pages/videos.html")]
 pub struct VideosTemplate {
-    video_urls: Vec<String>,
+    videos: Vec<VideoInfo>,
 }
 
 pub async fn videos() -> Html<String> {
     let tmpl = VideosTemplate {
-        video_urls: get_video_urls().await.expect("Failed to get video urls"),
+        videos: get_video_urls().await.expect("Failed to get videos"),
     };
     match tmpl.render() {
         Ok(r) => Html(r),
