@@ -14,11 +14,17 @@
   }
 </style>
 <div>
-  <nav x-style="md|font-size:2.5rem; font-size:1rem;">
+  <nav
+    x-style="md|font-size:2.5rem; font-size:1rem;"
+    hx-target="#route-content"
+    hx-swap="innerHTML transition:true"
+    hx-push-url="true"
+  >
     <button>About Us</button>
     <button>Resources</button>
     <button>Store</button>
     <button>Fallen Brothers</button>
+    <button hx-get="/videos">Videos</button>
   </nav>
   <div
     x-style="overflow:hidden; flex; flex-grow;"

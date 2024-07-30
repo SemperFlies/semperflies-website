@@ -1,0 +1,12 @@
+<div>
+  <h1 class="tattoo">Videos</h1>
+  <div x-style="grid-cols; gap:1rem; p:1rem;">
+    {% for url in video_urls %}
+    <iframe
+      x-style="w:100% h:auto; aspect-ratio:16/9; border:none;"
+      src="{{url}}"
+    >
+    </iframe>
+    {% endfor %}
+  </div>
+</div>

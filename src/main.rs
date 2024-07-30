@@ -15,9 +15,9 @@ use std::sync::{Arc, LazyLock};
 use telemetry::{get_subscriber, init_subscriber};
 use tokio::sync::RwLock;
 use tower_http::cors::CorsLayer;
-use tracing::{info, warn};
+use tracing::warn;
 
-static TRACING: LazyLock<()> = LazyLock::new(|| {
+pub static TRACING: LazyLock<()> = LazyLock::new(|| {
     let default_filter_level = "info".to_string();
     let subscriber_name = "main".to_string();
 
@@ -32,9 +32,9 @@ static TRACING: LazyLock<()> = LazyLock::new(|| {
 
 #[tokio::main]
 async fn main() {
+    dotenv::dotenv().ok();
     LazyLock::force(&TRACING);
     tracing::info!("Tracing Initialized");
-    dotenv::dotenv().ok();
     let port = std::env::var("PORT").expect("Failed to get port env variable");
 
     let config = state::Config::init();

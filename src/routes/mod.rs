@@ -46,6 +46,7 @@ pub fn create_router(state: SharedState) -> Router {
     Router::new()
         .route("/", get(index::index))
         .route("/landing", get(pages::landing))
+        .route("/videos", get(pages::videos::videos))
         // .route("/email", get(contact::send_email))
         //
         // .nest("/blog", blog_routes)

@@ -4,7 +4,7 @@ use axum::{response::Html, Extension};
 use crate::auth::middleware::SoftAuthExtension;
 
 #[derive(Template, Debug)]
-#[template(path = "pages/login_logout.html")]
+#[template(path = "admin/login_logout.html")]
 pub struct LoginLogoutTemplate {
     logged_in: bool,
 }
