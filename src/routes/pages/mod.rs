@@ -1,4 +1,5 @@
 pub mod admin;
+pub mod dedications;
 pub mod videos;
 use askama::Template;
 use axum::response::Html;

@@ -48,16 +48,15 @@ impl From<Snippet> for VideoInfo {
     }
 }
 
-const PLAYLIST_ID: &str = "PLsPUh22kYmNAmjsHke4pd8S9z6m_hVRur";
-
 async fn get_video_urls() -> anyhow::Result<Vec<VideoInfo>> {
     dotenv().ok();
     let api_key = env::var("YOUTUBE_API_KEY").expect("failed to get youtube api key");
+    let playlist_id = env::var("YOUTUBE_PLAYLIST_ID").expect("failed to get youtube api key");
 
     let client = Client::new();
     let url = format!(
         "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId={}&maxResults=50&key={}",
-        PLAYLIST_ID, api_key
+        playlist_id, api_key
     );
 
     let response = client.get(&url).send().await?;
