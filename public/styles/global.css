@@ -44,6 +44,10 @@ body {
   background-color: var(--primary-dark);
 }
 
+[x-cloak] {
+  display: none !important;
+}
+
 .tattoo {
   font-family: "Tattoo";
 }

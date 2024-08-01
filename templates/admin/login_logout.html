@@ -7,6 +7,10 @@
     hx-push-url="false"
     hx-swap="none"
     class="button"
+    _="
+      on htmx:afterRequest
+      end
+    "
     @htmx:after-request="if ($event.detail.successful) { toggle_logged_in() }"
   >
     Log me out
