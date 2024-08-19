@@ -1,0 +1,37 @@
+<div class="page">
+  <section class="hero hero-transition">
+    <h1>Support</h1>
+  </section>
+  <section class="main-section-transition">
+    <div x-style="flex; flex-col; lg|mx:6rem; mx:2rem; align-self:center;">
+      {% for res in resources %}
+      <div>
+        <h1>{{ res.name }}</h1>
+        <div x-style="flex; flex-row;">
+          {% for m in res.missions %}
+          <div
+            x-style="bg-color:@semper-orange; radius:pill; color:@primary-dark; py:0.25rem; px:0.4rem; mr:1rem;"
+          >
+            {{ m }}
+          </div>
+          {% endfor %}
+        </div>
+        <p>{{ res.description }}</p>
+
+        {% if let Some(phone) = res.phone %}
+        <p>Phone: {{ phone }}</p>
+        {% endif %} {% if let Some(email) = res.email %}
+        <p>Email: {{ email }}</p>
+        {% endif %} {% if let Some(phys_addy) = res.physical_address %}
+        <p>
+          {{ phys_addy.line_1 }} <br />
+          {% if let Some(line2) = phys_addy.line_2 %} {{ line2 }} {% endif %}
+          <br />{{ phys_addy.city }}, {{ phys_addy.state }}, {{ phys_addy.zip }}
+        </p>
+
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+</div>

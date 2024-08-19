@@ -1,0 +1,15 @@
+.navigation > button {
+  border-radius: 20px;
+  backdrop-filter: blur(50px);
+  background-color: transparent;
+  border: none;
+  color: var(--semper-orange);
+  cursor: pointer;
+  padding: 0.25rem;
+  margin: 0.5rem;
+  transition: all ease-in-out 200ms;
+}
+
+.navigation > button:hover {
+  color: var(--semper-red);
+}

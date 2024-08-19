@@ -1,0 +1,44 @@
+<link rel="stylesheet" href="/public/styles/patrol_logs.css" />
+<div class="page">
+  <section class="hero hero-transition">
+    <h1>Patrol Logs</h1>
+  </section>
+  <section
+    x-data="{ showing_vids: false, toggle() { this.showing_vids = !this.showing_vids; }}"
+    x-style="flex; flex-col; w:100%;"
+    class="main-section-transition"
+    hx-swap="innerHTML"
+    hx-push-url="false"
+  >
+    <button
+      x-show.important="showing_vids == false"
+      x-style="align-self:flex-end; m:1rem;"
+      @click="toggle()"
+      hx-get="/videos"
+      hx-target="#logs-content"
+    >
+      Videos
+    </button>
+    <button
+      x-show.important="showing_vids"
+      x-style="align-self:flex-end; m:1rem;"
+      @click="toggle()"
+      hx-get="/patrol_logs"
+      hx-select="#logs-content"
+      hx-target="#logs-content"
+    >
+      Logs
+    </button>
+    <section id="logs-content">
+      <div x-style="flex; flex-col;" class="subsection-transition">
+        {% for act in activities %} {% if !act.carousel.images.is_empty() %} {{
+        Self::render_carousel(act.carousel)|safe }} {% else %}
+        <p>No images</p>
+        {% endif %}
+        <p>{{ act.description }}</p>
+        <p>{{ act.date }}</p>
+        {% endfor %}
+      </div>
+    </section>
+  </section>
+</div>

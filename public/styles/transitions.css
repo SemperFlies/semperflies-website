@@ -1,0 +1,67 @@
+@keyframes main-section-in {
+  from {
+    opacity: 0;
+    transform: translateX(-100vw);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes main-section-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100vw);
+  }
+}
+
+@keyframes hero-in {
+  from {
+    filter: blur(0);
+    transform: translateX(-50vw);
+  }
+  to {
+    filter: blur(0);
+    transform: translateX(0);
+  }
+}
+
+@keyframes hero-out {
+  from {
+    filter: blur(0);
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(50vw);
+    filter: blur(2px);
+  }
+}
+
+::view-transition-old(hero) {
+  animation: 300ms cubic-bezier(0.95, 0.92, 0.08, 0.95) both hero-out;
+}
+::view-transition-new(hero) {
+  /* animation: 500ms cubic-bezier(0.73, 0.65, 0.2, 0.72) both hero-in; */
+  animation: 300ms cubic-bezier(0.95, 0.92, 0.08, 0.95) both hero-in;
+}
+
+::view-transition-old(main-section) {
+  animation: 500ms cubic-bezier(0.95, 0.92, 0.08, 0.95) both main-section-out;
+}
+::view-transition-new(main-section) {
+  animation: 500ms cubic-bezier(0.95, 0.92, 0.08, 0.95) both main-section-in;
+}
+
+.hero-transition {
+  view-transition-name: hero;
+}
+
+.main-section-transition {
+  transform-origin: center top;
+  view-transition-name: main-section;
+}

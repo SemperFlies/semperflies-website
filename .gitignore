@@ -1,2 +1,4 @@
 /target
 .env
+espx-ls.toml
+/.espx-ls

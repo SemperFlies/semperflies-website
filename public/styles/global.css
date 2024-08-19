@@ -33,14 +33,25 @@
   font-style: italic;
 }
 
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
 :root {
   --primary-dark: #232323;
+  --primary-light: #fdf1db;
+  --semper-orange: #faa51c;
+  --semper-red: #ae1c19;
 }
 
 html,
 body {
   font-family: "Tinos";
-  color: whitesmoke;
+  color: var(--primary-light);
   background-color: var(--primary-dark);
 }
 
@@ -50,4 +61,43 @@ body {
 
 .tattoo {
   font-family: "Tattoo";
+}
+
+.page {
+  display: flex;
+  min-width: 100%;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.hero {
+  padding: 1rem 4rem 4rem 4rem;
+}
+
+.hero h1 {
+  font-family: "Tattoo";
+}
+
+.hero h1::after {
+  content: "";
+  display: block;
+  border-bottom: 1px solid var(--semper-orange); /* Adjust the border style as needed */
+  margin-top: 0.5rem; /* Add some spacing between the h1 and the horizontal rule */
+}
+
+button {
+  color: var(--primary-dark);
+  font-family: "Tinos";
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  background-color: var(--semper-red);
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all ease-in-out 200ms;
+}
+
+button:hover {
+  background-color: var(--primary-light);
 }

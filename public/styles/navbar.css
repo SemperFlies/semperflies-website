@@ -1,0 +1,159 @@
+.logo {
+  mix-blend-mode: lighten;
+  object-fit: cover;
+  width: 14vw;
+  margin: 1rem;
+  transition: all ease-in-out 200ms;
+  cursor: pointer;
+}
+
+.logo.mobile {
+  width: 50vw;
+  align-self: center;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+#desktop-nav > button {
+  margin: 0rem 1rem;
+  color: var(--primary-light);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: "Tattoo";
+  transition: all ease-in-out 200ms;
+  height: fit-content;
+  width: fit-content;
+  padding: 1rem;
+  align-self: center;
+}
+
+#desktop-nav > button:hover {
+  color: var(--primary-dark);
+  background-color: var(--primary-light);
+}
+
+#mobile-nav {
+  flex-direction: column;
+  backdrop-filter: blur(20px);
+  transform-origin: center top;
+  opacity: 0;
+  display: flex;
+  transform: translate(20px);
+  max-height: 0%;
+  transition: max-height ease-in-out 500ms;
+  transition-behavior: allow-discrete;
+  scale: 0;
+}
+
+#mobile-nav.pre-open {
+  max-height: 100%;
+  scale: 1;
+}
+
+#mobile-nav.open {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mb-menu-enter {
+  transition: all ease-out 300ms;
+}
+
+.mb-menu-enter-start {
+  transform: translateY(-50px);
+  opacity: 0;
+}
+
+.mb-menu-enter-end {
+  transform: translateY(0px);
+  opacity: 1;
+}
+
+.mb-menu-leave {
+  transition: all ease-in 300ms;
+}
+
+.mb-menu-leave-start {
+  transform: translateY(0px);
+  opacity: 1;
+}
+
+.mb-menu-leave-end {
+  transform: translateY(-50px);
+  opacity: 0;
+}
+
+#hamburger-wrapper {
+  background-color: transparent;
+  backdrop-filter: blur(20px);
+  display: flex;
+  border-radius: 50px;
+  align-items: center;
+  width: 2em;
+  height: 2em;
+  padding: 0.4rem;
+  margin: 0;
+}
+
+.burger {
+  position: relative;
+  border-radius: 50px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.burger,
+.burger:before,
+.burger:after {
+  border-radius: 50px;
+  padding: 0;
+  background-color: white;
+  width: 80%;
+  height: 3px;
+  transition:
+    margin 0.1s 0.2s,
+    transform 0.2s;
+}
+
+.burger:before,
+.burger:after {
+  margin: 0;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.burger:before {
+  margin-top: -8px;
+}
+
+.burger:after {
+  margin-top: 8px;
+}
+
+/* STYLES FOR OUR BURGER WHEN THE MENU OPENS */
+.open .burger {
+  transform: rotate(45deg);
+}
+
+.open .burger,
+.open .burger:before,
+.open .burger:after {
+  transition:
+    margin 0.2s,
+    transform 0.1s 0.2s;
+}
+
+.open .burger:before,
+.open .burger:after {
+  margin-top: 0;
+}
+
+.open .burger:after {
+  transform: rotate(-90deg);
+}

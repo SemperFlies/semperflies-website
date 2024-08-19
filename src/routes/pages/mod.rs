@@ -1,7 +1,10 @@
 pub mod about_us;
 pub mod admin;
-pub mod dedications;
-pub mod videos;
+pub mod debriefs;
+pub mod fallen_brothers;
+pub mod patrol_gear;
+pub mod patrol_logs;
+pub mod support;
 use askama::Template;
 use axum::response::Html;
 

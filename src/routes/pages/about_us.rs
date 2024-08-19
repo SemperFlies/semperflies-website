@@ -19,6 +19,7 @@ fn board_members() -> Vec<BoardMember> {
         },
         BoardMember {
             name: "Other Guajardo".to_string(),
+
             role: "Other Role".to_string(),
             description: "This is a board member".to_string(),
             image_url: "public/assets/images/board_members/business2.jpg".to_string(),
