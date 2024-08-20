@@ -1,104 +1,7 @@
-<link rel="stylesheet" href="public/styles/navbar.css" />
-
-<div>
+<div x-style="w:100%; h:100%; overflow:auto;">
+  {% include "components/header.html" %}
   <div
-    x-data="{ is_mobile: false, isMobile() {
-			      const minWidth = 768; 
-			      console.log('checking mobile')
-			      return window.innerWidth < minWidth || screen.width < minWidth;
-			}}"
-    x-init="is_mobile = isMobile()"
-    x-style="flex;"
-  >
-    <nav
-      id="desktop-nav"
-      x-style="md|font-size:2.5rem; font-size:1rem; flex; flex-row; flex-shrink; justify-content:space-between;"
-      hx-target="#route-content"
-      hx-swap="innerHTML transition:true"
-      hx-push-url="true"
-      x-show.important="is_mobile == false"
-      x-cloak
-    >
-      <button hx-get="/about_us">About Us</button>
-      <button hx-get="/support">Support</button>
-      <button hx-get="/patrol_gear">Patrol Gear</button>
-      <img
-        class="logo"
-        src="public/assets/images/logoB.jpeg"
-        hx-get="/"
-        hx-select="#route-content"
-      />
-      <button hx-get="/patrol_logs">Patrol Logs</button>
-      <button hx-get="/fallen_brothers">Fallen Brothers</button>
-      <button hx-get="/debriefs">Debriefs</button>
-    </nav>
-    <div
-      x-show.important="is_mobile"
-      x-cloak
-      x-style="flex; flex-col; h:100%; w:100%; align-content:center;  z:6; bg-color:@primary-dark"
-      hx-target="#route-content"
-      hx-swap="innerHTML transition:true"
-    >
-      <img
-        class="logo mobile"
-        src="public/assets/images/logoB.jpeg"
-        hx-get="/"
-        hx-select="#route-content"
-      />
-      <div
-        id="hamburger-wrapper"
-        x-style="align-self:center; b:1px solid white;"
-        x-show="is_mobile"
-        @toggle.document="$el.classList.toggle('open')"
-        @click="$dispatch('toggle');"
-        f
-      >
-        <p class="burger"></p>
-      </div>
-    </div>
-  </div>
-  <nav
-    id="mobile-nav"
-    x-data="{open: false, toggle() { this.open = !this.open }}"
-    @toggle.document="
-		if (open) {
-			$el.classList.remove('open'); setTimeout(() => {
-				$el.classList.remove('pre-open');
-			}, 1);
-		} else {
-			$el.classList.add('pre-open'); setTimeout(() => {
-				$el.classList.add('open');
-			}, 300);
-		}
-		toggle()
-		"
-    x-cloak
-    hx-push-url="true"
-    hx-target="#route-content"
-    hx-swap="innerHTML transition:true"
-  >
-    <button @htmx:after-request="$dispatch('toggle')" hx-get="/about_us">
-      About Us
-    </button>
-    <button @htmx:after-request="$dispatch('toggle')" hx-get="/support">
-      Support
-    </button>
-    <button @htmx:after-request="$dispatch('toggle')" hx-get="/patrol_gear">
-      Patrol Gear
-    </button>
-    <button @htmx:after-request="$dispatch('toggle')" hx-get="/patrol_logs">
-      Patrol Logs
-    </button>
-    <button @htmx:after-request="$dispatch('toggle')" hx-get="/fallen_brothers">
-      Fallen Brothers
-    </button>
-    <button @htmx:after-request="$dispatch('toggle')" hx-get="/debriefs">
-      Debriefs
-    </button>
-  </nav>
-
-  <div
-    x-style="overflow:hidden; flex; flex-grow;"
+    x-style="overflow:hidden; flex; flex-grow; min-h:80%; min:w:100%"
     id="route-content"
     hx-target="this"
     hx-trigger="load"
@@ -106,4 +9,41 @@
     hx-get="{{path}}{{params}}"
     hx-push-url="true"
   ></div>
+  <footer x-style="flex; flex-col; mb:1rem; mt:3rem; min-w:100%; text:xs; ">
+    <div x-style="flex; flex-row; justify-content:space-around; mb:2rem;">
+      <div x-style="flex; flex-col; justfiy-content:center; text-align:center;">
+        <h1 x-style="color:grey;">Contact info</h1>
+        <p x-style="color:grey;">
+          1 (555)-555-5555
+          <br />
+          jamie@semperflies.com
+        </p>
+      </div>
+      <div x-style="flex; flex-col; justfiy-content:center;">
+        <h1 x-style="color:grey;">Follow Us</h1>
+        <a
+          href="https://www.instagram.com/semperfliesfoundation/"
+          x-style="align-self:center; transition:all ease-in-out 200ms; transform.hover:scale(1.1);"
+        >
+          <img
+            src="public/assets/images/Instagram_icon.svg"
+            alt="Instagram Icon"
+            width="30"
+          />
+        </a>
+        <div x-style="flex; flex-row;"></div>
+      </div>
+    </div>
+    <div x-style="flex-col; flex;">
+      <p x-style="align-self:center; my:0; color:grey;">
+        © Copyright 2024 - Powered by HTMX – All Rights Reserved
+      </p>
+      <p x-style="text-align:right; mr:1rem; my:0; color:grey;">
+        <small>Built by</small>
+        <a x-style="color:@semper-orange;" href="https://www.voidkandy.space"
+          ><strong>VoidKandy</strong></a
+        >
+      </p>
+    </div>
+  </footer>
 </div>

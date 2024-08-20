@@ -2,5 +2,17 @@
   <section class="hero hero-transition">
     <h1>Debriefs</h1>
   </section>
-  <section class="main-section-transition"></section>
+  <section class="main-section-transition">
+    <div x-style="flex; flex-col; mx:3rem;">
+      {% for test in testimonials %}
+      <section x-style="w:100%; align-self:center; ">
+        <h1>{{ test.firstname }} {{test.lastname}}</h1>
+        {% if let Some(bio) = test.bio %}
+        <small>{{ bio }}</small>
+        {% endif %}
+        <p>{{ test.content }}</p>
+      </section>
+      {% endfor %}
+    </div>
+  </section>
 </div>

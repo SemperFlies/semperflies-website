@@ -12,7 +12,6 @@ pub struct FallenBrosTemplate {
     dedications: Vec<Dedication>,
 }
 
-// #---#
 #[derive(Debug)]
 struct Dedication {
     name: String,

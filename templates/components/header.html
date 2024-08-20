@@ -1,0 +1,96 @@
+<link rel="stylesheet" href="public/styles/header.css" />
+<header x-style="flex; flex-col; ">
+  <div
+    x-data="{ is_mobile: false, isMobile() {
+                const minWidth = 920; 
+                console.log('checking mobile')
+                return window.innerWidth < minWidth || screen.width < minWidth;
+			}}"
+    x-init="is_mobile = isMobile()"
+    x-style="flex; justify-content:center;"
+  >
+    <nav
+      id="desktop-nav"
+      x-style="lg|font-size:2.5rem; font-size:1rem; flex; flex-row; flex-shrink; justify-content:space-between;"
+      hx-target="#route-content"
+      hx-swap="innerHTML transition:true"
+      hx-push-url="true"
+      x-show.important="is_mobile == false"
+      x-cloak
+    >
+      <button hx-get="/about_us">About Us</button>
+      <button hx-get="/support">Support</button>
+      <button hx-get="/patrol_gear">Patrol Gear</button>
+      <img
+        class="logo"
+        src="public/assets/images/logoTrans.png"
+        hx-get="/"
+        hx-select="#route-content"
+      />
+      <button hx-get="/patrol_logs">Patrol Logs</button>
+      <button hx-get="/fallen_brothers">Fallen Brothers</button>
+      <button hx-get="/debriefs">Debriefs</button>
+    </nav>
+    <div
+      x-show.important="is_mobile"
+      x-cloak
+      x-style="flex; flex-col; w:100%; align-content:center; z:6;"
+      hx-target="#route-content"
+      hx-swap="innerHTML transition:true"
+    >
+      <img
+        class="logo mobile"
+        src="public/assets/images/logoTrans.png"
+        hx-get="/"
+        hx-select="#route-content"
+      />
+      <div
+        id="hamburger-wrapper"
+        x-style="align-self:center; b:1px solid white;"
+        x-show="is_mobile"
+        @toggle.document="$el.classList.toggle('open')"
+        @click="$dispatch('toggle');"
+      >
+        <p class="burger"></p>
+      </div>
+    </div>
+  </div>
+  <nav
+    id="mobile-nav"
+    x-data="{open: false, toggle() { this.open = !this.open }}"
+    @toggle.document="
+      if (open) {
+              $el.classList.remove('open'); setTimeout(() => {
+                      $el.classList.remove('pre-open');
+              }, 1);
+      } else {
+              $el.classList.add('pre-open'); setTimeout(() => {
+                      $el.classList.add('open');
+              }, 300);
+      }
+      toggle()"
+    x-cloak
+    hx-push-url="true"
+    hx-target="#route-content"
+    hx-swap="innerHTML transition:true"
+  >
+    <button @htmx:after-request="$dispatch('toggle')" hx-get="/about_us">
+      About Us
+    </button>
+    <button @htmx:after-request="$dispatch('toggle')" hx-get="/support">
+      Support
+    </button>
+    <button @htmx:after-request="$dispatch('toggle')" hx-get="/patrol_gear">
+      Patrol Gear
+    </button>
+    <button @htmx:after-request="$dispatch('toggle')" hx-get="/patrol_logs">
+      Patrol Logs
+    </button>
+    <button @htmx:after-request="$dispatch('toggle')" hx-get="/fallen_brothers">
+      Fallen Brothers
+    </button>
+    <button @htmx:after-request="$dispatch('toggle')" hx-get="/debriefs">
+      Debriefs
+    </button>
+  </nav>
+</header>

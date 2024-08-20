@@ -50,13 +50,29 @@
 
 html,
 body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
   font-family: "Tinos";
   color: var(--primary-light);
   background-color: var(--primary-dark);
+  overflow-x: hidden;
 }
 
 [x-cloak] {
   display: none !important;
+}
+
+#background-image {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  mix-blend-mode: overlay;
+  opacity: 10%;
+  background-repeat: repeat;
+  background-position: center;
+  background-size: cover;
+  background-image: url("/public/assets/camo.svg");
 }
 
 .tattoo {
@@ -86,15 +102,19 @@ body {
   margin-top: 0.5rem; /* Add some spacing between the h1 and the horizontal rule */
 }
 
+.hero p {
+  margin: 0 2rem;
+}
+
 button {
   color: var(--primary-dark);
-  font-family: "Tinos";
+  font-family: "Tattoo";
   font-size: 1.5rem;
   padding: 0.5rem;
-  background-color: var(--semper-red);
+  background-color: var(--semper-orange);
   border: none;
-  border-radius: 20px;
   cursor: pointer;
+
   transition: all ease-in-out 200ms;
 }
 

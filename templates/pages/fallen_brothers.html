@@ -1,11 +1,14 @@
 <div class="page">
   <section class="hero hero-transition">
     <h1>Fallen Brothers</h1>
+    <p>Brothers lost</p>
   </section>
   <section class="main-section-transition">
-    <div x-style="flex; flex-col;">
+    <div x-style="flex; flex-col; lg|mx:4rem; mx:2rem;">
       {% for ded in dedications %}
-      <section x-style="w:100%; align-self:center;">
+      <section
+        x-style="w:100%; align-self:center; flex; lg|flex-row; flex-col; justify-content:space-between; mb:1rem;"
+      >
         <div>
           <h1>{{ ded.name }}</h1>
           <p>{{ ded.bio }}</p>
@@ -14,9 +17,12 @@
             <h3>Extract: {{ ded.death }}</h3>
           </div>
         </div>
-        <section x-style="h:50%; w:50%;">
-          {% if !ded.carousel.images.is_empty() %} {{
-          Self::render_carousel(ded.carousel)|safe }} {% else %}
+        <section x-style="h:50%; w:50%; align-self:center;">
+          {% if !ded.carousel.images.is_empty() %}
+          <!---->
+          {{ Self::render_carousel(ded.carousel)|safe }}
+          <!--  -->
+          {% else %}
           <p>No images</p>
           {% endif %}
         </section>

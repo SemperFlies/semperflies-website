@@ -1,7 +1,7 @@
 .logo {
   mix-blend-mode: lighten;
   object-fit: cover;
-  width: 14vw;
+  width: 10vw;
   margin: 1rem;
   transition: all ease-in-out 200ms;
   cursor: pointer;
@@ -17,7 +17,7 @@
 }
 
 #desktop-nav > button {
-  margin: 0rem 1rem;
+  margin: 0rem 0.5rem;
   color: var(--primary-light);
   background-color: transparent;
   border: none;
@@ -27,6 +27,7 @@
   height: fit-content;
   width: fit-content;
   padding: 1rem;
+  font-size: 1rem;
   align-self: center;
 }
 
@@ -36,26 +37,23 @@
 }
 
 #mobile-nav {
+  margin: 1rem;
   flex-direction: column;
   backdrop-filter: blur(20px);
   transform-origin: center top;
   opacity: 0;
-  display: flex;
-  transform: translate(20px);
+  display: none;
   max-height: 0%;
-  transition: max-height ease-in-out 500ms;
-  transition-behavior: allow-discrete;
-  scale: 0;
+  transition: all ease-in-out 500ms cubic-bezier(0, 1, 0, 1);
 }
 
 #mobile-nav.pre-open {
   max-height: 100%;
-  scale: 1;
+  display: flex;
 }
 
 #mobile-nav.open {
   opacity: 1;
-  transform: translateY(0);
 }
 
 .mb-menu-enter {
