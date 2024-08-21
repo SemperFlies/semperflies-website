@@ -1,18 +1,37 @@
 <div
   x-data="{logged_in: {{logged_in}}, toggle_logged_in() { this.logged_in = !this.logged_in; }}"
+  x-style="flex; flex-col; flex-grow; justify-content:center;"
 >
-  <button
-    x-show="logged_in"
-    hx-post="/data/auth/logout"
-    hx-push-url="false"
-    hx-swap="none"
-    class="button"
-    @htmx:after-request="if ($event.detail.successful) { toggle_logged_in() }"
+  <div
+    x-show.important="logged_in"
+    x-style="flex; flex-col;"
   >
-    Log me out
-  </button>
+    <h1 x-style="text-align:center;">You are logged in</h1>
+    <button
+      hx-post="/data/auth/logout"
+      x-style='align-self:center; mb:1rem;'
+      hx-push-url="false"
+      hx-swap="none"
+      class="button"
+      @htmx:after-request="if ($event.detail.successful) { toggle_logged_in() }"
+    >
+      Log me out
+      </button>
+
+    <button
+      x-style='align-self:center;'
+      hx-get="/admin/upload"
+      hx-push-url="true"
+      hx-target="#route-content"
+      hx-swap="innerHTML transition:true"
+      class="button"
+    >
+      Take me to upload forms
+      </button>
+  </div>
   <form
-    x-show="logged_in == false"
+    x-style="align-self:center; flex; flex-col; justify-content:center;"
+    x-show.important="logged_in == false"
     hx-post="/data/auth/login"
     hx-include="[name='password']"
     hx-push-url="false"
@@ -22,14 +41,15 @@
      $el.querySelector('input[name=password]').value = '';
      if ($event.detail.successful) { toggle_logged_in(); }"
   >
-    <h1>Login</h1>
+    <h1 x-style="text-align:center;">Login</h1>
     <input
+      x-style="my:1rem;"
       type="password"
       placeholder="password"
       name="password"
       autocomplete="off"
     />
-    <button class="button">Submit</button>
+    <button class="button" x-style="align-self:center;">Submit</button>
   </form>
   <div
     x-init="$watch('status', value=> setTimeout(() => status = '', 3000))"
@@ -37,11 +57,11 @@
     id="login-response"
     @htmx:before-swap="status = JSON.parse($event.detail.serverResponse).status.toLowerCase();"
   >
-    <div x-show="status === 'success'" x-style="color: green;">
-      <p>You have been logged in</p>
+    <div x-show="status === 'success'" x-style="color: green; text-align:center;">
+      <p>You have been logged in</p
     </div>
 
-    <div x-show="status === 'error'" x-style="color: red;">
+    <div x-show="status === 'error'" x-style="color: red; text-align:center;">
       <p>Incorrect Password</p>
     </div>
   </div>

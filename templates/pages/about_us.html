@@ -7,20 +7,14 @@
     x-style="flex; flex-col;">
     {% for member in board_members %}
     <div
-      x-data="{ show{{loop.index}}: false }"
-      x-intersect:enter.threshold.40="show{{loop.index}}=true;"
-      x-intersect:leave.threshold.0="show{{loop.index}}=false;"
+      x-data
+      class="slide-into-view"
+      x-intersect:enter.threshold.40="$el.classList.add('vis');"
       x-style="flex; lg|flex-row; flex-col; lg|m:2rem; m:1rem;">
       <img 
-        x-cloak
-        x-show.important='show{{loop.index}}'
-        x-transition.opacity.duration.500ms
         x-style="w:50%; lg|w:40%; radius:lg; lg|align-self:start; align-self:center; object-fit:cover;"
         src="{{member.image_url}}"></img>
       <div 
-        x-cloak
-        x-show.important='show{{loop.index}}'
-        x-transition.opacity.duration.500ms
         x-style="flex; flex-col; lg|m:1rem 0rem 1rem 1rem; m:1rem; p:2rem 3rem; flex-grow; b:1px @primary-light solid; radius:lg;">
         <h2 x-style='mb:0.25rem;'>{{member.role}}</h2>
         <h1 class="tattoo">{{member.name}}</h1>

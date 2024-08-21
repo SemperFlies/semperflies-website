@@ -1,25 +1,19 @@
-use super::{
-    error::AuthResult,
-    model::{LoginAdminSchema, TokenClaims},
-};
+use super::model::{LoginAdminSchema, TokenClaims};
 use crate::{
     auth::{error::AuthError, ADMIN_CREDENTIALS},
-    error::{DataApiReturn, DataResponse, InternalError},
+    error::{DataApiReturn, InternalError},
     state::SharedState,
-    AppState,
 };
-use anyhow::anyhow;
 use axum::{
     extract::State,
-    http::{header, Response, StatusCode},
-    response::{Html, IntoResponse},
-    Form, Json,
+    http::{header, Response},
+    response::IntoResponse,
+    Form,
 };
 use axum_extra::extract::cookie::{Cookie, SameSite};
 use jsonwebtoken::{encode, EncodingKey, Header};
 use serde_json::json;
-use std::{borrow::BorrowMut, sync::Arc};
-use tracing::{error, info};
+use tracing::info;
 use uuid::Uuid;
 
 pub async fn login_admin_handler(

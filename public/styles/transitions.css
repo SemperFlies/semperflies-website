@@ -1,3 +1,13 @@
+.slide-into-view {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all ease-in-out 250ms;
+}
+.slide-into-view.vis {
+  opacity: 1;
+  transform: translateY(0px);
+}
+
 @keyframes main-section-in {
   from {
     opacity: 0;

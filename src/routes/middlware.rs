@@ -6,6 +6,8 @@ use axum::{
     middleware::Next,
     response::{Html, IntoResponse, Response},
 };
+use tracing::debug;
+use tracing_log::log::info;
 
 pub(super) async fn htmx_request_check(headers: HeaderMap, req: Request, next: Next) -> Response {
     let uri = req.uri();

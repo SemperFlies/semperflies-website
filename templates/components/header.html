@@ -1,11 +1,12 @@
-<link rel="stylesheet" href="public/styles/header.css" />
+<link rel="stylesheet" href="/public/styles/header.css" />
 <header x-style="flex; flex-col; ">
   <div
-    x-data="{ is_mobile: false, isMobile() {
+    x-data="{ is_mobile: false,
+              isMobile() {
                 const minWidth = 920; 
-                console.log('checking mobile')
                 return window.innerWidth < minWidth || screen.width < minWidth;
-			}}"
+              }
+    }"
     x-init="is_mobile = isMobile()"
     x-style="flex; justify-content:center;"
   >
@@ -23,7 +24,7 @@
       <button hx-get="/patrol_gear">Patrol Gear</button>
       <img
         class="logo"
-        src="public/assets/images/logoTrans.png"
+        src="/public/assets/images/logoTrans.png"
         hx-get="/"
         hx-select="#route-content"
       />
@@ -40,7 +41,7 @@
     >
       <img
         class="logo mobile"
-        src="public/assets/images/logoTrans.png"
+        src="/public/assets/images/logoTrans.png"
         hx-get="/"
         hx-select="#route-content"
       />

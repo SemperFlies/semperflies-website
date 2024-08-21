@@ -107,17 +107,19 @@ body {
 }
 
 button {
-  color: var(--primary-dark);
   font-family: "Tattoo";
-  font-size: 1.5rem;
+  display: inline-block;
+  width: fit-content;
+  font-size: 1rem;
   padding: 0.5rem;
-  background-color: var(--semper-orange);
-  border: none;
+  color: var(--semper-orange);
+  background-color: var(--primary-dark);
+  border: 2px var(--semper-orange) inset;
   cursor: pointer;
-
   transition: all ease-in-out 200ms;
 }
 
 button:hover {
-  background-color: var(--primary-light);
+  color: var(--semper-red);
+  border-color: var(--semper-red);
 }
