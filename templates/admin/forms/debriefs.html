@@ -1,4 +1,9 @@
-<form>
+<form
+  hx-push-url="false"
+  hx-target="#upload-response"
+  hx-swap="innerHTML"
+  hx-post="/data/auth/upload/debriefs"
+>
   <h1>Debriefs</h1>
   <label for="firstname">First Name:</label>
   <input type="text" name="firstname" placeholder="First Name" required />
@@ -7,7 +12,7 @@
   <input type="text" name="lastname" placeholder="Last Name" required />
 
   <label for="bio">Bio:</label>
-  <textarea name="bio" placeholder="Bio" rows="4" cols="50"></textarea>
+  <textarea required name="bio" placeholder="Bio" rows="4" cols="50"></textarea>
 
   <label for="content">Content:</label>
   <textarea
@@ -17,4 +22,6 @@
     cols="50"
     required
   ></textarea>
+
+  <button type="submit">Submit</button>
 </form>

@@ -2,21 +2,22 @@ use askama::Template;
 use axum::response::Html;
 use chrono::NaiveDate;
 use rand::prelude::*;
+use serde::Deserialize;
 
 use crate::components::carousel::{CarouselTemplate, Image};
 
 #[derive(Template, Debug)]
 #[template(path = "pages/patrol_logs.html")]
 pub struct PatrolLogsTemplate {
-    activities: Vec<Activity>,
+    activities: Vec<Log>,
 }
 
 #[derive(Debug)]
-struct Activity {
-    heading: String,
-    description: String,
-    date: NaiveDate,
-    carousel: CarouselTemplate,
+pub struct Log {
+    pub heading: String,
+    pub description: String,
+    pub date: NaiveDate,
+    pub carousel: CarouselTemplate,
 }
 
 pub async fn patrol_logs() -> Html<String> {
@@ -38,7 +39,7 @@ impl PatrolLogsTemplate {
     }
 }
 
-fn generate_activities(amt: i32) -> Vec<Activity> {
+fn generate_activities(amt: i32) -> Vec<Log> {
     let mut rng = thread_rng();
     let image_urls = vec![
         "public/assets/images/board_members/business.jpg".to_string(),
@@ -62,7 +63,7 @@ fn generate_activities(amt: i32) -> Vec<Activity> {
         }
         let carousel = CarouselTemplate { images };
 
-        activities.push(Activity {
+        activities.push(Log {
             heading,
             description,
             date,

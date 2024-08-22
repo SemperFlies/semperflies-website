@@ -33,3 +33,14 @@
   align-self: center;
   margin: 0.5rem 0rem;
 }
+
+#upload-response {
+  margin: 0.5rem 0;
+  text-align: center;
+  color: green;
+  justify-self: center;
+}
+
+#upload-response.fail {
+  color: var(--semper-red);
+}

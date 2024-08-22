@@ -1,9 +1,9 @@
 mod index;
 mod middlware;
-mod pages;
+pub mod pages;
 use crate::{
     auth::{
-        handlers::{login_admin_handler, logout_handler},
+        handlers::{login_admin_handler, logout_handler, upload::upload_handler},
         middleware::{admin_auth, soft_auth},
     },
     state::SharedState,
@@ -31,11 +31,8 @@ pub fn create_router(state: SharedState) -> Router {
 
     let data_routes = Router::new()
         .route("/auth/login", post(login_admin_handler))
-        .route("/auth/logout", post(logout_handler));
-
-    // let private_dir_router = Router::new()
-    //     .nest_service("/", ServeDir::new("private"))
-    //     .route_layer(middleware::from_fn_with_state(state.clone(), auth));
+        .route("/auth/logout", post(logout_handler))
+        .route("/auth/upload/:item", post(upload_handler));
 
     Router::new()
         .route("/", get(index::index))

@@ -1,4 +1,9 @@
-<form>
+<form
+  hx-push-url="false"
+  hx-target="#upload-response"
+  hx-swap="innerHTML"
+  hx-post="/data/auth/upload/fallen_brothers"
+>
   <h1>Fallen Brothers</h1>
 
   <label for="fullname">Full Name:</label>
@@ -24,4 +29,6 @@
     cols="50"
     required
   ></textarea>
+
+  <button type="submit">Submit</button>
 </form>

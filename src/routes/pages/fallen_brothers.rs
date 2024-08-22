@@ -3,6 +3,7 @@ use axum::response::Html;
 use chrono::{Date, NaiveDate};
 use rand::seq::SliceRandom;
 use rand::{thread_rng, Rng};
+use serde::Deserialize;
 
 use crate::components::carousel::{self, CarouselTemplate, Image};
 
@@ -13,15 +14,14 @@ pub struct FallenBrosTemplate {
 }
 
 #[derive(Debug)]
-struct Dedication {
-    name: String,
-    bio: String,
+pub struct Dedication {
+    pub name: String,
+    pub bio: String,
     // insert
-    birth: NaiveDate,
+    pub birth: NaiveDate,
     // extract
-    death: NaiveDate,
-    carousel: CarouselTemplate,
-    // images: Vec<String>,
+    pub death: NaiveDate,
+    pub carousel: CarouselTemplate,
 }
 
 fn generate_dedications(amt: i32) -> Vec<Dedication> {

@@ -1,5 +1,6 @@
 use askama::Template;
 use axum::response::Html;
+use serde::Deserialize;
 
 #[derive(Template, Debug)]
 #[template(path = "pages/debriefs.html")]
@@ -8,12 +9,11 @@ pub struct DebriefsTemplate {
 }
 
 #[derive(Debug)]
-struct Testimonial {
-    firstname: String,
-    lastname: String,
-    bio: Option<String>,
-    content: String,
-    // image: Option<String>,
+pub struct Testimonial {
+    pub firstname: String,
+    pub lastname: String,
+    pub bio: Option<String>,
+    pub content: String,
 }
 pub async fn debriefs() -> Html<String> {
     let template = DebriefsTemplate {

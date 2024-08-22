@@ -1,6 +1,10 @@
-<form>
+<form
+  hx-push-url="false"
+  hx-target="#upload-response"
+  hx-swap="innerHTML"
+  hx-post="/data/auth/upload/patrol_logs"
+>
   <h1>Patrol Logs</h1>
-
   <label for="heading">Heading:</label>
   <input type="text" name="heading" placeholder="Some Activity" required />
 
@@ -17,4 +21,6 @@
     cols="50"
     required
   ></textarea>
+
+  <button type="submit">Submit</button>
 </form>

@@ -18,3 +18,13 @@ pub async fn landing() -> Html<String> {
         Err(err) => Html(format!("Error rendering Layout: {}", err.to_string())),
     }
 }
+
+pub mod uploadables {
+    #[allow(unused)]
+    pub use super::{
+        debriefs::Testimonial,
+        fallen_brothers::Dedication,
+        patrol_logs::logs::Log,
+        support::{Address, SupportResource},
+    };
+}

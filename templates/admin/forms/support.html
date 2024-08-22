@@ -7,7 +7,7 @@
 
     const newInput = document.createElement("input");
     newInput.type = "text";
-    newInput.name = "inputs[]";
+    newInput.name = "missions[]";
     newInput.placeholder = "Enter value";
     newInput.classList.add("mission-input");
 
@@ -32,6 +32,10 @@
 </style>
 
 <form
+  hx-swap="none"
+  hx-target="#upload-response"
+  hx-swap="innerHTML"
+  hx-post="/data/auth/upload/support"
   x-data="{ 
   phys_address: false,
   buttontext: 'Add Physical Address',
@@ -48,7 +52,7 @@
 >
   <h1>Support</h1>
   <label for="name">Name:</label>
-  <input type="text" name="firstname" placeholder="Name" required />
+  <input type="text" name="name" placeholder="Name" required />
 
   <label for="description">Description:</label>
   <textarea
@@ -56,6 +60,7 @@
     placeholder="Description"
     rows="4"
     cols="50"
+    required
   ></textarea>
 
   <div id="inputContainer" x-style="my:0.5rem;">
@@ -63,7 +68,7 @@
     <input
       class="mission-input"
       type="text"
-      name="inputs[]"
+      name="missions[]"
       placeholder="Enter value"
     />
     <button class="small" type="button" @click="addInput()">Add Another</button>
@@ -162,4 +167,6 @@
     <label for="line2">Address Line 2:</label>
     <input class="optional" type="text" name="line2" placeholder="Apt. 4" />
   </div>
+
+  <button type="submit">Submit</button>
 </form>

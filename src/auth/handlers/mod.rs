@@ -1,11 +1,15 @@
+mod error;
+pub mod upload;
 use super::model::{LoginAdminSchema, TokenClaims};
 use crate::{
     auth::{error::AuthError, ADMIN_CREDENTIALS},
     error::{DataApiReturn, InternalError},
     state::SharedState,
+    AppState,
 };
+use anyhow::anyhow;
 use axum::{
-    extract::State,
+    extract::{Multipart, Path, State},
     http::{header, Response},
     response::IntoResponse,
     Form,
@@ -13,6 +17,7 @@ use axum::{
 use axum_extra::extract::cookie::{Cookie, SameSite};
 use jsonwebtoken::{encode, EncodingKey, Header};
 use serde_json::json;
+use std::sync::Arc;
 use tracing::info;
 use uuid::Uuid;
 
@@ -21,11 +26,6 @@ pub async fn login_admin_handler(
     Form(body): Form<LoginAdminSchema>,
 ) -> Result<impl IntoResponse, DataApiReturn> {
     info!("Login request Body {:?}", body);
-
-    // let user = get_user_by_email(&data.db, &body.email.trim())
-    // .await
-    // .map_err(|e| e.into_data_api_return())?
-    // .ok_or_else(|| AuthError::NoLongerExists.into_data_api_return())?;
 
     if ADMIN_CREDENTIALS.password != body.password {
         data.write().await.admin_session_id = None;

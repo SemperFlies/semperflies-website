@@ -1,6 +1,7 @@
 use askama::Template;
 use axum::response::Html;
 use rand::prelude::*;
+use serde::Deserialize;
 
 #[derive(Template, Debug)]
 #[template(path = "pages/support.html")]
@@ -9,22 +10,22 @@ pub struct SupportTemplate {
 }
 
 #[derive(Debug)]
-struct Address {
-    line_2: Option<String>,
-    line_1: String,
-    city: String,
-    state: String,
-    zip: String,
+pub struct Address {
+    pub line_2: Option<String>,
+    pub line_1: String,
+    pub city: String,
+    pub state: String,
+    pub zip: String,
 }
 
 #[derive(Debug)]
-struct SupportResource {
-    name: String,
-    description: String,
-    missions: Vec<String>,
-    phone: Option<String>,
-    email: Option<String>,
-    physical_address: Option<Address>,
+pub struct SupportResource {
+    pub name: String,
+    pub description: String,
+    pub missions: Vec<String>,
+    pub phone: Option<String>,
+    pub email: Option<String>,
+    pub physical_address: Option<Address>,
 }
 
 pub async fn support() -> Html<String> {
