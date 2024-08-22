@@ -123,3 +123,9 @@ button:hover {
   color: var(--semper-red);
   border-color: var(--semper-red);
 }
+
+button.small {
+  font-size: 0.75rem;
+  padding: 0.2rem;
+  border-radius: 10px;
+}

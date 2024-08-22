@@ -1,0 +1,27 @@
+<form>
+  <h1>Fallen Brothers</h1>
+
+  <label for="fullname">Full Name:</label>
+  <input type="text" name="fullname" placeholder="John Middle Doe" required />
+
+  <div x-style="flex; flex-row; my:0.5rem; gap:0.5rem;">
+    <label for="birth"
+      >Birth:
+      <input type="date" name="birth" required />
+    </label>
+
+    <label for="death"
+      >Death:
+      <input type="date" name="death" required />
+    </label>
+  </div>
+
+  <label for="bio">Biography:</label>
+  <textarea
+    name="bio"
+    placeholder="Biography..."
+    rows="4"
+    cols="50"
+    required
+  ></textarea>
+</form>

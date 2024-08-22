@@ -1,5 +1,3 @@
-// 🔒
-
 use askama::Template;
 use axum::response::Html;
 use rand::prelude::*;

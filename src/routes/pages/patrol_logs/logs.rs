@@ -11,9 +11,9 @@ pub struct PatrolLogsTemplate {
     activities: Vec<Activity>,
 }
 
-// #---#
 #[derive(Debug)]
 struct Activity {
+    heading: String,
     description: String,
     date: NaiveDate,
     carousel: CarouselTemplate,
@@ -37,7 +37,7 @@ impl PatrolLogsTemplate {
             .unwrap_or("error rendering carousel".to_owned())
     }
 }
-//⚑
+
 fn generate_activities(amt: i32) -> Vec<Activity> {
     let mut rng = thread_rng();
     let image_urls = vec![
@@ -48,6 +48,7 @@ fn generate_activities(amt: i32) -> Vec<Activity> {
 
     let mut activities = Vec::new();
     for _ in 0..amt {
+        let heading = format!("Heading for activity {}", activities.len() + 1);
         let description = format!("Description of activity {}", activities.len() + 1);
         let year = rng.gen_range(1950..1990);
         let month = rng.gen_range(1..13);
@@ -62,6 +63,7 @@ fn generate_activities(amt: i32) -> Vec<Activity> {
         let carousel = CarouselTemplate { images };
 
         activities.push(Activity {
+            heading,
             description,
             date,
             carousel,

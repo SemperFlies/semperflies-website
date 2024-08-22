@@ -7,7 +7,6 @@ use crate::{
     state::SharedState,
     AppState,
 };
-use anyhow::anyhow;
 use axum::{
     body::Body,
     extract::{FromRef, State},
@@ -17,10 +16,9 @@ use axum::{
 };
 use axum_extra::extract::cookie::CookieJar;
 use jsonwebtoken::{decode, DecodingKey, Validation};
-use reqwest::StatusCode;
 use tracing::{debug, warn};
 
-#[tracing::instrument(name = "get admin session id", skip(cookie_jar, jwt_secret))]
+#[tracing::instrument(name = "get admin session id", skip_all)]
 pub fn get_admin_session_id(
     jwt_secret: &[u8],
     cookie_jar: CookieJar,
@@ -55,7 +53,7 @@ pub fn get_admin_session_id(
     Ok(id)
 }
 
-#[tracing::instrument(name = "admin authorization middleware", skip(cookie_jar, data, next))]
+#[tracing::instrument(name = "admin authorization middleware", skip_all)]
 pub async fn admin_auth(
     State(data): State<SharedState>,
     cookie_jar: CookieJar,
@@ -67,8 +65,12 @@ pub async fn admin_auth(
         .map_err(|err| err.into_data_api_return())?;
     if let Some(state_id) = r.admin_session_id {
         if state_id != id {
+            warn!("session id from state does not match admin id");
             return Err(AuthError::NotLoggedIn.into_data_api_return());
         }
+    } else {
+        warn!("no session id from state");
+        return Err(AuthError::NotLoggedIn.into_data_api_return());
     }
     Ok(next.run(req).await)
 }
@@ -78,7 +80,7 @@ pub struct SoftAuthExtension {
     pub is_logged_in: bool,
 }
 
-#[tracing::instrument(name = "soft auth middleware", skip(cookie_jar, data, next))]
+#[tracing::instrument(name = "soft auth middleware", skip_all)]
 pub async fn soft_auth(
     cookie_jar: CookieJar,
     State(data): State<SharedState>,
@@ -92,6 +94,7 @@ pub async fn soft_auth(
             get_admin_session_id(r.env.jwt_secret.as_ref(), cookie_jar, &req).ok()
         {
             if let Some(session_id) = r.admin_session_id {
+                warn!("got session id from state");
                 ret = user_id == session_id;
             }
         }

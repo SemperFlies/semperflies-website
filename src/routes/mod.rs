@@ -24,16 +24,10 @@ pub type HandlerResult<T> = Result<T, StatusCode>;
 #[tracing::instrument(name = "create app router", skip_all)]
 pub fn create_router(state: SharedState) -> Router {
     let admin_routes = Router::new()
-        .route(
-            "/upload",
-            get(pages::admin::upload), // get(admin::upload::get_upload_form).post(admin::upload::post_upload_form),
-        )
-        .route_layer(middleware::from_fn_with_state(state.clone(), admin_auth))
-        .route(
-            "/status",
-            get(pages::admin::login_logout)
-                .route_layer(middleware::from_fn_with_state(state.clone(), soft_auth)),
-        );
+        .route("/upload", get(pages::admin::upload))
+        // .route_layer(middleware::from_fn_with_state(state.clone(), admin_auth))
+        .route("/status", get(pages::admin::login_logout))
+        .layer(middleware::from_fn_with_state(state.clone(), soft_auth));
 
     let data_routes = Router::new()
         .route("/auth/login", post(login_admin_handler))

@@ -1,1 +1,62 @@
-<div>this is a protected route</div>
+<link rel="stylesheet" href="/public/styles/admin_upload.css" />
+<div
+  x-style="flex; flex-col; flex-grow; m:2rem;"
+  x-data="{logged_in: {{logged_in}}, toggle_logged_in() { this.logged_in = !this.logged_in; }}"
+>
+  <section x-show.important="logged_in == false">
+    <p x-style="text-align:center;">
+      You need to be logged in to access this page
+    </p>
+  </section>
+
+  <button
+    x-style="align-self:left;"
+    hx-get="/admin/status"
+    hx-push-url="true"
+    hx-target="#route-content"
+    hx-swap="innerHTML transition:true"
+    class="button"
+  >
+    Take me to login/logout page
+  </button>
+  <section
+    id="logged-in"
+    x-data="{ current_form: null }"
+    x-show.important="logged_in"
+  >
+    <div
+      id="form-selection"
+      x-style="flex; flex-col; my:1.5rem; gap:1rem; align-self:center;"
+      x-show.important="current_form == null"
+    >
+      <button @click="current_form = 'support'">Show Support Form</button>
+      <button @click="current_form = 'debriefs'">Show Debriefs Form</button>
+      <button @click="current_form = 'patrol_logs'">
+        Show Patrol Logs Form
+      </button>
+      <button @click="current_form = 'fallen_brothers'">
+        Show Fallen Brothers Form
+      </button>
+    </div>
+
+    <div x-show="current_form === 'support'">
+      {% include "admin/forms/support.html" %}
+      <button @click="current_form = null">Hide Form</button>
+    </div>
+
+    <div x-show="current_form === 'debriefs'">
+      {% include "admin/forms/debriefs.html" %}
+      <button @click="current_form = null">Hide Form</button>
+    </div>
+
+    <div x-show="current_form === 'patrol_logs'">
+      {% include "admin/forms/patrol_logs.html" %}
+      <button @click="current_form = null">Hide Form</button>
+    </div>
+
+    <div x-show="current_form === 'fallen_brothers'">
+      {% include "admin/forms/fallen_brothers.html" %}
+      <button @click="current_form = null">Hide Form</button>
+    </div>
+  </section>
+</div>
