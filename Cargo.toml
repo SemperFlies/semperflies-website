@@ -25,7 +25,7 @@ thiserror = "1.0.61"
 reqwest = { version = "0.12.4", features=["json"] }
 rand = "0.8.5"
 anyhow = "1.0.86"
-chrono = "0.4.38"
+chrono = { version = "0.4.38", features=["serde"] }
 time = "0.3.36"
-uuid = {version="1.10.0", features=["v4"]}
+uuid = {version="1.10.0", features=["v4", "serde"]}
 

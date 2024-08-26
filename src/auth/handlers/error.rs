@@ -1,3 +1,4 @@
+use axum::extract::multipart::MultipartError;
 use reqwest::StatusCode;
 
 use crate::error::{error_chain_fmt, InternalError};
@@ -10,6 +11,7 @@ pub enum UploadError {
     Undefined(#[from] anyhow::Error),
     Chrono(#[from] chrono::ParseError),
     Serde(#[from] serde_json::error::Error),
+    MultiPart(#[from] MultipartError),
     UserFacing(String),
 }
 
@@ -24,6 +26,7 @@ impl Display for UploadError {
         let display = match self {
             Self::Undefined(err) => err.to_string(),
             Self::Serde(err) => err.to_string(),
+            Self::MultiPart(err) => err.to_string(),
             Self::UserFacing(err) => err.to_string(),
             Self::Chrono(err) => err.to_string(),
         };
@@ -42,6 +45,7 @@ impl InternalError for UploadError {
         match self {
             Self::UserFacing(err) => err.to_string(),
             Self::Undefined(err) => format!("An undefined error occurred: {:?}", err),
+            Self::MultiPart(err) => format!("A multipart error occurred: {:?}", err),
             Self::Serde(err) => format!("A serde error occurred: {:?}", err),
             Self::Chrono(err) => format!("A chrono error occurred: {:?}", err),
         }

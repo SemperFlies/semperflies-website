@@ -1,10 +1,24 @@
 <div class="page">
   <section class="hero hero-transition">
     <h1>About Us</h1>
+
+    <p>
+
+      At Semper Flies Foundation we believe “Suffering in Silence” should be kept for the battlefield. 22 Veterans take their life everyday, one is too many.
+      Our belief is that if we can create a positive paradigm shift in a single Veterans life, if we can save a single Veteran then everything we are doing is worth it. 
+      Thank you in advance for any support you offer to Semper Flies Foundation. 
+    </p>
+
+    <div x-style="mx:5rem;  flex; flex-grow; flex-col; color:@semper-orange;" >
+      <h2 x-style="text-align:center; font-size:3rem;">"Stay in The Fight!"</h2>
+      <small x-style="text-align:right;">-Jamie, Beverly, & Dan. Semper Flies Foundation</small>
+    </div>
   </section>
   <section
     class="main-section-transition"
-    x-style="flex; flex-col;">
+    x-style="flex; flex-col; overflow:hidden;">
+
+
     {% for member in board_members %}
     <div
       x-data
@@ -12,13 +26,13 @@
       x-intersect:enter.threshold.40="$el.classList.add('vis');"
       x-style="flex; lg|flex-row; flex-col; lg|m:2rem; m:1rem;">
       <img 
-        x-style="w:50%; lg|w:40%; radius:lg; lg|align-self:start; align-self:center; object-fit:cover;"
+        x-style="w:50%; lg|w:40%; radius:lg; align-self:center; object-fit:cover;"
         src="{{member.image_url}}"></img>
       <div 
         x-style="flex; flex-col; lg|m:1rem 0rem 1rem 1rem; m:1rem; p:2rem 3rem; flex-grow; b:1px @primary-light solid; radius:lg;">
-        <h2 x-style='mb:0.25rem;'>{{member.role}}</h2>
         <h1 class="tattoo">{{member.name}}</h1>
-        <p>{{member.description}}</p>
+        <h2 x-style='mb:0.25rem;'>{{member.role}}</h2>
+        <p>{{member.description|safe}}</p>
       </div>
     </div>
     {% endfor %}

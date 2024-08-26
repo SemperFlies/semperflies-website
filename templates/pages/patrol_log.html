@@ -1,0 +1,72 @@
+<link rel="stylesheet" href="/public/styles/patrol_log.css" />
+<div class="page">
+  <section class="hero hero-transition">
+    <h1>Patrol Log</h1>
+    <p>Semperflies hosts activities for vets and families</p>
+  </section>
+  <section
+    x-data="{ 
+      showing_vids: false,
+      admin: {{ admin }},
+      toggle() { this.showing_vids = !this.showing_vids; }
+    }"
+    x-style="flex; flex-col; w:100%;"
+    class="main-section-transition"
+    hx-swap="innerHTML"
+    hx-push-url="false"
+  >
+    <button
+      x-show.important="showing_vids == false"
+      x-style="lg|align-self:flex-end; align-self:center; m:1rem; mr:4rem; text:sm;"
+      @click="toggle()"
+      hx-get="/videos"
+      hx-target="#log-content"
+    >
+      Check out our videos
+    </button>
+    <button
+      x-show.important="showing_vids"
+      x-style="lg|align-self:flex-end; align-self:center; m:1rem; mr:4rem;text:sm;"
+      @click="toggle()"
+      hx-get="/patrol_log"
+      hx-select="#log-content"
+      hx-target="#log-content"
+    >
+      Back to Patrol Log
+    </button>
+    <section id="log-content">
+      <div x-style="flex; flex-col; " class="subsection-transition">
+        {% for l in logs %}
+        <div
+          x-style="m:2rem; flex; lg|flex-row; flex-col; justify-content:space-between;"
+        >
+          <h1>{{l.heading}}</h1>
+          <p>{{ l.description }}</p>
+          <div x-style="w:50%; h:50%;">
+            <!---->
+            <p>{{ l.date }}</p>
+            {% if !l.carousel.images.is_empty() %}
+            <!---->
+            {{ Self::render_carousel(l.carousel)|safe }}
+            <!---->
+            {% else %}
+            <p>No images</p>
+            {% endif %}
+          </div>
+
+          <button
+            x-show="admin"
+            hx-push-url="false"
+            hx-target="#delete-response"
+            hx-swap="innerHTML"
+            hx-delete="/data/auth/delete/{{ PATROL_LOG }}/{{ l.id }}"
+            class="material-symbols-outlined"
+          >
+            close
+          </button>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+  </section>
+</div>

@@ -28,8 +28,8 @@
         hx-get="/"
         hx-select="#route-content"
       />
-      <button hx-get="/patrol_logs">Patrol Logs</button>
-      <button hx-get="/fallen_brothers">Fallen Brothers</button>
+      <button hx-get="/patrol_log">Patrol Log</button>
+      <button hx-get="/dedications">Speak their names</button>
       <button hx-get="/debriefs">Debriefs</button>
     </nav>
     <div
@@ -84,11 +84,11 @@
     <button @htmx:after-request="$dispatch('toggle')" hx-get="/patrol_gear">
       Patrol Gear
     </button>
-    <button @htmx:after-request="$dispatch('toggle')" hx-get="/patrol_logs">
-      Patrol Logs
+    <button @htmx:after-request="$dispatch('toggle')" hx-get="/patrol_log">
+      Patrol Log
     </button>
-    <button @htmx:after-request="$dispatch('toggle')" hx-get="/fallen_brothers">
-      Fallen Brothers
+    <button @htmx:after-request="$dispatch('toggle')" hx-get="/dedications">
+      Speak their Names
     </button>
     <button @htmx:after-request="$dispatch('toggle')" hx-get="/debriefs">
       Debriefs

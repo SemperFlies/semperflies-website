@@ -2,7 +2,7 @@
   <section class="hero hero-transition">
     <h1>Support</h1>
   </section>
-  <section class="main-section-transition">
+  <section class="main-section-transition" x-data="{ admin: {{ admin }} }">
     <div x-style="flex; flex-col; lg|mx:6rem; mx:2rem; align-self:center;">
       {% for res in resources %}
       <div>
@@ -30,6 +30,17 @@
         </p>
 
         {% endif %}
+
+        <button
+          x-show="admin"
+          hx-push-url="false"
+          hx-target="#delete-response"
+          hx-swap="innerHTML"
+          hx-delete="/data/auth/delete/{{ SUPPORT }}/{{ res.id }}"
+          class="material-symbols-outlined"
+        >
+          close
+        </button>
       </div>
       {% endfor %}
     </div>

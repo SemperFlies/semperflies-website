@@ -2,7 +2,7 @@
   <section class="hero hero-transition">
     <h1>Debriefs</h1>
   </section>
-  <section class="main-section-transition">
+  <section class="main-section-transition" x-data="{ admin: {{admin}} }">
     <div x-style="flex; flex-col; mx:3rem;">
       {% for test in testimonials %}
       <section x-style="w:100%; align-self:center; ">
@@ -11,8 +11,31 @@
         <small>{{ bio }}</small>
         {% endif %}
         <p>{{ test.content }}</p>
+        <button
+          x-show="admin"
+          hx-push-url="false"
+          hx-target="#delete-response"
+          hx-swap="innerHTML"
+          hx-delete="/data/auth/delete/{{ DEBRIEFS }}/{{ test.id }}"
+          class="material-symbols-outlined"
+        >
+          close
+        </button>
       </section>
       {% endfor %}
     </div>
+
+    <span
+      @htmx:before-swap="
+      if ($event.detail.failed) {
+        $el.classList.add('fail')
+      } else {
+        $el.classList.remove('fail')
+      }
+      setTimeout(() => $el.textContent = '', 3000);
+      "
+      id="delete-response"
+    >
+    </span>
   </section>
 </div>

@@ -1,3 +1,4 @@
+pub mod delete;
 mod error;
 pub mod upload;
 use super::model::{LoginAdminSchema, TokenClaims};

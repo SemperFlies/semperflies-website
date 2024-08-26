@@ -14,18 +14,25 @@ fn board_members() -> Vec<BoardMember> {
         BoardMember {
             name: "Jamie Guajardo".to_string(),
             role: "Founder".to_string(),
-            description: "Our founder and veteran".to_string(),
+            description: r#"
+            After battling Post Traumatic Stress Disorder & Traumatic Brain Injury for twelve years without seeking help he finally walked through the doors of a Veterans Administration Hospital for the first time.
+            The severity of his PTSD and TBI eventually resulted in his stay at a residential Veterans Administration PTSD Hospital in Colorado where he worked with the best doctors in the nation.
+            To this day Jamie continues to struggle daily but through years of gathering knowledge he has made a decision to save his life, and as many other Veterans as he possibly can.
+            <br/>
+            <br/>
+            During his stay at the residential treatment hospital in Colorado, Jamie learned how to tie fishing flys as a form of “grounding.” He enjoyed this project and vowed to himself
+            that when he got out he was going to create a platform called Semper Flies and use it to raise awareness for Veterans that struggle with PTSD & TBI, and that’s exactly what he did.
+            "#.to_string(),
             image_url: "public/assets/images/board_members/business.jpg".to_string(),
         },
         BoardMember {
-            name: "Other Guajardo".to_string(),
-
+            name: "Beverly Guajardo".to_string(),
             role: "Other Role".to_string(),
             description: "This is a board member".to_string(),
             image_url: "public/assets/images/board_members/business2.jpg".to_string(),
         },
         BoardMember {
-            name: "Another Guajardo".to_string(),
+            name: "Dan Guajardo".to_string(),
             role: "Another Role".to_string(),
             description: "This is a board member".to_string(),
             image_url: "public/assets/images/board_members/old.jpg".to_string(),

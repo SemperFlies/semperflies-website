@@ -31,11 +31,9 @@
     >
       <button @click="current_form = 'support'">Show Support Form</button>
       <button @click="current_form = 'debriefs'">Show Debriefs Form</button>
-      <button @click="current_form = 'patrol_logs'">
-        Show Patrol Logs Form
-      </button>
-      <button @click="current_form = 'fallen_brothers'">
-        Show Fallen Brothers Form
+      <button @click="current_form = 'patrol_log'">Show Patrol Log Form</button>
+      <button @click="current_form = 'dedications'">
+        Show Dedications Form
       </button>
     </div>
 
@@ -49,13 +47,13 @@
       <button @click="current_form = null">Hide Form</button>
     </div>
 
-    <div x-show="current_form === 'patrol_logs'">
-      {% include "admin/forms/patrol_logs.html" %}
+    <div x-show="current_form === 'patrol_log'">
+      {% include "admin/forms/patrol_log.html" %}
       <button @click="current_form = null">Hide Form</button>
     </div>
 
-    <div x-show="current_form === 'fallen_brothers'">
-      {% include "admin/forms/fallen_brothers.html" %}
+    <div x-show="current_form === 'dedications'">
+      {% include "admin/forms/dedications.html" %}
       <button @click="current_form = null">Hide Form</button>
     </div>
   </section>

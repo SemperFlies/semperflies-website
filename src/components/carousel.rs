@@ -8,8 +8,8 @@ pub struct CarouselTemplate {
 
 #[derive(Debug)]
 pub struct Image {
-    src: String,
-    alt: String,
+    pub src: String,
+    pub alt: String,
 }
 
 impl Image {

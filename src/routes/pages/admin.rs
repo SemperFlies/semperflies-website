@@ -30,8 +30,8 @@ pub struct UploadTemplate {
 
 pub async fn upload(Extension(soft_auth_ext): Extension<SoftAuthExtension>) -> Html<String> {
     let tmpl = UploadTemplate {
-        // logged_in: soft_auth_ext.is_logged_in,
-        logged_in: true,
+        logged_in: soft_auth_ext.is_logged_in,
+        // logged_in: true,
     };
     match tmpl.render() {
         Ok(r) => Html(r),

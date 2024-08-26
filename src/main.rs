@@ -1,5 +1,6 @@
 mod auth;
 mod components;
+mod database;
 mod error;
 mod routes;
 mod state;
@@ -39,31 +40,29 @@ async fn main() {
     let port = std::env::var("PORT").expect("Failed to get port env variable");
 
     let config = state::Config::init();
-    // tracing::info!(
-    //     "attempting to connect to database: {:?}",
-    //     &config.database_url
-    // );
-    // let pool = match PgPoolOptions::new()
-    //     .max_connections(10)
-    //     .connect(&config.database_url)
-    //     .await
-    // {
-    //     Ok(pool) => {
-    //         tracing::info!("✅Connection to the database is successful!");
-    //         pool
-    //     }
-    //     Err(err) => {
-    //         tracing::error!("🔥 Failed to connect to the database: {:?}", err);
-    //         std::process::exit(1);
-    //     }
-    // };
+    tracing::info!(
+        "attempting to connect to database: {:?}",
+        &config.database_url
+    );
+    let pool = match PgPoolOptions::new()
+        .max_connections(10)
+        .connect(&config.database_url)
+        .await
+    {
+        Ok(pool) => {
+            tracing::info!("✅Connection to the database is successful!");
+            pool
+        }
+        Err(err) => {
+            tracing::error!("🔥 Failed to connect to the database: {:?}", err);
+            std::process::exit(1);
+        }
+    };
 
-    // sqlx::migrate!("./migrations")
-    //     .run(&pool)
-    //     .await
-    //     .expect("failed to migrate database");
-
-    // info!("Got admin info");
+    sqlx::migrate!("./migrations")
+        .run(&pool)
+        .await
+        .expect("failed to migrate database");
 
     let allowed_origin = std::env::var("ALLOWED_ORIGIN").unwrap_or_else(|_| {
         warn!("No allowed origin env var, falling back to localhost");
@@ -77,7 +76,7 @@ async fn main() {
         .allow_headers([AUTHORIZATION, ACCEPT, CONTENT_TYPE]);
 
     let app = routes::create_router(Arc::new(RwLock::new(AppState {
-        // db: pool.clone(),
+        db: pool.clone(),
         admin_session_id: None,
         env: config.clone(),
     })))

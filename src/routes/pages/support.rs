@@ -1,13 +1,27 @@
+use anyhow::anyhow;
 use askama::Template;
-use axum::response::Html;
+use axum::{extract::State, response::Html, Extension};
 use rand::prelude::*;
 use serde::Deserialize;
+use sqlx::{Pool, Postgres};
+
+use crate::{
+    auth::middleware::SoftAuthExtension,
+    database::{
+        handles::DbData,
+        models::{DBAddress, DBResource},
+    },
+    state::SharedState,
+};
 
 #[derive(Template, Debug)]
 #[template(path = "pages/support.html")]
 pub struct SupportTemplate {
     resources: Vec<SupportResource>,
+    admin: bool,
 }
+
+pub const SUPPORT: &str = "support";
 
 #[derive(Debug)]
 pub struct Address {
@@ -20,6 +34,7 @@ pub struct Address {
 
 #[derive(Debug)]
 pub struct SupportResource {
+    pub id: uuid::Uuid,
     pub name: String,
     pub description: String,
     pub missions: Vec<String>,
@@ -28,106 +43,66 @@ pub struct SupportResource {
     pub physical_address: Option<Address>,
 }
 
-pub async fn support() -> Html<String> {
-    let template = SupportTemplate {
-        resources: generate_support_resources(),
-    };
-    match template.render() {
-        Ok(r) => Html(r),
-        Err(err) => Html(format!("Error rendering Layout: {}", err.to_string())),
+impl From<DBAddress> for Address {
+    fn from(value: DBAddress) -> Self {
+        Self {
+            line_2: value.line_2,
+            line_1: value.line_1,
+            city: value.city,
+            state: value.state,
+            zip: value.zip,
+        }
     }
 }
 
-fn generate_support_resources() -> Vec<SupportResource> {
-    let mut resources = Vec::new();
+impl From<(DBResource, Option<DBAddress>)> for SupportResource {
+    fn from((res, add): (DBResource, Option<DBAddress>)) -> Self {
+        Self {
+            id: res.id,
+            name: res.name,
+            description: res.description,
+            missions: res.missions,
+            phone: res.phone,
+            email: res.email,
+            physical_address: add.and_then(|a| Some(Address::from(a))),
+        }
+    }
+}
 
-    let names = vec![
-        "Red Cross",
-        "Salvation Army",
-        "Habitat for Humanity",
-        "United Way",
-        "Feeding America",
-    ];
+async fn get_resources(pool: &Pool<Postgres>) -> anyhow::Result<Vec<SupportResource>> {
+    let res = DBResource::get_multiple(pool).await?;
+    let mut all = vec![];
 
-    let descriptions = vec![
-        "Providing emergency assistance and disaster relief.",
-        "Offering shelter, food, and social services.",
-        "Building affordable housing and revitalizing communities.",
-        "Supporting health, education, and financial stability programs.",
-        "Fighting hunger and distributing food to those in need.",
-    ];
-
-    let missions = vec![
-        vec!["Disaster Relief", "Blood Donation", "Health Services"],
-        vec!["Homeless Services", "Rehabilitation", "Youth Programs"],
-        vec![
-            "Affordable Housing",
-            "Home Repairs",
-            "Neighborhood Revitalization",
-        ],
-        vec!["Education", "Income", "Health"],
-        vec!["Food Pantries", "Meal Programs", "Nutrition Education"],
-    ];
-
-    let mut rng = rand::thread_rng();
-
-    for _ in 0..5 {
-        let name = names.choose(&mut rng).unwrap();
-        let description = descriptions.choose(&mut rng).unwrap();
-        let missions = missions
-            .choose(&mut rng)
-            .unwrap()
-            .iter()
-            .map(|m| m.to_string())
-            .collect();
-        let phone = if rng.gen_bool(0.7) {
-            Some(format!(
-                "1-800-{:03}-{:04}",
-                rng.gen_range(100..999),
-                rng.gen_range(1000..9999)
-            ))
-        } else {
-            None
-        };
-        let email = if rng.gen_bool(0.8) {
-            Some(format!(
-                "info@{}.org",
-                name.replace(" ", "_").to_lowercase()
-            ))
-        } else {
-            None
-        };
-        let physical_address = if rng.gen_bool(0.6) {
-            Some(Address {
-                line_1: format!(
-                    "{} Something {}",
-                    rng.gen_range(100..999),
-                    ["St", "Ave", "Blvd", "Rd"].choose(&mut rng).unwrap()
-                ),
-                line_2: None,
-                city: ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix"]
-                    .choose(&mut rng)
-                    .unwrap()
-                    .to_string(),
-                state: ["NY", "CA", "IL", "TX", "AZ"]
-                    .choose(&mut rng)
-                    .unwrap()
-                    .to_string(),
-                zip: format!("{:05}", rng.gen_range(10000..99999)),
-            })
-        } else {
-            None
-        };
-
-        resources.push(SupportResource {
-            name: name.to_string(),
-            description: description.to_string(),
-            missions,
-            phone,
-            email,
-            physical_address,
-        });
+    for r in res {
+        let mut address = Option::<DBAddress>::None;
+        if let Some(id) = r.address_id {
+            let add = DBAddress::get_single_by(pool, id)
+                .await?
+                .ok_or(anyhow!("no address with id: {:?}", id))?;
+            address = Some(add);
+        }
+        all.push(SupportResource::from((r, address)))
     }
 
-    resources
+    Ok(all)
+}
+
+pub async fn support(
+    State(data): State<SharedState>,
+    Extension(soft_auth_ext): Extension<SoftAuthExtension>,
+) -> Html<String> {
+    let r = data.read().await;
+    match get_resources(&r.db).await {
+        Ok(resources) => {
+            let template = SupportTemplate {
+                resources,
+                admin: soft_auth_ext.is_logged_in,
+            };
+            match template.render() {
+                Ok(r) => Html(r),
+                Err(err) => Html(format!("Error rendering Layout: {}", err.to_string())),
+            }
+        }
+        Err(err) => Html(format!("A database error occured: {:?}", err)),
+    }
 }

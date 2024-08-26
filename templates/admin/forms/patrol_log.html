@@ -1,0 +1,46 @@
+<form
+  hx-push-url="false"
+  hx-target="#upload-response"
+  hx-swap="innerHTML"
+  hx-post="/data/auth/upload_multipart/patrol_log"
+  enctype="multipart/form-data"
+>
+  <h1>Patrol Log</h1>
+  <label for="heading">Heading:</label>
+  <input type="text" name="heading" placeholder="Some Activity" required />
+
+  <label for="date"
+    >Date:
+    <input type="date" name="date" required />
+  </label>
+
+  <label for="description">Description:</label>
+  <textarea
+    name="description"
+    placeholder="Description...."
+    rows="4"
+    cols="50"
+    required
+  ></textarea>
+
+  <label
+    for="images"
+    class="button"
+    x-style="m:2; align-self:center; font-size:0.5rem;"
+  >
+    Select images to upload
+    <input
+      multiple
+      x-style="border:none; background: transparent;"
+      type="file"
+      name="images"
+      accept="image/png, image/jpg, image/jpeg"
+      _="on change
+            set :span to next <span/>
+            set :span.textContent to `${length of me.files} selected` 
+         end"
+    />
+  </label>
+
+  <button type="submit">Submit</button>
+</form>

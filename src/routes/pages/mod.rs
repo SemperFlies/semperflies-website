@@ -1,9 +1,9 @@
 pub mod about_us;
 pub mod admin;
 pub mod debriefs;
-pub mod fallen_brothers;
+pub mod dedications;
 pub mod patrol_gear;
-pub mod patrol_logs;
+pub mod patrol_log;
 pub mod support;
 use askama::Template;
 use axum::response::Html;
@@ -17,14 +17,4 @@ pub async fn landing() -> Html<String> {
         Ok(r) => Html(r),
         Err(err) => Html(format!("Error rendering Layout: {}", err.to_string())),
     }
-}
-
-pub mod uploadables {
-    #[allow(unused)]
-    pub use super::{
-        debriefs::Testimonial,
-        fallen_brothers::Dedication,
-        patrol_logs::logs::Log,
-        support::{Address, SupportResource},
-    };
 }
