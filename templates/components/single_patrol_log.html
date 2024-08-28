@@ -1,0 +1,52 @@
+<div
+  x-data="{ 
+      admin: {{ admin }},
+    }"
+  x-style="flex; flex-col; flex-grow;"
+  class="subsection-transition"
+>
+  <div x-style="flex; flex-row; justify-content: space-between;">
+    <div x-style="flex; mx:5rem; flex-col;">
+      <h1 x-style="mb:0; ">{{log.heading}}</h1>
+      <small>{{ log.date }}</small>
+      <p>{{ log.description }}</p>
+    </div>
+    <button
+      x-style=" h: fit-content; w: fit-content; align-self:center; m:1rem;"
+      hx-target="#route-content"
+      hx-swap="innerHTML transition:true"
+      hx-push-url="true"
+      hx-get="/patrol_log"
+    >
+      Back To Patrol Log
+    </button>
+  </div>
+  <section
+    style="
+      margin-top: 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      align-self: center;
+      width: 80%;
+    "
+  >
+    {% for img in log.carousel.images %}
+    <img
+      style="width: 100%; height: auto; max-width: 20vw; max-height: 30vw"
+      src="{{ img.src }}"
+      alt="Image description"
+    />
+    {% endfor %}
+  </section>
+  <button
+    x-show="admin"
+    hx-push-url="false"
+    hx-target="#delete-response"
+    hx-swap="innerHTML"
+    hx-delete="/data/auth/delete/{{ PATROL_LOG }}/{{ log.id }}"
+    class="material-symbols-outlined"
+  >
+    close
+  </button>
+</div>

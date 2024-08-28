@@ -56,6 +56,14 @@
   opacity: 1;
 }
 
+#mobile-nav button {
+  align-self: center;
+}
+
+#mobile-nav button:not(:last-child) {
+  margin-bottom: 1rem;
+}
+
 .mb-menu-enter {
   transition: all ease-out 300ms;
 }

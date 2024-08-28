@@ -30,7 +30,8 @@ pub async fn debriefs(
     let r = data.read().await;
 
     match get_testimonials(&r.db).await {
-        Ok(testimonials) => {
+        Ok(mut testimonials) => {
+            testimonials.append(&mut generate_testimonials());
             let template = DebriefsTemplate {
                 testimonials,
                 admin: soft_auth_ext.is_logged_in,
@@ -43,4 +44,38 @@ pub async fn debriefs(
         }
         Err(err) => Html(format!("A database error occured: {:?}", err)),
     }
+}
+
+fn generate_testimonials() -> Vec<DBTestimonial> {
+    let image_urls = vec![
+        "public/assets/images/board_members/business.jpg".to_string(),
+        "public/assets/images/board_members/business2.jpg".to_string(),
+        "public/assets/images/board_members/old.jpg".to_string(),
+    ];
+    vec![
+        DBTestimonial {
+            id: uuid::Uuid::new_v4(),
+            firstname: "Jane".to_string(),
+            lastname: "Doe".to_string(),
+            bio: Some("Widow of vet".to_string()),
+            content: "I got to meet other women who struggle with what i have".to_string(),
+            // image: Some(image_urls[0].clone()),
+        },
+        DBTestimonial {
+            id: uuid::Uuid::new_v4(),
+            firstname: "Jack".to_string(),
+            lastname: "Smith".to_string(),
+            bio: Some("Vietnam Veteran".to_string()),
+            content: "Semperflies got me in touch with other vets".to_string(),
+            // image: None,
+        },
+        DBTestimonial {
+            id: uuid::Uuid::new_v4(),
+            firstname: "John".to_string(),
+            lastname: "Doe".to_string(),
+            bio: None,
+            content: "I love semperflies".to_string(),
+            // image: Some(image_urls[1].clone()),
+        },
+    ]
 }

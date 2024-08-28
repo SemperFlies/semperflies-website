@@ -32,10 +32,21 @@
   view-transition-name: subsection;
 }
 
-#log-content .carousel-container {
+#landing-carousel {
+  width: 80vw;
+  height: 60vw;
+}
+
+#landing-carousel .carousel-container {
   box-sizing: content-box;
 }
 
-#log-content .carousel-container .images img {
-  justify-self: center;
+#landing-carousel .carousel-container .images {
+  align-self: center;
+}
+
+#landing-carousel .carousel-container .images img {
+  width: 60vw !important;
+  height: auto !important;
+  object-fit: contain !important;
 }

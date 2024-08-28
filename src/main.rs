@@ -32,6 +32,8 @@ pub static TRACING: LazyLock<()> = LazyLock::new(|| {
     }
 });
 
+const LOCALHOST: &str = "http://localhost";
+
 #[tokio::main]
 async fn main() {
     dotenv::dotenv().ok();
@@ -59,15 +61,17 @@ async fn main() {
         }
     };
 
-    sqlx::migrate!("./migrations")
-        .run(&pool)
-        .await
-        .expect("failed to migrate database");
-
     let allowed_origin = std::env::var("ALLOWED_ORIGIN").unwrap_or_else(|_| {
         warn!("No allowed origin env var, falling back to localhost");
-        "http://localhost:3000".to_string()
+        format!("{}:{}", LOCALHOST, port)
     });
+
+    if allowed_origin != format!("{}:{}", LOCALHOST, port) {
+        sqlx::migrate!("./migrations")
+            .run(&pool)
+            .await
+            .expect("failed to migrate database");
+    }
 
     let cors = CorsLayer::new()
         .allow_origin(allowed_origin.parse::<HeaderValue>().unwrap())

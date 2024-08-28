@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="/public/styles/landing.css?v=1.1" />
 <div class="page">
   <section class="hero hero-transition">
     <h1>SemperFlies</h1>
@@ -7,16 +8,27 @@
       veterans in any way we can.
     </p>
   </section>
-  <section class="main-section-transition">
-    <h1>Our Mission</h1>
-    <ul>
-      <li>
-        <strong> E.A.S.E </strong> - Educate, Advocate and Support Veterans
-        suffering from PTSD, TBI & Depression
-      </li>
-
-      <li>Honor Cpl. Jason David Mileo</li>
-      <li>Support Other Veteran 501(c)(3)'s</li>
-    </ul>
+  <section class="main-section-transition" x-style="flex; flex-col;">
+    <div x-style="flex; flex-col; mx:8rem; justify-self:center;">
+      <h1 class="tattoo">Our Mission</h1>
+      <ul>
+        <li>
+          <strong> E.A.S </strong> - <strong>E</strong>ducate,
+          <strong>A</strong>dvocate and <strong>S</strong>upport Veterans
+          suffering from PTSD, TBI & Depression
+        </li>
+        <li>Honor Cpl. Jason David Mileo</li>
+        <li>Support Other Veteran 501(c)(3)'s</li>
+      </ul>
+    </div>
+    <section id="landing-carousel" x-style="align-self:center;">
+      {% if !carousel.images.is_empty() %}
+      <!---->
+      {{ Self::render_carousel(carousel)|safe }}
+      <!---->
+      {% else %}
+      <p>No images</p>
+      {% endif %}
+    </section>
   </section>
 </div>

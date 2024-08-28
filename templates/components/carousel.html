@@ -1,6 +1,7 @@
 <link rel="stylesheet" href="public/styles/carousel.css" />
 
 <div
+  class="carousel-container"
   x-data="{            
     slides: [                
         {% for img in images %}
@@ -34,9 +35,12 @@
 >
   <section class="images">
     <template x-for="(slide, index) in slides">
-      <div x-show="currentSlideIndex == index + 1">
+      <div
+        x-show.important="currentSlideIndex == index + 1"
+        x-style="justify-content: center; flex;"
+      >
         <img
-          x-style="w:50vw; h:75vw; object-fit:cover;"
+          x-style="w:80vw; h:75vw;  object-fit:cover;"
           x-bind:src="slide.imgSrc"
           x-bind:alt="slide.imgAlt"
         />
@@ -47,7 +51,7 @@
     class="navigation"
     x-show.important="renderImgNav()"
     x-cloak
-    x-style="flex; flex-row; justify-content:space-between; align-self:center;"
+    x-style="flex; flex-row; justify-content:space-between; align-self:flex-end;"
   >
     <button
       class="material-symbols-outlined"

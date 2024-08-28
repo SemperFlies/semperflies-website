@@ -1,12 +1,28 @@
+use std::{
+    collections::HashMap,
+    fs,
+    path::{Path, PathBuf},
+    sync::LazyLock,
+};
+
 use askama::Template;
-use axum::{extract::State, response::Html, Extension};
+use axum::{
+    extract::{Query, State},
+    response::Html,
+    Extension,
+};
 use chrono::NaiveDate;
+use rand::Rng;
+use serde::Deserialize;
 use sqlx::{Pool, Postgres};
+use tracing::warn;
+use uuid::Uuid;
 
 use crate::{
     auth::middleware::SoftAuthExtension,
-    components::carousel::{CarouselTemplate, Image},
+    components::carousel::{CarouselTemplate, HasCarousel, Image},
     database::{handles::DbData, models::DBPatrolLog},
+    routes::pages::util,
     state::SharedState,
 };
 
@@ -17,9 +33,16 @@ pub struct PatrolLogTemplate {
     admin: bool,
 }
 
+#[derive(Template, Debug)]
+#[template(path = "components/single_patrol_log.html")]
+pub struct SinglePatrolLogTemplate {
+    log: Log,
+    admin: bool,
+}
+
 pub const PATROL_LOG: &str = "patrol_log";
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Log {
     pub id: uuid::Uuid,
     pub heading: String,
@@ -27,6 +50,7 @@ pub struct Log {
     pub date: NaiveDate,
     pub carousel: CarouselTemplate,
 }
+impl HasCarousel for PatrolLogTemplate {}
 
 impl From<DBPatrolLog> for Log {
     fn from(value: DBPatrolLog) -> Self {
@@ -35,6 +59,7 @@ impl From<DBPatrolLog> for Log {
                 .img_urls
                 .into_iter()
                 .map(|url| Image {
+                    subtitle: None,
                     src: url,
                     alt: String::new(),
                 })
@@ -55,30 +80,119 @@ async fn get_logs(pool: &Pool<Postgres>) -> anyhow::Result<Vec<Log>> {
     Ok(dblogs.into_iter().map(|l| Log::from(l)).collect())
 }
 
+#[derive(Debug, Deserialize)]
+pub struct PatrolLogQuery {
+    log_heading: Option<String>,
+}
+
 pub async fn patrol_log(
     State(data): State<SharedState>,
+    queries: Option<Query<PatrolLogQuery>>,
     Extension(soft_auth_ext): Extension<SoftAuthExtension>,
 ) -> Html<String> {
     let r = data.read().await;
-    match get_logs(&r.db).await {
-        Ok(logs) => {
-            let template = PatrolLogTemplate {
-                logs,
-                admin: soft_auth_ext.is_logged_in,
-            };
-            match template.render() {
-                Ok(r) => Html(r),
-                Err(err) => Html(format!("Error rendering Layout: {}", err.to_string())),
+    let mut logs_map = HashMap::new();
+    for l in generate_activities(5) {
+        logs_map.insert(l.heading.to_owned(), l);
+    }
+
+    for l in builtin_logs() {
+        logs_map.insert(l.heading.to_owned(), l);
+    }
+
+    for l in get_logs(&r.db).await.unwrap() {
+        logs_map.insert(l.heading.to_owned(), l);
+    }
+
+    if let Some(q) = queries {
+        warn!("got query: {:?}", q);
+        if let Some(heading) = q.0.log_heading {
+            match logs_map.get(&heading) {
+                Some(log) => {
+                    warn!("building template for log: {:?}", log);
+                    let template = Some(SinglePatrolLogTemplate {
+                        log: log.clone(),
+                        admin: soft_auth_ext.is_logged_in,
+                    });
+
+                    return match template.unwrap().render() {
+                        Ok(r) => Html(r),
+                        Err(err) => Html(format!("Error rendering Layout: {}", err.to_string())),
+                    };
+                }
+                None => return Html(format!("{} is not a valid log heading", heading)),
             }
         }
-        Err(err) => Html(format!("A database error occured: {:?}", err)),
+    }
+    let logs = logs_map.into_values().collect();
+    let template = Some(PatrolLogTemplate {
+        logs,
+        admin: soft_auth_ext.is_logged_in,
+    });
+
+    match template.unwrap().render() {
+        Ok(r) => Html(r),
+        Err(err) => Html(format!("Error rendering Layout: {}", err.to_string())),
     }
 }
 
-impl PatrolLogTemplate {
-    fn render_carousel(carousel: &CarouselTemplate) -> String {
-        carousel
-            .render()
-            .unwrap_or("error rendering carousel".to_owned())
+fn builtin_logs() -> Vec<Log> {
+    let images =
+        util::all_images_in_directory("public/assets/images/patrol_log/fishing_trip").unwrap();
+    let images = images
+        .into_iter()
+        .map(|path| Image {
+            src: path.to_str().unwrap().to_string(),
+            alt: String::new(),
+            subtitle: None,
+        })
+        .collect();
+    let carousel = CarouselTemplate { images };
+    let fishing_trip = Log {
+        id: Uuid::new_v4(),
+        heading: "Semperflies Fishing Trip".to_string(),
+        description: "Semperflies hosted a fishing trip".to_string(),
+        date: NaiveDate::from_ymd_opt(2023, 06, 10).unwrap(),
+        carousel,
+    };
+    vec![fishing_trip]
+}
+
+fn generate_activities(amt: i32) -> Vec<Log> {
+    let mut rng = rand::thread_rng();
+    let image_urls = vec![
+        "public/assets/images/board_members/business.jpg".to_string(),
+        "public/assets/images/board_members/business2.jpg".to_string(),
+        "public/assets/images/board_members/old.jpg".to_string(),
+    ];
+
+    let mut activities = Vec::new();
+    for _ in 0..amt {
+        let heading = format!("Heading for activity {}", activities.len() + 1);
+        let description = format!("Description of activity {}", activities.len() + 1);
+        let year = rng.gen_range(1950..1990);
+        let month = rng.gen_range(1..13);
+        let day = rng.gen_range(1..29);
+        let date = NaiveDate::from_ymd_opt(year, month, day).unwrap();
+
+        let amt_imgs = rng.gen_range(0..=3);
+        let mut images = vec![];
+        for i in 0..amt_imgs {
+            images.push(Image {
+                src: image_urls[i].to_owned(),
+                alt: String::new(),
+                subtitle: None,
+            })
+        }
+        let carousel = CarouselTemplate { images };
+
+        activities.push(Log {
+            id: uuid::Uuid::new_v4(),
+            heading,
+            description,
+            date,
+            carousel,
+        });
     }
+    activities
 }

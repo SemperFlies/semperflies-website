@@ -10,7 +10,7 @@ use serde::Deserialize;
 use sqlx::{Pool, Postgres};
 
 use crate::auth::middleware::SoftAuthExtension;
-use crate::components::carousel::{self, CarouselTemplate, Image};
+use crate::components::carousel::{self, CarouselTemplate, HasCarousel, Image};
 use crate::database::handles::DbData;
 use crate::database::models::DBDedication;
 use crate::state::SharedState;
@@ -22,6 +22,7 @@ pub struct DedicationsTemplate {
     admin: bool,
 }
 
+impl HasCarousel for DedicationsTemplate {}
 pub const DEDICATIONS: &str = "dedications";
 
 #[derive(Debug)]
@@ -45,6 +46,7 @@ impl From<DBDedication> for Dedication {
                 .map(|url| Image {
                     src: url,
                     alt: String::new(),
+                    subtitle: None,
                 })
                 .collect(),
         };
@@ -73,7 +75,8 @@ pub async fn dedications(
 ) -> Html<String> {
     let r = data.read().await;
     match get_dedications(&r.db).await {
-        Ok(dedications) => {
+        Ok(mut dedications) => {
+            dedications.append(&mut generate_dedications(10));
             let template = DedicationsTemplate {
                 dedications,
                 admin: soft_auth_ext.is_logged_in,
@@ -87,10 +90,50 @@ pub async fn dedications(
     }
 }
 
-impl DedicationsTemplate {
-    fn render_carousel(carousel: &CarouselTemplate) -> String {
-        carousel
-            .render()
-            .unwrap_or("error rendering carousel".to_owned())
+fn generate_dedications(amt: i32) -> Vec<Dedication> {
+    let mut rng = thread_rng();
+    let image_urls = vec![
+        "public/assets/images/board_members/business.jpg".to_string(),
+        "public/assets/images/board_members/business2.jpg".to_string(),
+        "public/assets/images/board_members/old.jpg".to_string(),
+    ];
+
+    let mut dedications = Vec::new();
+
+    for _ in 0..amt {
+        let name = format!("Veteran {}", dedications.len() + 1);
+        let bio = "Served in the military".to_string();
+        let birth_year = rng.gen_range(1950..1990);
+        let birth_month = rng.gen_range(1..13);
+        let birth_day = rng.gen_range(1..29);
+        let birth = NaiveDate::from_ymd_opt(birth_year, birth_month, birth_day).unwrap();
+
+        let death_year = birth_year + rng.gen_range(20..70);
+        let death_month = rng.gen_range(1..13);
+        let death_day = rng.gen_range(1..29);
+        let death = NaiveDate::from_ymd_opt(death_year, death_month, death_day).unwrap();
+
+        let amt_imgs = rng.gen_range(0..=3);
+        let mut images = vec![];
+        for i in 0..amt_imgs {
+            images.push(Image {
+                src: image_urls[i].to_owned(),
+                alt: "".to_string(),
+                subtitle: None,
+            })
+        }
+        let carousel = CarouselTemplate { images };
+
+        dedications.push(Dedication {
+            id: uuid::Uuid::new_v4(),
+            name,
+            bio,
+            birth,
+            death,
+            carousel,
+            // images,
+        });
     }
+
+    dedications
 }

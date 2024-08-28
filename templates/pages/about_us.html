@@ -9,7 +9,7 @@
       Thank you in advance for any support you offer to Semper Flies Foundation. 
     </p>
 
-    <div x-style="mx:5rem;  flex; flex-grow; flex-col; color:@semper-orange;" >
+    <div x-style="lg|mx:5rem; flex; flex-grow; flex-col; color:@semper-orange;" >
       <h2 x-style="text-align:center; font-size:3rem;">"Stay in The Fight!"</h2>
       <small x-style="text-align:right;">-Jamie, Beverly, & Dan. Semper Flies Foundation</small>
     </div>
@@ -17,14 +17,12 @@
   <section
     class="main-section-transition"
     x-style="flex; flex-col; overflow:hidden;">
-
-
     {% for member in board_members %}
     <div
       x-data
       class="slide-into-view"
-      x-intersect:enter.threshold.40="$el.classList.add('vis');"
-      x-style="flex; lg|flex-row; flex-col; lg|m:2rem; m:1rem;">
+      x-intersect:enter.threshold.20="$el.classList.add('vis');"
+      x-style="flex; lg|flex-row; flex-col; lg|m:5rem 10rem; m:1rem;">
       <img 
         x-style="w:50%; lg|w:40%; radius:lg; align-self:center; object-fit:cover;"
         src="{{member.image_url}}"></img>

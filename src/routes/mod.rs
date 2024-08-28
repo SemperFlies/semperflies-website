@@ -45,7 +45,7 @@ pub fn create_router(state: SharedState) -> Router {
 
     Router::new()
         .route("/", get(index::index))
-        .route("/landing", get(pages::landing))
+        .route("/landing", get(pages::landing::landing))
         .route("/about_us", get(pages::about_us::about_us))
         .route("/support", get(pages::support::support))
         .layer(middleware::from_fn_with_state(state.clone(), soft_auth))

@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/public/styles/patrol_log.css" />
+<link rel="stylesheet" href="/public/styles/patrol_log.css?v=1.1" />
 <div class="page">
   <section class="hero hero-transition">
     <h1>Patrol Log</h1>
@@ -40,11 +40,20 @@
         <div
           x-style="m:2rem; flex; lg|flex-row; flex-col; justify-content:space-between;"
         >
-          <h1>{{l.heading}}</h1>
-          <p>{{ l.description }}</p>
-          <div x-style="w:50%; h:50%;">
-            <!---->
-            <p>{{ l.date }}</p>
+          <div
+            x-style="flex; flex-col;"
+            hx-get="/patrol_log?log_heading={{l.heading}}"
+            hx-select=".subsection-transition"
+            hx-push-url="true"
+            hx-swap="innerHTML"
+            hx-target="#route-content"
+          >
+            <h1 x-style="mb:0; ">{{l.heading}}</h1>
+            <small>{{ l.date }}</small>
+            <p>{{ l.description }}</p>
+          </div>
+
+          <section x-style="align-self:center;">
             {% if !l.carousel.images.is_empty() %}
             <!---->
             {{ Self::render_carousel(l.carousel)|safe }}
@@ -52,7 +61,7 @@
             {% else %}
             <p>No images</p>
             {% endif %}
-          </div>
+          </section>
 
           <button
             x-show="admin"
