@@ -9,41 +9,5 @@
     hx-get="{{path}}{{params}}"
     hx-push-url="true"
   ></div>
-  <footer x-style="flex; flex-col; mb:1rem; mt:3rem; min-w:100%; text:xs; ">
-    <div x-style="flex; flex-row; justify-content:space-around; mb:2rem;">
-      <div x-style="flex; flex-col; justfiy-content:center; text-align:center;">
-        <h1 x-style="color:grey;">Contact info</h1>
-        <p x-style="color:grey;">
-          1 (555)-555-5555
-          <br />
-          jamie@semperflies.com
-        </p>
-      </div>
-      <div x-style="flex; flex-col; justfiy-content:center;">
-        <h1 x-style="color:grey;">Follow Us</h1>
-        <a
-          href="https://www.instagram.com/semperfliesfoundation/"
-          x-style="align-self:center; transition:all ease-in-out 200ms; transform.hover:scale(1.1);"
-        >
-          <img
-            src="/public/assets/images/Instagram_icon.svg"
-            alt="Instagram Icon"
-            width="30"
-          />
-        </a>
-        <div x-style="flex; flex-row;"></div>
-      </div>
-    </div>
-    <div x-style="flex-col; flex;">
-      <p x-style="align-self:center; my:0; color:grey;">
-        © Copyright 2024 - Powered by HTMX – All Rights Reserved
-      </p>
-      <p x-style="text-align:right; mr:1rem; my:0; color:grey;">
-        <small>Built by</small>
-        <a x-style="color:@semper-orange;" href="https://www.voidkandy.space"
-          ><strong>VoidKandy</strong></a
-        >
-      </p>
-    </div>
-  </footer>
+  {% include "components/footer.html" %}
 </div>

@@ -32,18 +32,20 @@
   view-transition-name: subsection;
 }
 
+/* i dont know, css keeps breaking so im giving these identical styles */
 #landing-carousel {
-  width: 80vw;
-  height: 60vw;
+  width: 80vw !important;
+  height: 100vw !important;
 }
 
-#landing-carousel .carousel-container {
-  box-sizing: content-box;
-}
+/* #landing-carousel .carousel-container { */
+/*   width: 80vw !important; */
+/*   height: 100vw !important; */
+/* } */
 
-#landing-carousel .carousel-container .images {
-  align-self: center;
-}
+/* #landing-carousel .carousel-container .images { */
+/*   align-self: center; */
+/* } */
 
 #landing-carousel .carousel-container .images img {
   width: 60vw !important;

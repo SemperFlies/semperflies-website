@@ -72,6 +72,7 @@ pub async fn admin_auth(
         warn!("no session id from state");
         return Err(AuthError::NotLoggedIn.into_data_api_return());
     }
+    warn!("admin is logged in");
     Ok(next.run(req).await)
 }
 

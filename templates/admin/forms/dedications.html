@@ -1,53 +1,44 @@
 <form
   hx-push-url="false"
   hx-target="#upload-response"
-  hx-swap="innerHTML"
+  hx-trigger="send"
+  hx-swap="none"
   hx-post="/data/auth/upload_multipart/dedications"
   enctype="multipart/form-data"
 >
   <h1>Dedications</h1>
 
   <label for="name">Full Name:</label>
-  <input type="text" name="name" placeholder="John Middle Doe" required />
+  <input
+    type="text"
+    id="name"
+    name="name"
+    placeholder="John Middle Doe"
+    required
+  />
 
   <div x-style="flex; flex-row; my:0.5rem; gap:0.5rem;">
     <label for="birth"
       >Birth:
-      <input type="date" name="birth" required />
+      <input type="date" id="birth" name="birth" required />
     </label>
 
     <label for="death"
       >Death:
-      <input type="date" name="death" required />
+      <input type="date" id="death" name="death" required />
     </label>
   </div>
 
-  <label for="bio">Biography:</label>
+  <label for="bio">Biography: </label>
   <textarea
+    id="bio"
     name="bio"
     placeholder="Biography..."
     rows="4"
     cols="50"
     required
   ></textarea>
-  <label
-    for="images"
-    class="button"
-    x-style="m:2; align-self:center; font-size:0.5rem;"
-  >
-    Select images to upload
-    <input
-      multiple
-      x-style="border:none; background: transparent;"
-      type="file"
-      name="images"
-      accept="image/png, image/jpg, image/jpeg"
-      _="on change
-            set :span to next <span/>
-            set :span.textContent to `${length of me.files} selected` 
-         end"
-    />
-  </label>
 
-  <button type="submit">Submit</button>
+  {% include "admin/forms/images.html" %}
+  <button type="submit">Upload</button>
 </form>

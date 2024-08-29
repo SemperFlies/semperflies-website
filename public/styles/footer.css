@@ -1,0 +1,12 @@
+#logos img {
+  align-self: center;
+  justify-self: center;
+}
+#logos a {
+  align-self: center;
+  transition: all ease-in-out 200ms;
+  margin: 0rem 0.25rem;
+}
+#logos a:hover {
+  transform: scale(1.1);
+}

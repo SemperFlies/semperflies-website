@@ -39,3 +39,13 @@
 #log-content .carousel-container .images img {
   justify-self: center;
 }
+
+/* Single Patrol Log Styles */
+#img-grid {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20vw, 1fr));
+  gap: 1rem;
+  align-self: center;
+  width: 80%;
+}

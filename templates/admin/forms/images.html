@@ -1,0 +1,103 @@
+<script>
+  function handleFileSelect(event) {
+    const uploadsContainer = document.getElementById("uploads-container");
+    const files = event.target.files;
+    uploadsContainer.innerHTML = "";
+    Array.from(files).forEach((file, index) => {
+      console.log(uploadsContainer);
+      console.log(file);
+      const fileDiv = document.createElement("div");
+      fileDiv.style.display = "flex";
+      fileDiv.style.flexDirection = "column";
+      fileDiv.style.margin = "10px 0";
+      fileDiv.style.padding = "10px";
+      fileDiv.style.border = "1px solid #ccc";
+      fileDiv.style.borderRadius = "5px";
+
+      const fileName = document.createElement("h3");
+      fileName.textContent = file.name;
+      fileName.style.margin = "0 0 10px 0";
+      fileDiv.appendChild(fileName);
+
+      if (file.type.startsWith("image/")) {
+        const imgPreview = document.createElement("img");
+        imgPreview.style.maxWidth = "20%";
+        imgPreview.style.height = "auto";
+        imgPreview.style.marginBottom = "10px";
+        imgPreview.file = file;
+        fileDiv.appendChild(imgPreview);
+
+        const reader = new FileReader();
+        reader.onload = (function (aImg) {
+          return function (e) {
+            aImg.src = e.target.result;
+          };
+        })(imgPreview);
+        reader.readAsDataURL(file);
+      }
+
+      const createInput = (label, name, placeholder) => {
+        const labelElement = document.createElement("label");
+        labelElement.textContent = label;
+        labelElement.style.marginBottom = "5px";
+        const input = document.createElement("input");
+        input.type = "text";
+        input.name = name;
+        input.placeholder = placeholder;
+        input.style.marginBottom = "10px";
+        input.style.padding = "5px";
+        labelElement.appendChild(input);
+        return labelElement;
+      };
+
+      fileDiv.appendChild(
+        createInput(
+          "New Filename:",
+          `name_${index}`,
+          "new filename (optional)",
+        ),
+      );
+      fileDiv.appendChild(
+        createInput(
+          "Alt Text:",
+          `alt_${index}`,
+          "describe what's in the image",
+        ),
+      );
+      fileDiv.appendChild(
+        createInput("Subtitle:", `subtitle_${index}`, "subtitle for the image"),
+      );
+
+      uploadsContainer.appendChild(fileDiv);
+    });
+    console.log(uploadsContainer);
+  }
+</script>
+
+<div x-data>
+  <label
+    for="images"
+    class="button"
+    style="margin: 2px; align-self: center; font-size: 0.5rem"
+  >
+    Select images to upload
+    <input
+      multiple
+      style="border: none; background: transparent"
+      type="file"
+      name="images"
+      id="images"
+      accept="image/png, image/jpg, image/jpeg"
+      @change="handleFileSelect"
+    />
+  </label>
+  <div
+    id="uploads-container"
+    style="
+      display: flex !important;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+    "
+  ></div>
+</div>

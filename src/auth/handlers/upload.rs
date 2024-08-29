@@ -3,8 +3,9 @@ use crate::{
     database::{
         handles::DbData,
         models::{
-            DBAddress, DBAddressParams, DBDedication, DBDedicationParams, DBPatrolLog,
-            DBPatrolLogParams, DBResource, DBResourceParams, DBTestimonial, DBTestimonialParams,
+            DBAddress, DBAddressParams, DBDedication, DBDedicationParams, DBImageParams,
+            DBPatrolLog, DBPatrolLogParams, DBResource, DBResourceParams, DBTestimonial,
+            DBTestimonialParams,
         },
     },
     error::{DataApiReturn, InternalError},
@@ -299,14 +300,23 @@ impl UploadItemType<Multipart> for UploadMultipartItemType {
                 }
 
                 let heading = heading.expect("no heading");
-                let img_urls =
+                let paths =
                     FileAttachment::save_multiple_to_filesys(attachments, &self, Some(&heading))?;
+
+                let img_params = paths
+                    .into_iter()
+                    .map(|path| DBImageParams {
+                        path,
+                        alt: String::new(),
+                        subtitle: None,
+                    })
+                    .collect();
 
                 let log = DBPatrolLogParams {
                     heading,
                     description: description.expect("no description"),
                     date: date.expect("no date"),
-                    img_urls,
+                    img_params,
                 };
 
                 Ok(UploadItem::PatrolLog(log))
@@ -370,15 +380,24 @@ impl UploadItemType<Multipart> for UploadMultipartItemType {
                 }
                 warn!("outside of field processing loop");
                 let name = name.expect("no name");
-                let img_urls =
+                let paths =
                     FileAttachment::save_multiple_to_filesys(attachments, &self, Some(&name))?;
+                // image metadata will be added into multipart
+                let img_params = paths
+                    .into_iter()
+                    .map(|path| DBImageParams {
+                        path,
+                        alt: String::new(),
+                        subtitle: None,
+                    })
+                    .collect();
 
                 let ded = DBDedicationParams {
                     name,
                     bio: bio.expect("no bio"),
                     birth: birth.expect("no birth"),
                     death: death.expect("no death"),
-                    img_urls,
+                    img_params,
                 };
                 Ok(UploadItem::Dedication(ded))
             }
@@ -386,7 +405,7 @@ impl UploadItemType<Multipart> for UploadMultipartItemType {
     }
 }
 
-#[tracing::instrument(name = "upload handler", skip(data))]
+#[tracing::instrument(name = "upload form handler", skip(data))]
 pub async fn upload_form_handler(
     Path(item_str): Path<String>,
     State(data): State<SharedState>,
@@ -444,6 +463,7 @@ pub async fn upload_form_handler(
     }
 }
 
+#[tracing::instrument(name = "upload multipart handler", skip(data))]
 pub async fn upload_multipart_handler(
     State(data): State<SharedState>,
     Path(item_str): Path<String>,

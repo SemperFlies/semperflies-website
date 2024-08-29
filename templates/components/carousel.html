@@ -8,10 +8,13 @@
         {
           imgSrc: '{{ img.src }}',
           imgAlt: '{{ img.alt }}',
+          imgSub: `{{ img.subtitle|safe }}`,
         },                
         {% endfor %}
     ],            
     currentSlideIndex: 1,
+    autoScroll: {{ auto_scroll }},
+    showSubtitles: {{ show_subtitles }},
     previous() {                
         if (this.currentSlideIndex > 1) {                    
             this.currentSlideIndex = this.currentSlideIndex - 1                
@@ -27,26 +30,47 @@
         }            
     },        
     renderImgNav() {
-      console.log(this.slides.length > 1);
-      return this.slides.length > 1
+      return this.slides.length > 1 && !this.autoScroll
     }
-}"
-  x-style=" w:100%; overflow:hidden; ^stack;"
+  }"
+  x-init="$nextTick(() => {
+      let autoScrollTimeout = 8000;
+      if (autoScroll) {
+        setTimeout(() => {
+          next();
+        }, autoScrollTimeout);
+      $watch('currentSlideIndex', value => {
+        setTimeout(() => {
+          next();
+        }, autoScrollTimeout);
+      }) 
+      }
+  })"
+  x-style="overflow:hidden; ^stack;"
 >
   <section class="images">
     <template x-for="(slide, index) in slides">
       <div
         x-show.important="currentSlideIndex == index + 1"
-        x-style="justify-content: center; flex;"
+        x-style="grid; place-items:center;"
       >
+        <div 
+          style="box-sizing: content-box;">
         <img
           x-style="w:80vw; h:75vw;  object-fit:cover;"
           x-bind:src="slide.imgSrc"
           x-bind:alt="slide.imgAlt"
         />
+        <h1
+          x-show="showSubtitles"
+          x-style="mt:0rem; justify-self:left;"
+          x-html="slide.imgSub"
+        ></h1>
+      </div>
       </div>
     </template>
   </section>
+
   <section
     class="navigation"
     x-show.important="renderImgNav()"

@@ -15,7 +15,12 @@ impl HasCarousel for LandingTemplate {}
 pub async fn landing() -> Html<String> {
     let paths = super::util::all_images_in_directory("public/assets/images/landing_page").unwrap();
     let images = paths_to_ordered_images(paths);
-    let carousel = CarouselTemplate { images };
+    let carousel = CarouselTemplate {
+        show_subtitles: true,
+        images,
+        auto_scroll: true,
+        // auto_scroll: false,
+    };
     let template = LandingTemplate { carousel };
     match template.render() {
         Ok(r) => Html(r),
@@ -31,6 +36,7 @@ fn paths_to_ordered_images(paths: Vec<PathBuf>) -> Vec<Image> {
         let src = path_str.to_owned();
         let name = src.rsplit_once('.').unwrap().0.rsplit_once('/').unwrap().1;
         if let Some((idx, alt, subtitle)) = map.remove(name) {
+            let subtitle = subtitle.replace('\n', "<br />");
             images.push((idx, Image { src, alt, subtitle }))
         }
     }
@@ -39,7 +45,7 @@ fn paths_to_ordered_images(paths: Vec<PathBuf>) -> Vec<Image> {
     images
 }
 
-fn subtitle_alt_map() -> HashMap<String, (usize, String, Option<String>)> {
+fn subtitle_alt_map() -> HashMap<String, (usize, String, String)> {
     let mut map = HashMap::new();
     let mut ordering_idx = 0;
     map.insert(
@@ -47,15 +53,13 @@ fn subtitle_alt_map() -> HashMap<String, (usize, String, Option<String>)> {
         (
             ordering_idx,
             "A photo of multiple soldiers in camo".to_string(),
-            Some(
-                r#"
+            r#"
 1997
 3rd Bn 4th Marines
 STA Platoon Scout Snipers 
 Six members of this platoon would go on to operate in Iraq. 
                 "#
-                .to_string(),
-            ),
+            .to_string(),
         ),
     );
     ordering_idx += 1;
@@ -65,14 +69,12 @@ Six members of this platoon would go on to operate in Iraq.
         (
             ordering_idx,
             "A black and white photo of multiple soldiers".to_string(),
-            Some(
-                r#"
+            r#"
 Green Side Patrolling
 Team leader #2 5th Platoon
 1st Force Reconnaissance Co.
                 "#
-                .to_string(),
-            ),
+            .to_string(),
         ),
     );
     ordering_idx += 1;
@@ -82,14 +84,12 @@ Team leader #2 5th Platoon
         (
             ordering_idx,
             "A photo of soldiers in diving gear".to_string(),
-            Some(
-                r#"
+            r#"
 Diving Operations
 Team leader #2 5th Platoon
 1st Force Reconnaissance Co.
                 "#
-                .to_string(),
-            ),
+            .to_string(),
         ),
     );
 
@@ -100,15 +100,13 @@ Team leader #2 5th Platoon
         (
             ordering_idx,
             "A photo of a soldier in front of his gear".to_string(),
-            Some(
-                r#"
+            r#"
 Kuwait, Camp Commando
 Platoon Inspection
 Direction Action Raid Safwan Hill, Iraq
 SSgt Guajardo
                 "#
-                .to_string(),
-            ),
+            .to_string(),
         ),
     );
 
@@ -119,16 +117,14 @@ SSgt Guajardo
         (
             ordering_idx,
             "A photo of a soldier posing with a shovel".to_string(),
-            Some(
-                r#"
+            r#"
 Digging In
 Direct Action Raid
 Safwan Hill, Iraq
 D-8
 March 20, 2003
                 "#
-                .to_string(),
-            ),
+            .to_string(),
         ),
     );
 
@@ -138,16 +134,14 @@ March 20, 2003
         (
             ordering_idx,
             "soldiers posing with a flag in Baghdad, Iraq".to_string(),
-            Some(
-                r#"
+            r#"
 March 20, 2003
 Iraq Invasion 
 Safwan Hill. 
 1st Force Reconnaissance Co. 5th Platoon
 SSgt Guajardo, Team Leader, Team #2
                 "#
-                .to_string(),
-            ),
+            .to_string(),
         ),
     );
 
@@ -157,14 +151,12 @@ SSgt Guajardo, Team Leader, Team #2
         (
             ordering_idx,
             "photo of a burning building".to_string(),
-            Some(
-                r#"
+            r#"
 Baghdad, Iraq
 5th Platoon 
 1st Force Reconnaissance Company.
                 "#
-                .to_string(),
-            ),
+            .to_string(),
         ),
     );
 
@@ -174,8 +166,7 @@ Baghdad, Iraq
         (
             ordering_idx,
             "a picture of soldiers with a bunch of cash".to_string(),
-            Some(
-                r#"
+            r#"
 Baghdad, Iraq
 Sitting on pile of cash. 
 Recovered during CQB/Bank Hits. 
@@ -183,8 +174,7 @@ Recovered during CQB/Bank Hits.
 1st Force Reconnaissance Company.
 Baghdad SWAT
                 "#
-                .to_string(),
-            ),
+            .to_string(),
         ),
     );
 
@@ -195,15 +185,13 @@ Baghdad SWAT
             ordering_idx,
             "a screenshot of a news broadcast with two soldiers holding M4 assault rifles"
                 .to_string(),
-            Some(
-                r#"
+            r#"
 Operating in Baghdad, Iraq. 
 2003
 SSgt Guajardo
 Sgt Anderson
                 "#
-                .to_string(),
-            ),
+            .to_string(),
         ),
     );
 
@@ -214,15 +202,13 @@ Sgt Anderson
         (
             ordering_idx,
             "A time magazine article with an american soldier subdueing a man".to_string(),
-            Some(
-                r#"
+            r#"
 Time Magazine
 April 28, 2003 Edition
 Sgt Guajardo J.M. 
 Operating in Baghdad, Iraq.
         "#
-                .to_string(),
-            ),
+            .to_string(),
         ),
     );
 
@@ -232,15 +218,13 @@ Operating in Baghdad, Iraq.
         (
             ordering_idx,
             "soldiers posing with a flag in Baghdad, Iraq".to_string(),
-            Some(
-                r#"
+            r#"
 April, 2003
 Baghdad, Iraq
 1st Force Recon 5th Platoon 
 This platoon would earn the name “Baghdad SWAT” for their operations. 
                 "#
-                .to_string(),
-            ),
+            .to_string(),
         ),
     );
 
@@ -250,16 +234,14 @@ This platoon would earn the name “Baghdad SWAT” for their operations.
         (
             ordering_idx,
             "A navy commendation medal".to_string(),
-            Some(
-                r#"
+            r#"
 General Conway & Jamie Guajardo
 Babylon, Iraq
 Retrograde back to Kuwait
 Navy Commendation Medal 
 “V” for Valor
 "#
-                .to_string(),
-            ),
+            .to_string(),
         ),
     );
 
@@ -269,14 +251,12 @@ Navy Commendation Medal
         (
             ordering_idx,
             "an image of a man holding a rabbit".to_string(),
-            Some(
-                r#"
+            r#"
 Jamie Guajardo
 Veterans Administration PTSD Hospital 
 Denver, Colorado 2019
 "#
-                .to_string(),
-            ),
+            .to_string(),
         ),
     );
 
@@ -286,7 +266,7 @@ Denver, Colorado 2019
         (
             ordering_idx,
             "a how to tie a flie diagram".to_string(),
-            Some("Semper Flies was born in a residential PTSD treatment facility in Colorado. These are the 1st flys I ever made.".to_string()),
+"Semper Flies was born in a residential PTSD treatment facility in Colorado. These are the 1st flys I ever made.".to_string(),
         ),
     );
 
@@ -297,7 +277,7 @@ Denver, Colorado 2019
         (
             ordering_idx,
             "an image of a lot of flies for fly fishing".to_string(),
-            Some("The first (22) Semper Flies ever made.".to_string()),
+            "The first (22) Semper Flies ever made.".to_string(),
         ),
     );
 
@@ -307,10 +287,7 @@ Denver, Colorado 2019
         (
             ordering_idx,
             "An image of cards, including the veteran crisis line and a semperflies business card. As well as a photo of a solider".to_string(),
-            Some(
-                r#"Semperflies"#
-                .to_string(),
-            ),
+                r#"Semperflies"# .to_string(),
         ),
     );
 
@@ -320,16 +297,14 @@ Denver, Colorado 2019
         (
             ordering_idx,
             "an image of a soldier smiling in uniform".to_string(),
-            Some(
-                r#"
+            r#"
 March 20, 2003
 Iraq Invasion 
 Safwan Hill. 
 1st Force Reconnaissance Co. 5th Platoon
 SSgt Guajardo, Team Leader, Team #2
 "#
-                .to_string(),
-            ),
+            .to_string(),
         ),
     );
 

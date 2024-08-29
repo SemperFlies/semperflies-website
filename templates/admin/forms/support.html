@@ -52,10 +52,11 @@
 >
   <h1>Support</h1>
   <label for="name">Name:</label>
-  <input type="text" name="name" placeholder="Name" required />
+  <input type="text" id="name" name="name" placeholder="Name" required />
 
   <label for="description">Description:</label>
   <textarea
+    id="description"
     name="description"
     placeholder="Description"
     rows="4"
@@ -75,9 +76,14 @@
   </div>
 
   <label for="phone">Phone:</label>
-  <input type="tel" name="phone" placeholder="(555)-555-5555" />
+  <input type="tel" id="phone" name="phone" placeholder="(555)-555-5555" />
   <label for="email">Email:</label>
-  <input type="email" name="email" placeholder="somename@service.com" />
+  <input
+    type="email"
+    id="email"
+    name="email"
+    placeholder="somename@service.com"
+  />
 
   <button
     x-text="buttontext"
@@ -103,9 +109,9 @@
     x-style="flex; flex-col;"
   >
     <label for="city">City:</label>
-    <input type="text" name="city" placeholder="Carson City" />
+    <input type="text" id="city" name="city" placeholder="Carson City" />
     <label for="state">State:</label>
-    <select name="state">
+    <select id="state" name="state">
       <option value="AL">Alabama</option>
       <option value="AK">Alaska</option>
       <option value="AZ">Arizona</option>
@@ -159,14 +165,20 @@
     </select>
 
     <label for="zip">Zip Code:</label>
-    <input type="text" name="zip" placeholder="Zip code.." />
+    <input type="text" id="zip" name="zip" placeholder="Zip code.." />
 
     <label for="line1">Address Line 1:</label>
-    <input type="text" name="line1" placeholder="123 Some st." />
+    <input type="text" id="line1" name="line1" placeholder="123 Some st." />
 
     <label for="line2">Address Line 2:</label>
-    <input class="optional" type="text" name="line2" placeholder="Apt. 4" />
+    <input
+      class="optional"
+      type="text"
+      id="line2"
+      name="line2"
+      placeholder="Apt. 4"
+    />
   </div>
 
-  <button type="submit">Submit</button>
+  <button type="submit">Upload</button>
 </form>

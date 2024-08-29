@@ -1,4 +1,5 @@
 use askama::Template;
+// use askama::Template;
 use axum::extract::State;
 use axum::response::Html;
 use axum::Extension;
@@ -12,7 +13,7 @@ use sqlx::{Pool, Postgres};
 use crate::auth::middleware::SoftAuthExtension;
 use crate::components::carousel::{self, CarouselTemplate, HasCarousel, Image};
 use crate::database::handles::DbData;
-use crate::database::models::DBDedication;
+use crate::database::models::{DBDedication, DBDedicationParams, DBImage};
 use crate::state::SharedState;
 
 #[derive(Template, Debug)]
@@ -37,18 +38,23 @@ pub struct Dedication {
     pub carousel: CarouselTemplate,
 }
 
-impl From<DBDedication> for Dedication {
-    fn from(ded: DBDedication) -> Self {
+impl From<(DBDedication, Vec<DBImage>)> for Dedication {
+    fn from((ded, images): (DBDedication, Vec<DBImage>)) -> Self {
+        let images: Vec<Image> = images
+            .into_iter()
+            .filter_map(|i| {
+                if ded.img_ids.contains(&i.id) {
+                    Some(i.into())
+                } else {
+                    None
+                }
+            })
+            .collect();
+
         let carousel = CarouselTemplate {
-            images: ded
-                .img_urls
-                .into_iter()
-                .map(|url| Image {
-                    src: url,
-                    alt: String::new(),
-                    subtitle: None,
-                })
-                .collect(),
+            show_subtitles: false,
+            auto_scroll: false,
+            images,
         };
         Self {
             id: ded.id,
@@ -62,11 +68,13 @@ impl From<DBDedication> for Dedication {
 }
 
 async fn get_dedications(pool: &Pool<Postgres>) -> anyhow::Result<Vec<Dedication>> {
-    let dbdeds = DBDedication::get_multiple(pool).await?;
-    Ok(dbdeds
-        .into_iter()
-        .map(|ded| Dedication::from(ded))
-        .collect())
+    let all_deds_and_imgs =
+        DBImage::get_multiple_with_images::<DBDedication, DBDedicationParams>(&pool).await?;
+    let mut all_deds = vec![];
+    for (ded, imgs) in all_deds_and_imgs {
+        all_deds.push(Dedication::from((ded, imgs)));
+    }
+    Ok(all_deds)
 }
 
 pub async fn dedications(
@@ -119,10 +127,14 @@ fn generate_dedications(amt: i32) -> Vec<Dedication> {
             images.push(Image {
                 src: image_urls[i].to_owned(),
                 alt: "".to_string(),
-                subtitle: None,
+                subtitle: "".to_string(),
             })
         }
-        let carousel = CarouselTemplate { images };
+        let carousel = CarouselTemplate {
+            show_subtitles: false,
+            images,
+            auto_scroll: false,
+        };
 
         dedications.push(Dedication {
             id: uuid::Uuid::new_v4(),

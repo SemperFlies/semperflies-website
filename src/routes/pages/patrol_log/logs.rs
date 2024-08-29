@@ -21,7 +21,10 @@ use uuid::Uuid;
 use crate::{
     auth::middleware::SoftAuthExtension,
     components::carousel::{CarouselTemplate, HasCarousel, Image},
-    database::{handles::DbData, models::DBPatrolLog},
+    database::{
+        handles::DbData,
+        models::{DBImage, DBPatrolLog, DBPatrolLogParams},
+    },
     routes::pages::util,
     state::SharedState,
 };
@@ -52,32 +55,42 @@ pub struct Log {
 }
 impl HasCarousel for PatrolLogTemplate {}
 
-impl From<DBPatrolLog> for Log {
-    fn from(value: DBPatrolLog) -> Self {
+impl From<(DBPatrolLog, Vec<DBImage>)> for Log {
+    fn from((log, images): (DBPatrolLog, Vec<DBImage>)) -> Self {
+        let images: Vec<Image> = images
+            .into_iter()
+            .filter_map(|i| {
+                if log.img_ids.contains(&i.id) {
+                    Some(i.into())
+                } else {
+                    None
+                }
+            })
+            .collect();
+
         let carousel = CarouselTemplate {
-            images: value
-                .img_urls
-                .into_iter()
-                .map(|url| Image {
-                    subtitle: None,
-                    src: url,
-                    alt: String::new(),
-                })
-                .collect(),
+            show_subtitles: false,
+            auto_scroll: false,
+            images,
         };
         Self {
-            id: value.id,
-            heading: value.heading,
-            description: value.description,
-            date: value.date,
+            id: log.id,
+            heading: log.heading,
+            description: log.description,
+            date: log.date,
             carousel,
         }
     }
 }
 
 async fn get_logs(pool: &Pool<Postgres>) -> anyhow::Result<Vec<Log>> {
-    let dblogs = DBPatrolLog::get_multiple(pool).await?;
-    Ok(dblogs.into_iter().map(|l| Log::from(l)).collect())
+    let all_logs_and_imgs =
+        DBImage::get_multiple_with_images::<DBPatrolLog, DBPatrolLogParams>(&pool).await?;
+    let mut all_logs = vec![];
+    for (log, imgs) in all_logs_and_imgs {
+        all_logs.push(Log::from((log, imgs)));
+    }
+    Ok(all_logs)
 }
 
 #[derive(Debug, Deserialize)]
@@ -144,10 +157,14 @@ fn builtin_logs() -> Vec<Log> {
         .map(|path| Image {
             src: path.to_str().unwrap().to_string(),
             alt: String::new(),
-            subtitle: None,
+            subtitle: String::new(),
         })
         .collect();
-    let carousel = CarouselTemplate { images };
+    let carousel = CarouselTemplate {
+        show_subtitles: false,
+        images,
+        auto_scroll: false,
+    };
     let fishing_trip = Log {
         id: Uuid::new_v4(),
         heading: "Semperflies Fishing Trip".to_string(),
@@ -181,10 +198,14 @@ fn generate_activities(amt: i32) -> Vec<Log> {
             images.push(Image {
                 src: image_urls[i].to_owned(),
                 alt: String::new(),
-                subtitle: None,
+                subtitle: String::new(),
             })
         }
-        let carousel = CarouselTemplate { images };
+        let carousel = CarouselTemplate {
+            show_subtitles: false,
+            images,
+            auto_scroll: false,
+        };
 
         activities.push(Log {
             id: uuid::Uuid::new_v4(),

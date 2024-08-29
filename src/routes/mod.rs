@@ -8,7 +8,7 @@ use crate::{
             login_admin_handler, logout_handler,
             upload::{upload_form_handler, upload_multipart_handler},
         },
-        middleware::soft_auth,
+        middleware::{admin_auth, soft_auth},
     },
     state::SharedState,
 };
@@ -30,18 +30,19 @@ pub fn create_router(state: SharedState) -> Router {
         .route("/upload", get(pages::admin::upload))
         // .route_layer(middleware::from_fn_with_state(state.clone(), admin_auth))
         .route("/status", get(pages::admin::login_logout))
-        .layer(middleware::from_fn_with_state(state.clone(), soft_auth));
+        .route_layer(middleware::from_fn_with_state(state.clone(), soft_auth));
 
     let data_routes = Router::new()
-        .route("/auth/login", post(login_admin_handler))
         .route("/auth/logout", post(logout_handler))
         .route("/auth/upload_form/:item", post(upload_form_handler))
-        .route("/auth/delete/:item/:id", delete(delete_item_handler))
         .route(
             "/auth/upload_multipart/:item",
             post(upload_multipart_handler),
         )
-        .layer(DefaultBodyLimit::disable());
+        .route("/auth/delete/:item/:id", delete(delete_item_handler))
+        .route_layer(DefaultBodyLimit::disable())
+        .route_layer(middleware::from_fn_with_state(state.clone(), admin_auth))
+        .route("/auth/login", post(login_admin_handler));
 
     Router::new()
         .route("/", get(index::index))
@@ -57,16 +58,9 @@ pub fn create_router(state: SharedState) -> Router {
         .route("/debriefs", get(pages::debriefs::debriefs))
         .layer(middleware::from_fn_with_state(state.clone(), soft_auth))
         .route("/videos", get(pages::patrol_log::videos::videos))
-        // .route("/email", get(contact::send_email))
-        //
-        // .nest("/blog", blog_routes)
-        // .nest("/admin", admin_routes)
-        // .route("/contact", get(contact::index))
-        // .route_layer(middleware::from_fn_with_state(state.clone(), soft_auth))
         .nest("/admin", admin_routes)
         .layer(middleware::from_fn(htmx_request_check))
         .nest("/data", data_routes)
-        // .nest("/private", private_dir_router)
         .fallback(index::custom_404)
         .with_state(state)
         .nest_service("/public", ServeDir::new("public"))

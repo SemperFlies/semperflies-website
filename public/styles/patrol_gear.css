@@ -1,0 +1,28 @@
+#gear-display .merch-grid {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(30vw, 1fr));
+  gap: 1rem;
+  justify-content: center;
+  align-content: center;
+}
+
+.merch-grid center {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+}
+
+.merch-grid img {
+  justify-self: center;
+  object-fit: cover;
+  max-width: 30vw;
+  max-height: 60vw;
+}
+
+.merch-grid h4 {
+  text-align: center;
+  color: var(--semper-orange);
+}

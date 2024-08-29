@@ -7,6 +7,21 @@ use uuid::Uuid;
 
 use super::handles::DbData;
 
+#[derive(Debug, Serialize, Deserialize, FromRow, Clone)]
+pub struct DBImage {
+    pub id: uuid::Uuid,
+    pub path: String,
+    pub alt: String,
+    pub subtitle: Option<String>,
+}
+
+#[derive(Debug, Serialize, Clone, Deserialize)]
+pub struct DBImageParams {
+    pub path: String,
+    pub alt: String,
+    pub subtitle: Option<String>,
+}
+
 #[derive(Debug, Serialize, Deserialize, FromRow)]
 pub struct DBAddress {
     pub id: uuid::Uuid,
@@ -33,7 +48,7 @@ pub struct DBDedication {
     pub bio: String,
     pub birth: NaiveDate,
     pub death: NaiveDate,
-    pub img_urls: Vec<String>,
+    pub img_ids: Vec<Uuid>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -42,7 +57,7 @@ pub struct DBDedicationParams {
     pub bio: String,
     pub birth: NaiveDate,
     pub death: NaiveDate,
-    pub img_urls: Vec<String>,
+    pub img_params: Vec<DBImageParams>,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
@@ -51,7 +66,7 @@ pub struct DBPatrolLog {
     pub heading: String,
     pub description: String,
     pub date: NaiveDate,
-    pub img_urls: Vec<String>,
+    pub img_ids: Vec<Uuid>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -59,7 +74,7 @@ pub struct DBPatrolLogParams {
     pub heading: String,
     pub description: String,
     pub date: NaiveDate,
-    pub img_urls: Vec<String>,
+    pub img_params: Vec<DBImageParams>,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
@@ -100,6 +115,30 @@ pub struct DBResourceParams {
     pub address: Option<DBAddressParams>,
 }
 
+impl DbData<DBImageParams> for DBImage {
+    fn id(&self) -> Uuid {
+        self.id
+    }
+    fn table_name() -> String {
+        "images".to_string()
+    }
+    fn fields() -> Vec<String> {
+        vec!["path", "alt", "subtitle"]
+            .iter()
+            .map(|s| s.to_string())
+            .collect()
+    }
+    fn bind_tables(
+        params: DBImageParams,
+        query: super::handles::QueryType<Self>,
+    ) -> super::handles::QueryType<Self> {
+        query
+            .bind(params.path)
+            .bind(params.alt)
+            .bind(params.subtitle)
+    }
+}
+
 impl DbData<DBAddressParams> for DBAddress {
     fn id(&self) -> uuid::Uuid {
         self.id
@@ -134,10 +173,13 @@ impl DbData<DBDedicationParams> for DBDedication {
         "dedications".to_string()
     }
     fn fields() -> Vec<String> {
-        vec!["name", "bio", "birth", "death", "img_urls"]
+        vec!["name", "bio", "birth", "death", "img_ids"]
             .iter()
             .map(|s| s.to_string())
             .collect()
+    }
+    fn take_images(params: &mut DBDedicationParams) -> Option<Vec<DBImageParams>> {
+        Some(params.img_params.drain(..).collect())
     }
 
     fn bind_tables(
@@ -149,7 +191,6 @@ impl DbData<DBDedicationParams> for DBDedication {
             .bind(params.bio)
             .bind(params.birth)
             .bind(params.death)
-            .bind(params.img_urls)
     }
 }
 
@@ -161,10 +202,13 @@ impl DbData<DBPatrolLogParams> for DBPatrolLog {
         "patrol_logs".to_string()
     }
     fn fields() -> Vec<String> {
-        vec!["heading", "description", "date", "img_urls"]
+        vec!["heading", "description", "date", "img_ids"]
             .iter()
             .map(|s| s.to_string())
             .collect()
+    }
+    fn take_images(params: &mut DBPatrolLogParams) -> Option<Vec<DBImageParams>> {
+        Some(params.img_params.drain(..).collect())
     }
     fn bind_tables(
         params: DBPatrolLogParams,
@@ -174,7 +218,6 @@ impl DbData<DBPatrolLogParams> for DBPatrolLog {
             .bind(params.heading)
             .bind(params.description)
             .bind(params.date)
-            .bind(params.img_urls)
     }
 }
 

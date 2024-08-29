@@ -11,6 +11,16 @@ CREATE TABLE
         line_2 VARCHAR(255)
     );
 
+
+CREATE TABLE
+    "images" (
+        id UUID NOT NULL PRIMARY KEY DEFAULT (uuid_generate_v4()),
+        path VARCHAR(255) NOT NULL,
+        alt VARCHAR(255) NOT NULL,
+        subtitle TEXT
+    );
+
+
 CREATE TABLE
     "dedications" (
         id UUID NOT NULL PRIMARY KEY DEFAULT (uuid_generate_v4()),
@@ -18,7 +28,7 @@ CREATE TABLE
         bio TEXT NOT NULL,
         birth DATE NOT NULL,
         death DATE NOT NULL,
-        img_urls TEXT[] NOT NULL
+        img_ids UUID[] NOT NULL
     );
 
 
@@ -28,7 +38,7 @@ CREATE TABLE
         heading VARCHAR(255) NOT NULL,
         description TEXT NOT NULL,
         date DATE NOT NULL,
-        img_urls TEXT[] NOT NULL
+        img_ids UUID[] NOT NULL
     );
 
 

@@ -37,25 +37,33 @@
       </button>
     </div>
 
-    <div x-show="current_form === 'support'">
-      {% include "admin/forms/support.html" %}
-      <button @click="current_form = null">Hide Form</button>
-    </div>
+    <template x-if="current_form === 'support'"
+      ><div>
+        {% include "admin/forms/support.html" %}
+        <button @click="current_form = null">Hide Form</button>
+      </div>
+    </template>
 
-    <div x-show="current_form === 'debriefs'">
-      {% include "admin/forms/debriefs.html" %}
-      <button @click="current_form = null">Hide Form</button>
-    </div>
+    <template x-if="current_form === 'debriefs'">
+      <div>
+        {% include "admin/forms/debriefs.html" %}
+        <button @click="current_form = null">Hide Form</button>
+      </div>
+    </template>
 
-    <div x-show="current_form === 'patrol_log'">
-      {% include "admin/forms/patrol_log.html" %}
-      <button @click="current_form = null">Hide Form</button>
-    </div>
+    <template x-if="current_form === 'patrol_log'">
+      <div>
+        {% include "admin/forms/patrol_log.html" %}
+        <button @click="current_form = null">Hide Form</button>
+      </div>
+    </template>
 
-    <div x-show="current_form === 'dedications'">
-      {% include "admin/forms/dedications.html" %}
-      <button @click="current_form = null">Hide Form</button>
-    </div>
+    <template x-if="current_form === 'dedications'">
+      <div>
+        {% include "admin/forms/dedications.html" %}
+        <button @click="current_form = null">Hide Form</button>
+      </div>
+    </template>
   </section>
   <span
     @htmx:before-swap="

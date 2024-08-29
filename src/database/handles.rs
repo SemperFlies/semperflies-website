@@ -4,12 +4,14 @@ use sqlx::{
     database::HasArguments,
     postgres::PgRow,
     query::{Query, QueryAs},
-    Arguments, FromRow, Pool, Postgres,
+    Arguments, FromRow, Pool, Postgres, Row,
 };
 use tracing::warn;
 use uuid::Uuid;
 
-use crate::auth::handlers::upload::UploadItem;
+use crate::{auth::handlers::upload::UploadItem, database::models::DBImage};
+
+use super::models::DBImageParams;
 
 pub(super) type QueryType<'q, O> =
     QueryAs<'q, Postgres, O, <Postgres as HasArguments<'q>>::Arguments>;
@@ -22,6 +24,9 @@ where
     fn table_name() -> String;
     fn fields() -> Vec<String>;
     fn id(&self) -> Uuid;
+    fn take_images(_params: &mut P) -> Option<Vec<DBImageParams>> {
+        None
+    }
     fn bind_tables(params: P, query: QueryType<Self>) -> QueryType<Self>;
 
     async fn get_single_by(pool: &Pool<Postgres>, id: Uuid) -> anyhow::Result<Option<Self>> {
@@ -76,6 +81,9 @@ where
     }
 
     async fn insert_one(params: P, pool: &Pool<Postgres>) -> anyhow::Result<Self> {
+        if Self::fields().contains(&"img_ids".to_string()) {
+            warn!("make sure you've inserted images before inserting this'");
+        }
         let binds = Self::fields()
             .iter()
             .enumerate()
@@ -120,6 +128,136 @@ where
     }
 }
 
+impl DBImage {
+    fn insert_query<D, P>() -> String
+    where
+        P: std::fmt::Debug + Serialize + for<'de> Deserialize<'de> + Send + Unpin,
+        D: DbData<P>,
+    {
+        let binds = D::fields()
+            .iter()
+            .enumerate()
+            .fold(String::new(), |mut acc, (i, _)| {
+                let mut str_to_push = format!("${}", i + 1);
+                if i + 1 != D::fields().len() {
+                    str_to_push.push_str(",");
+                }
+                acc.push_str(&str_to_push);
+                acc
+            });
+        let query = format!(
+            "INSERT INTO {} ({}) VALUES ({}) RETURNING *;",
+            D::table_name(),
+            D::fields().join(","),
+            binds
+        );
+        println!("query: {}", query);
+        query
+    }
+
+    pub async fn insert_multiple_with_images<D, P>(
+        pool: &Pool<Postgres>,
+        multiple: Vec<P>,
+    ) -> anyhow::Result<()>
+    where
+        P: std::fmt::Debug + Serialize + for<'de> Deserialize<'de> + Send + Unpin,
+        D: DbData<P>,
+    {
+        for mut params in multiple {
+            let mut imgs_ids = vec![];
+            if let Some(images) = D::take_images(&mut params) {
+                for img in images {
+                    let i = DBImage::insert_one(img, pool).await?;
+                    imgs_ids.push(i.id);
+                }
+            } else {
+                return Err(anyhow!("should include images"));
+            }
+            let query = Self::insert_query::<D, P>();
+
+            let q = sqlx::query_as::<_, D>(&query);
+            D::bind_tables(params, q)
+                .bind(imgs_ids)
+                .fetch_all(pool)
+                .await?;
+        }
+        Ok(())
+    }
+
+    pub async fn get_multiple_with_images<D, P>(
+        pool: &Pool<Postgres>,
+    ) -> anyhow::Result<Vec<(D, Vec<DBImage>)>>
+    where
+        P: std::fmt::Debug + Serialize + for<'de> Deserialize<'de> + Send + Unpin,
+        D: DbData<P>,
+    {
+        let query = format!(
+            r#"
+        SELECT
+            d.*, i.*
+        FROM {} d
+        LEFT JOIN LATERAL unnest(d.img_ids) AS img_id ON true
+        LEFT JOIN {} i ON i.id = img_id::uuid
+        ORDER BY d.id, i.id
+        "#,
+            D::table_name(),
+            Self::table_name()
+        );
+        let rows = sqlx::query(&query).fetch_all(pool).await?;
+
+        let mut result = Vec::new();
+        let mut current_item: Option<(D, Vec<DBImage>)> = None;
+
+        for row in rows {
+            let item_id: Uuid = row.get("id");
+            let expected_imgs_amt: usize = row
+                .try_get::<Vec<Uuid>, _>("img_ids")
+                .ok()
+                .unwrap_or(vec![])
+                .len();
+            println!("expecting {:?} images", expected_imgs_amt);
+
+            if current_item.is_none()
+                || (current_item.as_ref().unwrap().0.id() != item_id
+                    && current_item.as_ref().unwrap().1.len() == expected_imgs_amt)
+            {
+                if let Some(item) = current_item {
+                    result.push(item);
+                }
+                let new_item: D = D::from_row(&row)?;
+                current_item = Some((new_item, Vec::new()));
+            }
+
+            if row.try_get::<String, _>("path").is_ok()
+                && row.try_get::<String, _>("alt").is_ok()
+                && row.try_get::<Option<String>, _>("subtitle").is_ok()
+            {
+                if let Ok(image_id) = row.try_get::<Uuid, _>("id") {
+                    let image = DBImage {
+                        id: image_id,
+                        path: row.get("path"),
+                        alt: row.get("alt"),
+                        subtitle: row.get("subtitle"),
+                    };
+                    current_item.as_mut().unwrap().1.push(image);
+                }
+            }
+
+            if let Some(item) = current_item.take() {
+                if item.1.len() == expected_imgs_amt {
+                    println!("pushing item: {:?}", item);
+                    result.push(item);
+                } else {
+                    println!("item: {:?} not ready", item);
+                    current_item = Some(item);
+                }
+            }
+        }
+
+        Ok(result)
+    }
+}
+
 mod tests {
     use std::{str::FromStr, sync::LazyLock};
 
@@ -129,8 +267,9 @@ mod tests {
 
     use crate::{
         database::models::{
-            DBAddress, DBAddressParams, DBDedication, DBDedicationParams, DBPatrolLog,
-            DBPatrolLogParams, DBResource, DBResourceParams, DBTestimonial, DBTestimonialParams,
+            DBAddress, DBAddressParams, DBDedication, DBDedicationParams, DBImage, DBImageParams,
+            DBPatrolLog, DBPatrolLogParams, DBResource, DBResourceParams, DBTestimonial,
+            DBTestimonialParams,
         },
         telemetry::{get_subscriber, init_subscriber},
         TRACING,
@@ -161,23 +300,28 @@ mod tests {
         LazyLock::force(&TRACING);
 
         let pool = connect_to_database().await;
-        let td = test_data();
+        let mut td = test_data();
 
         DBResource::delete_many(&pool).await.unwrap();
         DBAddress::delete_many(&pool).await.unwrap();
-        DBAddress::delete_many(&pool).await.unwrap();
         DBDedication::delete_many(&pool).await.unwrap();
         DBPatrolLog::delete_many(&pool).await.unwrap();
+        DBImage::delete_many(&pool).await.unwrap();
         DBTestimonial::delete_many(&pool).await.unwrap();
 
         let deds_amt = td.dedications.len();
-        for params in td.dedications {
-            DBDedication::insert_one(params, &pool).await.unwrap();
-        }
+        DBImage::insert_multiple_with_images::<DBDedication, DBDedicationParams>(
+            &pool,
+            td.dedications,
+        )
+        .await
+        .unwrap();
+
         let logs_amt = td.logs.len();
-        for params in td.logs {
-            DBPatrolLog::insert_one(params, &pool).await.unwrap();
-        }
+        DBImage::insert_multiple_with_images::<DBPatrolLog, DBPatrolLogParams>(&pool, td.logs)
+            .await
+            .unwrap();
+
         let testi_amt = td.testimonials.len();
         for params in td.testimonials {
             DBTestimonial::insert_one(params, &pool).await.unwrap();
@@ -187,6 +331,19 @@ mod tests {
         for params in td.resources {
             DBResource::insert_one(params, &pool).await.unwrap();
         }
+
+        let all_deds_and_imgs =
+            DBImage::get_multiple_with_images::<DBDedication, DBDedicationParams>(&pool)
+                .await
+                .unwrap();
+        assert_eq!(all_deds_and_imgs.len(), deds_amt);
+
+        let all_logs_and_imgs =
+            DBImage::get_multiple_with_images::<DBPatrolLog, DBPatrolLogParams>(&pool)
+                .await
+                .unwrap();
+
+        assert_eq!(all_logs_and_imgs.len(), deds_amt);
 
         let all = DBResource::get_multiple(&pool).await.unwrap();
         assert_eq!(all.len(), res_amt);
@@ -266,7 +423,6 @@ mod tests {
     }
 
     struct TestData {
-        // addresses: Vec<DBAddress>,
         dedications: Vec<DBDedicationParams>,
         logs: Vec<DBPatrolLogParams>,
         testimonials: Vec<DBTestimonialParams>,
@@ -274,19 +430,37 @@ mod tests {
     }
 
     fn test_data() -> TestData {
+        let images = vec![
+            DBImageParams {
+                path: "path1".to_string(),
+                alt: "alt1".to_string(),
+                subtitle: None,
+            },
+            DBImageParams {
+                path: "path2".to_string(),
+                alt: "alt2".to_string(),
+                subtitle: None,
+            },
+            DBImageParams {
+                path: "path3".to_string(),
+                alt: "alt3".to_string(),
+                subtitle: None,
+            },
+        ];
+
         let dedications = vec![DBDedicationParams {
             name: "John Doe".to_string(),
             bio: "A famous person".to_string(),
             birth: NaiveDate::from_ymd_opt(1980, 5, 15).unwrap(),
             death: NaiveDate::from_ymd_opt(2050, 12, 31).unwrap(),
-            img_urls: vec!["https://example.com/image1.jpg".to_string()],
+            img_params: images.clone(),
         }];
 
         let logs = vec![DBPatrolLogParams {
             heading: "Patrol Log 1".to_string(),
             description: "This is a patrol log description".to_string(),
             date: NaiveDate::from_ymd_opt(2023, 4, 1).unwrap(),
-            img_urls: vec![],
+            img_params: images.clone(),
         }];
 
         let testimonials = vec![DBTestimonialParams {
@@ -328,7 +502,7 @@ mod tests {
         ];
 
         TestData {
-            // addresses,
+            // images,
             dedications,
             logs,
             testimonials,

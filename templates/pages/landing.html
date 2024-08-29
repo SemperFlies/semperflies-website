@@ -1,15 +1,29 @@
-<link rel="stylesheet" href="/public/styles/landing.css?v=1.1" />
+<link rel="stylesheet" href="/public/styles/landing.css" />
 <div class="page">
   <section class="hero hero-transition">
     <h1>SemperFlies</h1>
     <p>
-      We are a non profit based in the Carson Valley area, for veterans by
-      veterans. We host events, provide mental health services and support
-      veterans in any way we can.
+      We are a Non Profit Orginization, 501(c)(3) pending, in the South Lake
+      Tahoe area of California. We participate in, support, & host events
+      raising awareness for Veterans that struggle with PTSD, TBI, and
+      Depression. 100% of the information we provide “is not” from any clinical
+      background we have but rather from our own life experiences battling these
+      conditions. We are not licensed in mental health and encourage anyone
+      struggling with these conditions to seek professional help. We are
+      committed to doing anything we can to educate, advocate, & support any
+      Veteran that served our country.
     </p>
+
+    <div x-style="lg|mx:5rem; flex; flex-grow; flex-col; color:@semper-orange;">
+      <h2 x-style="text-align:center; font-size:3rem;">"Stay in The Fight!"</h2>
+      <small x-style="text-align:right;">-Semper Flies Foundation</small>
+    </div>
   </section>
-  <section class="main-section-transition" x-style="flex; flex-col;">
-    <div x-style="flex; flex-col; mx:8rem; justify-self:center;">
+  <section
+    class="main-section-transition"
+    x-style="flex; flex-col; lg|mx:8rem; mx:3rem;"
+  >
+    <div x-style="flex; flex-col;  justify-self:center;">
       <h1 class="tattoo">Our Mission</h1>
       <ul>
         <li>
@@ -21,7 +35,8 @@
         <li>Support Other Veteran 501(c)(3)'s</li>
       </ul>
     </div>
-    <section id="landing-carousel" x-style="align-self:center;">
+
+    <section id="landing-carousel" x-style="align-self:center; mt: 4rem;">
       {% if !carousel.images.is_empty() %}
       <!---->
       {{ Self::render_carousel(carousel)|safe }}

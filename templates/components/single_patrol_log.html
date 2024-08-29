@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="public/styles/patrol_log.css" />
 <div
   x-data="{ 
       admin: {{ admin }},
@@ -6,7 +7,7 @@
   class="subsection-transition"
 >
   <div x-style="flex; flex-row; justify-content: space-between;">
-    <div x-style="flex; mx:5rem; flex-col;">
+    <div x-style="flex; lg|mx:5rem; mx:1.5rem; flex-col;">
       <h1 x-style="mb:0; ">{{log.heading}}</h1>
       <small>{{ log.date }}</small>
       <p>{{ log.description }}</p>
@@ -21,19 +22,10 @@
       Back To Patrol Log
     </button>
   </div>
-  <section
-    style="
-      margin-top: 2rem;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
-      align-self: center;
-      width: 80%;
-    "
-  >
+  <section id="img-grid">
     {% for img in log.carousel.images %}
     <img
-      style="width: 100%; height: auto; max-width: 20vw; max-height: 30vw"
+      style="width: 100%; height: auto"
       src="{{ img.src }}"
       alt="Image description"
     />

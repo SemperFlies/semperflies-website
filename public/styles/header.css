@@ -25,8 +25,8 @@
   font-family: "Tattoo";
   transition: all ease-in-out 200ms;
   height: fit-content;
-  width: fit-content;
-  padding: 1rem;
+  width: 10vw;
+  padding: 0.5rem;
   font-size: 1rem;
   align-self: center;
 }

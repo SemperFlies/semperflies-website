@@ -2,20 +2,40 @@
   hx-push-url="false"
   hx-target="#upload-response"
   hx-swap="innerHTML"
-  hx-post="/data/auth/upload_form/debriefs"
+  hx-post="/data/auth/upload/debriefs"
 >
   <h1>Debriefs</h1>
   <label for="firstname">First Name:</label>
-  <input type="text" name="firstname" placeholder="First Name" required />
+  <input
+    type="text"
+    id="firstname"
+    name="firstname"
+    placeholder="First Name"
+    required
+  />
 
   <label for="lastname">Last Name:</label>
-  <input type="text" name="lastname" placeholder="Last Name" required />
+  <input
+    type="text"
+    id="lastname"
+    name="lastname"
+    placeholder="Last Name"
+    required
+  />
 
   <label for="bio">Bio:</label>
-  <textarea required name="bio" placeholder="Bio" rows="4" cols="50"></textarea>
+  <textarea
+    required
+    id="bio"
+    name="bio"
+    placeholder="Bio"
+    rows="4"
+    cols="50"
+  ></textarea>
 
   <label for="content">Content:</label>
   <textarea
+    id="content"
     name="content"
     placeholder="Content"
     rows="6"
@@ -23,5 +43,5 @@
     required
   ></textarea>
 
-  <button type="submit">Submit</button>
+  <button type="submit">Upload</button>
 </form>
