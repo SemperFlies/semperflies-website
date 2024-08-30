@@ -102,6 +102,7 @@ pub struct DBResource {
     pub missions: Vec<String>,
     pub phone: Option<String>,
     pub email: Option<String>,
+    pub website_url: Option<String>,
     pub address_id: Option<uuid::Uuid>,
 }
 
@@ -112,6 +113,7 @@ pub struct DBResourceParams {
     pub missions: Vec<String>,
     pub phone: Option<String>,
     pub email: Option<String>,
+    pub website_url: Option<String>,
     pub address: Option<DBAddressParams>,
 }
 

@@ -7,9 +7,10 @@
 
     const newInput = document.createElement("input");
     newInput.type = "text";
-    newInput.name = "missions[]";
+    newInput.classList.add("missions");
     newInput.placeholder = "Enter value";
-    newInput.classList.add("mission-input");
+    newInput.style.margin = "0.5rem 1rem";
+    newInput.addEventListener("change", updateHiddenInput());
 
     const removeButton = document.createElement("button");
     removeButton.type = "button";
@@ -18,18 +19,23 @@
     removeButton.textContent = "close";
     removeButton.onclick = function () {
       inputWrapper.remove();
+      updateHiddenInput();
     };
 
     inputWrapper.appendChild(newInput);
     inputWrapper.appendChild(removeButton);
     container.appendChild(inputWrapper);
   }
-</script>
-<style>
-  .mission-input {
-    margin: 0.5rem 1rem;
+
+  function updateHiddenInput() {
+    let missionsInput = document.getElementById("missionsInput");
+    const inputs = document.querySelectorAll("#inputContainer input.missions");
+    console.log(inputs);
+    const values = Array.from(inputs).map((input) => input.value);
+    missionsInput.value = values;
+    console.log(missionsInput);
   }
-</style>
+</script>
 
 <form
   hx-swap="none"
@@ -65,26 +71,32 @@
   ></textarea>
 
   <div id="inputContainer" x-style="my:0.5rem;">
-    <h2 x-style="my:0.25rem;">Values:</h2>
-    <input
-      class="mission-input"
-      type="text"
-      name="missions[]"
-      placeholder="Enter value"
-    />
-    <button class="small" type="button" @click="addInput()">Add Another</button>
+    <input style="visibility: hidden" id="missionsInput" name="missions[]" />
+    <h2 x-style="my:0.25rem;">Support Resource Missions:</h2>
+    <button class="small" type="button" @click="addInput()">Add mission</button>
   </div>
 
-  <label for="phone">Phone:</label>
-  <input type="tel" id="phone" name="phone" placeholder="(555)-555-5555" />
-  <label for="email">Email:</label>
-  <input
-    type="email"
-    id="email"
-    name="email"
-    placeholder="somename@service.com"
-  />
+  <label for="phone"
+    >Phone:
+    <input type="tel" id="phone" name="phone" placeholder="(555)-555-5555" />
+  </label>
+  <label for="email"
+    >Email:
+    <input
+      type="email"
+      id="email"
+      name="email"
+      placeholder="somename@service.com"
+  /></label>
 
+  <label for="website"
+    >Website:
+    <input
+      type="url"
+      id="website"
+      name="website"
+      placeholder="www.somename.com"
+  /></label>
   <button
     x-text="buttontext"
     x-style="align-self:flex-end; mt:1rem; mb:0.5rem;"

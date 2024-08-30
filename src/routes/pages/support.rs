@@ -40,6 +40,7 @@ pub struct SupportResource {
     pub description: String,
     pub missions: Vec<String>,
     pub phone: Option<String>,
+    pub website_url: Option<String>,
     pub email: Option<String>,
     pub physical_address: Option<Address>,
 }
@@ -65,6 +66,7 @@ impl From<(DBResource, Option<DBAddress>)> for SupportResource {
             missions: res.missions,
             phone: res.phone,
             email: res.email,
+            website_url: res.website_url,
             physical_address: add.and_then(|a| Some(Address::from(a))),
         }
     }
@@ -197,6 +199,7 @@ fn generate_support_resources() -> Vec<SupportResource> {
             phone,
             email,
             physical_address,
+            website_url: Some(String::from("https://www.linkedin.com/feed/")),
         });
     }
 

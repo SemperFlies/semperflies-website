@@ -17,8 +17,9 @@
           {% endfor %}
         </div>
         <p>{{ res.description }}</p>
-
-        {% if let Some(phone) = res.phone %}
+        {% if let Some(url) = res.website_url %}
+        <a x-style="color:@semper-orange" href="{{ url }}">Website</a>
+        {% endif %} {% if let Some(phone) = res.phone %}
         <p>Phone: {{ phone }}</p>
         {% endif %} {% if let Some(email) = res.email %}
         <p>Email: {{ email }}</p>

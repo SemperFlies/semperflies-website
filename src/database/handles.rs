@@ -480,6 +480,7 @@ mod tests {
                 missions: vec!["Mission 1".to_string(), "Mission 2".to_string()],
                 phone: Some("555-1234".to_string()),
                 email: Some("resource1@example.com".to_string()),
+                website_url: None,
                 address: Some(DBAddressParams {
                     city: "Los Angeles".to_string(),
                     state: "CA".to_string(),
@@ -494,6 +495,7 @@ mod tests {
                 missions: vec!["Mission 1".to_string(), "Mission 2".to_string()],
                 phone: Some("999-1234".to_string()),
                 email: Some("resource2@example.com".to_string()),
+                website_url: Some(String::from("www.website.com")),
                 address: Some(DBAddressParams {
                     city: "Carson".to_string(),
                     state: "CA".to_string(),

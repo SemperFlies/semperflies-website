@@ -58,6 +58,7 @@ CREATE TABLE
         description TEXT NOT NULL,
         missions TEXT[] NOT NULL,
         phone VARCHAR(100),
+        website_url VARCHAR(255),
         email VARCHAR(255),
         address_id UUID,
         FOREIGN KEY (address_id) REFERENCES addresses(id)
