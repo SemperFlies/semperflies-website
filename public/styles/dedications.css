@@ -1,0 +1,17 @@
+.main-section-transition h1::after {
+  content: "";
+  display: block;
+  border-bottom: 1px solid var(--semper-orange); /* Adjust the border style as needed */
+  margin-top: 0.5rem; /* Add some spacing between the h1 and the horizontal rule */
+  margin-right: 5rem;
+}
+
+.carousel-container {
+  box-sizing: content-box;
+}
+
+.carousel-container .images img {
+  justify-self: center;
+  max-width: 30vw;
+  max-height: 40vw;
+}
