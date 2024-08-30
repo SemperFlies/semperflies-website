@@ -25,7 +25,7 @@ fn board_members() -> Vec<BoardMember> {
             During his stay at the residential treatment hospital in Colorado, Jamie learned how to tie fishing flys as a form of “grounding.” He enjoyed this project and vowed to himself
             that when he got out he was going to create a platform called Semper Flies and use it to raise awareness for Veterans that struggle with PTSD & TBI, and that’s exactly what he did.
             "#.to_string(),
-            image_url: "public/assets/images/board_members/jamie.jpeg".to_string(),
+            image_url: "public/assets/images/board_members/jamie.jpg".to_string(),
         },
         BoardMember {
             name: "Beverly L. Martin-Ornelas".to_string(),

@@ -77,6 +77,7 @@ async fn get_dedications(pool: &Pool<Postgres>) -> anyhow::Result<Vec<Dedication
     Ok(all_deds)
 }
 
+#[tracing::instrument(name = "dedications page", skip_all)]
 pub async fn dedications(
     State(data): State<SharedState>,
     Extension(soft_auth_ext): Extension<SoftAuthExtension>,

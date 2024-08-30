@@ -19,7 +19,6 @@ pub async fn landing() -> Html<String> {
         show_subtitles: true,
         images,
         auto_scroll: true,
-        // auto_scroll: false,
     };
     let template = LandingTemplate { carousel };
     match template.render() {
@@ -153,7 +152,7 @@ SSgt Guajardo, Team Leader, Team #2
             "photo of a burning building".to_string(),
             r#"
 Baghdad, Iraq
-5th Platoon 
+5th Platoon on patrol
 1st Force Reconnaissance Company.
                 "#
             .to_string(),
@@ -205,7 +204,7 @@ Sgt Anderson
             r#"
 Time Magazine
 April 28, 2003 Edition
-Sgt Guajardo J.M. 
+SSgt Guajardo J.M. 
 Operating in Baghdad, Iraq.
         "#
             .to_string(),
@@ -266,7 +265,10 @@ Denver, Colorado 2019
         (
             ordering_idx,
             "a how to tie a flie diagram".to_string(),
-"Semper Flies was born in a residential PTSD treatment facility in Colorado. These are the 1st flys I ever made.".to_string(),
+            r#"
+Semper Flies was born in a residential PTSD treatment facility in Colorado.
+These are the 1st flys Jamie ever made."#
+                .to_string(),
         ),
     );
 
@@ -277,7 +279,11 @@ Denver, Colorado 2019
         (
             ordering_idx,
             "an image of a lot of flies for fly fishing".to_string(),
-            "The first (22) Semper Flies ever made.".to_string(),
+            r#"
+The first 22 Semper Flies ever made.
+22 Veterans a day lose their life to Veteran Suicide.
+            "#
+            .to_string(),
         ),
     );
 
@@ -287,22 +293,26 @@ Denver, Colorado 2019
         (
             ordering_idx,
             "An image of cards, including the veteran crisis line and a semperflies business card. As well as a photo of a solider".to_string(),
-                r#"Semperflies"# .to_string(),
+                r#"
+Semper Flies Foundation
+"# .to_string(),
         ),
     );
 
     ordering_idx += 1;
     map.insert(
-        "jamie-face".to_string(),
+        "jamie-with-truck".to_string(),
         (
             ordering_idx,
-            "an image of a soldier smiling in uniform".to_string(),
+            "an image of a tattooed man in front of a branded truck".to_string(),
             r#"
-March 20, 2003
-Iraq Invasion 
-Safwan Hill. 
-1st Force Reconnaissance Co. 5th Platoon
-SSgt Guajardo, Team Leader, Team #2
+Jamie Guajardo
+Semper Flies Foundation Mobile HQ
+Battling PTSD & TBI everyday is ubiquitous & unrelenting. 
+It can break you or make you. 
+It is from these platforms/conditions that we can either fall or rise. 
+I choose the latter. 
+Choose the latter with me and “Stay, The Fight!”
 "#
             .to_string(),
         ),
