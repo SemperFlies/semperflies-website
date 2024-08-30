@@ -37,33 +37,33 @@
       </button>
     </div>
 
-    <template x-if="current_form === 'support'"
-      ><div>
+    <div x-show="current_form === 'support'">
+      <div>
         {% include "admin/forms/support.html" %}
         <button @click="current_form = null">Hide Form</button>
       </div>
-    </template>
+    </div>
 
-    <template x-if="current_form === 'debriefs'">
+    <div x-show="current_form === 'debriefs'">
       <div>
         {% include "admin/forms/debriefs.html" %}
         <button @click="current_form = null">Hide Form</button>
       </div>
-    </template>
+    </div>
 
-    <template x-if="current_form === 'patrol_log'">
+    <div x-show="current_form === 'patrol_log'">
       <div>
         {% include "admin/forms/patrol_log.html" %}
         <button @click="current_form = null">Hide Form</button>
       </div>
-    </template>
+    </div>
 
-    <template x-if="current_form === 'dedications'">
+    <div x-show="current_form === 'dedications'">
       <div>
         {% include "admin/forms/dedications.html" %}
         <button @click="current_form = null">Hide Form</button>
       </div>
-    </template>
+    </div>
   </section>
   <span
     @htmx:before-swap="

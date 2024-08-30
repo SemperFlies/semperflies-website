@@ -203,7 +203,10 @@ impl DBImage {
             D::table_name(),
             Self::table_name()
         );
-        let rows = sqlx::query(&query).fetch_all(pool).await?;
+        let rows = sqlx::query(&query)
+            .fetch_all(pool)
+            .await
+            .expect("failed to query database");
 
         let mut result = Vec::new();
         let mut current_item: Option<(D, Vec<DBImage>)> = None;
@@ -215,7 +218,7 @@ impl DBImage {
                 .ok()
                 .unwrap_or(vec![])
                 .len();
-            println!("expecting {:?} images", expected_imgs_amt);
+            warn!("expecting {:?} images", expected_imgs_amt);
 
             if current_item.is_none()
                 || (current_item.as_ref().unwrap().0.id() != item_id
@@ -245,10 +248,10 @@ impl DBImage {
 
             if let Some(item) = current_item.take() {
                 if item.1.len() == expected_imgs_amt {
-                    println!("pushing item: {:?}", item);
+                    warn!("pushing item: {:?}", item);
                     result.push(item);
                 } else {
-                    println!("item: {:?} not ready", item);
+                    warn!("item: {:?} not ready", item);
                     current_item = Some(item);
                 }
             }
