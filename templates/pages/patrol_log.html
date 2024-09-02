@@ -53,8 +53,11 @@
           bg-color:@primary-dark;
           "
         >
-          <div x-style="flex; flex-col; flex-grow; m:1rem;">
-            <h1 x-style="my: 0.25rem; color:@semper-orange;" class="tattoo">
+          <div x-style="flex; flex-col; flex-grow; m:1rem; lg|max-width:60%;">
+            <h1
+              x-style="my: 0.25rem; color:@semper-orange;"
+              class="tattoo underlined"
+            >
               {{l.heading}}
             </h1>
             <small>{{ l.date }}</small>

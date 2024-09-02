@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="/public/styles/patrol_gear.css" />
-<div class="page">
+<div class="page" x-style="overflow:hidden;">
   <section class="hero hero-transition">
     <h1>Patrol Gear</h1>
 
@@ -9,27 +9,52 @@
         >Jamie@semperfliesfoundation.com</span
       >
       To place your order today!
+      <br />
+      <br />
+      Please include the number associated with the item, quantity, and size if
+      applicable.
     </p>
   </section>
   <section
     class="main-section-transition"
     x-init="$watch('current_gear', value=> console.log(value))"
-    x-data="{ current_gear: null }"
+    x-data="{ current_gear: '{{ HATS }}' }"
   >
     <div x-style="flex; flex-row; justify-content: space-around;">
-      <button @click="current_gear = '{{ HATS }}'">{{ HATS }}</button>
-      <button @click="current_gear = '{{ MISC }}'">{{ MISC }}</button>
-      <button @click="current_gear = '{{ TOPS }}'">{{ TOPS }}</button>
+      <button
+        :class="current_gear === '{{ HATS }}' ? 'selected' : ''"
+        @click="current_gear = '{{ HATS }}'"
+      >
+        {{ HATS }}
+      </button>
+      <button
+        :class="current_gear === '{{ MISC }}' ? 'selected' : ''"
+        @click="current_gear = '{{ MISC }}'"
+      >
+        {{ MISC }}
+      </button>
+      <button
+        :class="current_gear === '{{ TOPS }}' ? 'selected' : ''"
+        @click="current_gear = '{{ TOPS }}'"
+      >
+        {{ TOPS }}
+      </button>
     </div>
 
     <div id="gear-display" x-style="lg|m:5rem; m:2rem;">
       <template x-if="current_gear === '{{ MISC }}'">
         <div class="merch-grid">
           {% for gear in Self::misc(self) %}
-          <center>
+          <div>
+            <h4>Misc #{{ gear.id}}</h4>
             <h4>${{ gear.price}} Donation</h4>
-            <img src="{{ gear.src }}" />
-          </center>
+
+            {% if !gear.carousel.images.is_empty() %}
+            <!---->
+            {{ Self::render_carousel(gear.carousel)|safe }}
+            <!---->
+            {% endif %}
+          </div>
           {% endfor %}
         </div>
       </template>
@@ -37,10 +62,15 @@
       <template x-if="current_gear === '{{ HATS }}'">
         <div class="merch-grid">
           {% for gear in Self::hats(self) %}
-          <center>
+          <div>
+            <h4>Hat #{{ gear.id}}</h4>
             <h4>${{ gear.price}} Donation</h4>
-            <img src="{{ gear.src }}" />
-          </center>
+            {% if !gear.carousel.images.is_empty() %}
+            <!---->
+            {{ Self::render_carousel(gear.carousel)|safe }}
+            <!---->
+            {% endif %}
+          </div>
           {% endfor %}
         </div>
       </template>
@@ -48,10 +78,15 @@
       <template x-if="current_gear === '{{ TOPS }}'">
         <div class="merch-grid">
           {% for gear in Self::tops(self) %}
-          <center>
+          <div>
+            <h4>Top #{{ gear.id}}</h4>
             <h4>${{ gear.price}} Donation</h4>
-            <img src="{{ gear.src }}" />
-          </center>
+            {% if !gear.carousel.images.is_empty() %}
+            <!---->
+            {{ Self::render_carousel(gear.carousel)|safe }}
+            <!---->
+            {% endif %}
+          </div>
           {% endfor %}
         </div>
       </template>

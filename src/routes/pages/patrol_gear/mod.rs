@@ -2,6 +2,9 @@ use std::collections::HashMap;
 
 use askama::Template;
 use axum::response::Html;
+use tracing::warn;
+
+use crate::components::carousel::{CarouselTemplate, HasCarousel, Image};
 
 use super::util::all_images_in_directory;
 
@@ -15,16 +18,31 @@ pub async fn patrol_gear() -> Html<String> {
     let template = PatrolGearTemplate {
         gear: builtin_gear(),
     };
+    warn!("got gear template: {:?}", template);
     match template.render() {
         Ok(r) => Html(r),
         Err(err) => Html(format!("Error rendering Layout: {}", err.to_string())),
     }
 }
+impl HasCarousel for PatrolGearTemplate {}
 
 #[derive(Debug)]
 pub struct Gear {
-    src: String,
+    id: u32,
     price: u32,
+    carousel: CarouselTemplate,
+}
+
+impl PatrolGearTemplate {
+    fn tops(&self) -> &Vec<Gear> {
+        self.gear.get(TOPS).unwrap()
+    }
+    fn hats(&self) -> &Vec<Gear> {
+        self.gear.get(HATS).unwrap()
+    }
+    fn misc(&self) -> &Vec<Gear> {
+        self.gear.get(MISC).unwrap()
+    }
 }
 
 pub const TOPS: &str = "Tops";
@@ -45,8 +63,37 @@ fn builtin_gear() -> HashMap<String, Vec<Gear>> {
 
     let mut all_misc = vec![];
     for src in all_misc_imgs {
-        let price = if src.contains("sticker") { 5 } else { 22 };
-        all_misc.push(Gear { src, price });
+        if src.contains("sticker") {
+            let images = vec![Image {
+                src,
+                alt: String::new(),
+                subtitle: String::new(),
+            }];
+            all_misc.push(Gear {
+                id: 1,
+                price: 5,
+                carousel: CarouselTemplate {
+                    images,
+                    auto_scroll: false,
+                    show_subtitles: false,
+                },
+            })
+        } else {
+            let images = vec![Image {
+                src,
+                alt: String::new(),
+                subtitle: String::new(),
+            }];
+            all_misc.push(Gear {
+                id: 2,
+                price: 22,
+                carousel: CarouselTemplate {
+                    images,
+                    auto_scroll: false,
+                    show_subtitles: false,
+                },
+            })
+        };
     }
 
     let all_tops_imgs: Vec<String> = all_images_in_directory(&tops_path)
@@ -56,37 +103,90 @@ fn builtin_gear() -> HashMap<String, Vec<Gear>> {
         .collect();
 
     let mut all_tops = vec![];
-    for src in all_tops_imgs {
-        let price = if src.contains("hoodie") { 60 } else { 40 };
-        all_tops.push(Gear { src, price });
-    }
+    let (hoodie_imgs, t_imgs): (Vec<String>, Vec<String>) = all_tops_imgs
+        .into_iter()
+        .partition(|src| src.contains("hoodie"));
+    let images = hoodie_imgs
+        .into_iter()
+        .map(|src| Image {
+            src,
+            alt: String::new(),
+            subtitle: String::new(),
+        })
+        .collect();
+    all_tops.push(Gear {
+        id: 1,
+        price: 60,
+        carousel: CarouselTemplate {
+            images,
+            auto_scroll: false,
+            show_subtitles: false,
+        },
+    });
+    let images = t_imgs
+        .into_iter()
+        .map(|src| Image {
+            src,
+            alt: String::new(),
+            subtitle: String::new(),
+        })
+        .collect();
+
+    all_tops.push(Gear {
+        id: 2,
+        price: 40,
+        carousel: CarouselTemplate {
+            images,
+            auto_scroll: false,
+            show_subtitles: false,
+        },
+    });
 
     let all_hats_imgs: Vec<String> = all_images_in_directory(&hats_path)
         .unwrap()
         .iter()
         .map(|p| p.to_str().unwrap().to_string())
         .collect();
+
     let mut all_hats = vec![];
     for src in all_hats_imgs {
         let price = 40;
-        all_hats.push(Gear { src, price });
+        let id = match src.rsplit_once("/").unwrap().1 {
+            "black-baseball.jpeg" => 1,
+            "black-baseball2.jpeg" => 2,
+            "black-beanie.jpeg" => 3,
+            "camo-baseball.jpeg" => 4,
+            "camo-flatbill.jpeg" => 5,
+            "camo-flatbill2.jpeg" => 6,
+            "camo-trucker.jpeg" => 7,
+            "grey-flatbill.jpeg" => 8,
+            "grey-flatbill2.jpeg" => 9,
+            "grey-red-flatbill.jpeg" => 10,
+            "white-beanie.jpeg" => 11,
+            other => panic!("encountered unexpected hat img: {}", other),
+        };
+
+        let images = vec![Image {
+            src,
+            alt: String::new(),
+            subtitle: String::new(),
+        }];
+        all_hats.push(Gear {
+            id,
+            price,
+            carousel: CarouselTemplate {
+                images,
+                auto_scroll: false,
+                show_subtitles: false,
+            },
+        });
     }
+
+    all_hats.sort_by(|a, b| a.id.cmp(&b.id));
 
     let mut map = HashMap::new();
     map.insert(TOPS.to_string(), all_tops);
     map.insert(HATS.to_string(), all_hats);
     map.insert(MISC.to_string(), all_misc);
     map
-}
-
-impl PatrolGearTemplate {
-    fn tops(&self) -> &Vec<Gear> {
-        self.gear.get(TOPS).unwrap()
-    }
-    fn hats(&self) -> &Vec<Gear> {
-        self.gear.get(HATS).unwrap()
-    }
-    fn misc(&self) -> &Vec<Gear> {
-        self.gear.get(MISC).unwrap()
-    }
 }

@@ -3,14 +3,29 @@
     <h1>Debriefs</h1>
   </section>
   <section class="main-section-transition" x-data="{ admin: {{admin}} }">
-    <div x-style="flex; flex-col; mx:3rem;">
+    <section x-style="flex; flex-col; mx:3rem;">
       {% for test in testimonials %}
-      <section x-style="w:100%; align-self:center; ">
-        <h1>{{ test.firstname }} {{test.lastname}}</h1>
+      <div
+        x-style="
+        w:100%;
+        align-self:center;
+        bg-color:@primary-dark;
+        b:1px @primary-light solid;
+        radius:xl;
+        p:1rem;
+        m:1rem;
+        "
+      >
+        <h1
+          class="underlined"
+          x-style="color:@semper-orange; font-size:2rem; mb:0.25rem; mt:0.5rem;"
+        >
+          {{ test.firstname }} {{test.lastname}}
+        </h1>
         {% if let Some(bio) = test.bio %}
         <small>{{ bio }}</small>
         {% endif %}
-        <p>{{ test.content }}</p>
+        <p>{{ test.content|safe }}</p>
         <button
           x-show="admin"
           hx-push-url="false"
@@ -21,9 +36,9 @@
         >
           close
         </button>
-      </section>
+      </div>
       {% endfor %}
-    </div>
+    </section>
 
     <span
       @htmx:before-swap="

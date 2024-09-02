@@ -111,7 +111,7 @@ body {
 .hero > h1::after {
   content: "";
   display: block;
-  border-bottom: 1px solid var(--semper-orange); /* Adjust the border style as needed */
+  border-bottom: 1.5px solid var(--semper-red); /* Adjust the border style as needed */
   margin-top: 0.5rem; /* Add some spacing between the h1 and the horizontal rule */
 }
 
@@ -132,9 +132,13 @@ button {
   transition: all ease-in-out 200ms;
 }
 
-button:hover {
+button:hover,
+button.selected {
   color: var(--semper-red);
   border-color: var(--semper-red);
+}
+button.selected {
+  pointer-events: none;
 }
 
 button.small {
@@ -143,7 +147,19 @@ button.small {
   border-radius: 10px;
 }
 
+.underlined::after {
+  content: "";
+  display: block;
+  border-bottom: 1px solid var(--semper-orange); /* Adjust the border style as needed */
+  margin-top: 0.5rem; /* Add some spacing between the h1 and the horizontal rule */
+  margin-right: 5rem;
+}
+
 @media screen and (max-width: 920px) {
+  .underlined::after {
+    margin-top: 0.5rem;
+    margin-right: 2rem;
+  }
   .hero > p {
     margin: 0 1rem;
   }

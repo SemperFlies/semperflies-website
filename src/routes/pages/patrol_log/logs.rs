@@ -1,10 +1,3 @@
-use std::{
-    collections::HashMap,
-    fs,
-    path::{Path, PathBuf},
-    sync::LazyLock,
-};
-
 use askama::Template;
 use axum::{
     extract::{Query, State},
@@ -15,16 +8,14 @@ use chrono::NaiveDate;
 use rand::Rng;
 use serde::Deserialize;
 use sqlx::{Pool, Postgres};
+use std::collections::HashMap;
 use tracing::warn;
 use uuid::Uuid;
 
 use crate::{
     auth::middleware::SoftAuthExtension,
     components::carousel::{CarouselTemplate, HasCarousel, Image},
-    database::{
-        handles::DbData,
-        models::{DBImage, DBPatrolLog, DBPatrolLogParams},
-    },
+    database::models::{DBImage, DBPatrolLog, DBPatrolLogParams},
     routes::pages::util,
     state::SharedState,
 };
@@ -160,6 +151,7 @@ fn builtin_logs() -> Vec<Log> {
             subtitle: String::new(),
         })
         .collect();
+
     let carousel = CarouselTemplate {
         show_subtitles: false,
         images,
@@ -168,8 +160,8 @@ fn builtin_logs() -> Vec<Log> {
     let fishing_trip = Log {
         id: Uuid::new_v4(),
         heading: "Semperflies Fishing Trip".to_string(),
-        description: "Semperflies hosted a fishing trip".to_string(),
-        date: NaiveDate::from_ymd_opt(2023, 06, 10).unwrap(),
+        description: "Semper Flies Foundation & Tahoe Fly Fishing Outfitters teamed up to send (2) Combat Veterans on a fly fishing trip they would remember for the rest of their lives.".to_string(),
+        date: NaiveDate::from_ymd_opt(2023, 06, 21).unwrap(),
         carousel,
     };
     vec![fishing_trip]

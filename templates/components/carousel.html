@@ -54,7 +54,7 @@
         x-show.important="currentSlideIndex == index + 1"
         x-style="grid; place-items:center;"
       >
-        <div style="box-sizing: content-box">
+        <div x-style="box-sizing: content-box; flex; flex-col;">
           <img
             x-style="w:80vw; h:75vw; radius:lg; object-fit:cover;"
             x-bind:src="slide.imgSrc"
