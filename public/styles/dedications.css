@@ -4,6 +4,8 @@
 
 .carousel-container .images img {
   justify-self: center;
+  min-width: 250px;
+  min-height: 350px;
   max-width: 30vw;
   max-height: 40vw;
 }
