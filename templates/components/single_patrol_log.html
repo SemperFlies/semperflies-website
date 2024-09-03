@@ -25,6 +25,7 @@
   <section id="img-grid">
     {% for img in log.carousel.images %}
     <img
+      loading="lazy"
       style="width: 100%; height: auto"
       src="{{ img.src }}"
       alt="Image description"
