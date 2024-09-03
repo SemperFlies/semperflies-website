@@ -1,7 +1,7 @@
 #gear-display .merch-grid {
   margin-top: 2rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(30vw, 1fr));
   gap: 1rem;
   justify-content: center;
   align-content: center;
@@ -27,4 +27,10 @@
 .merch-grid h4 {
   text-align: center;
   color: var(--semper-orange);
+}
+
+@media screen and (max-width: 920px) {
+  #gear-display .merch-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
 }

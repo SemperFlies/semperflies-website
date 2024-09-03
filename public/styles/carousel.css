@@ -1,5 +1,9 @@
 .navigation > button {
   border-radius: 20px;
+  align-self: center;
+  box-sizing: content-box;
+  width: fit-content;
+  height: fit-content;
   backdrop-filter: blur(50px);
   background-color: transparent;
   border: none;
