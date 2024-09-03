@@ -1,7 +1,7 @@
 #gear-display .merch-grid {
   margin-top: 2rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(30vw, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1rem;
   justify-content: center;
   align-content: center;
@@ -18,6 +18,8 @@
 .merch-grid img {
   justify-self: center;
   object-fit: cover;
+  min-width: 250px;
+  min-height: 350px;
   max-width: 30vw;
   max-height: 60vw;
 }

@@ -48,7 +48,6 @@
           <div>
             <h4>Misc #{{ gear.id}}</h4>
             <h4>${{ gear.price}} Donation</h4>
-
             {% if !gear.carousel.images.is_empty() %}
             <!---->
             {{ Self::render_carousel(gear.carousel)|safe }}
