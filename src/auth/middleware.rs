@@ -1,24 +1,21 @@
-use std::{str::FromStr, sync::Arc};
-
 use super::error::{AuthError, AuthResult};
 use crate::{
     auth::model::TokenClaims,
-    error::{DataApiReturn, DataResponse, InternalError},
+    error::{DataApiReturn, InternalError},
     state::SharedState,
-    AppState,
 };
 use axum::{
     body::Body,
-    extract::{FromRef, State},
+    extract::State,
     http::{header, Request},
     middleware::Next,
     response::IntoResponse,
 };
 use axum_extra::extract::cookie::CookieJar;
 use jsonwebtoken::{decode, DecodingKey, Validation};
+use std::str::FromStr;
 use tracing::{debug, warn};
 
-#[tracing::instrument(name = "get admin session id", skip_all)]
 pub fn get_admin_session_id(
     jwt_secret: &[u8],
     cookie_jar: CookieJar,
@@ -53,7 +50,6 @@ pub fn get_admin_session_id(
     Ok(id)
 }
 
-#[tracing::instrument(name = "admin authorization middleware", skip_all)]
 pub async fn admin_auth(
     State(data): State<SharedState>,
     cookie_jar: CookieJar,
@@ -81,7 +77,6 @@ pub struct SoftAuthExtension {
     pub is_logged_in: bool,
 }
 
-#[tracing::instrument(name = "soft auth middleware", skip_all)]
 pub async fn soft_auth(
     cookie_jar: CookieJar,
     State(data): State<SharedState>,

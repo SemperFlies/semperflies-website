@@ -9,7 +9,7 @@ use sqlx::{
 use tracing::warn;
 use uuid::Uuid;
 
-use crate::{auth::handlers::upload::UploadItem, database::models::DBImage};
+use crate::database::models::DBImage;
 
 use super::models::DBImageParams;
 
@@ -207,6 +207,7 @@ impl DBImage {
             .fetch_all(pool)
             .await
             .expect("failed to query database");
+        warn!("got {:?} rows", rows.len());
 
         let mut result = Vec::new();
         let mut current_item: Option<(D, Vec<DBImage>)> = None;
@@ -415,9 +416,13 @@ mod tests {
 
         let all = DBAddress::get_multiple(&pool).await.unwrap();
         assert_eq!(all.len(), 0);
-        let all = DBDedication::get_multiple(&pool).await.unwrap();
+        let all = DBImage::get_multiple_with_images::<DBDedication, DBDedicationParams>(&pool)
+            .await
+            .unwrap();
         assert_eq!(all.len(), 0);
-        let all = DBPatrolLog::get_multiple(&pool).await.unwrap();
+        let all = DBImage::get_multiple_with_images::<DBPatrolLog, DBPatrolLogParams>(&pool)
+            .await
+            .unwrap();
         assert_eq!(all.len(), 0);
         let all = DBTestimonial::get_multiple(&pool).await.unwrap();
         assert_eq!(all.len(), 0);

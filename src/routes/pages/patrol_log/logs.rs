@@ -89,6 +89,7 @@ pub struct PatrolLogQuery {
     log_heading: Option<String>,
 }
 
+#[tracing::instrument(name = "patrol log template rendering", skip_all)]
 pub async fn patrol_log(
     State(data): State<SharedState>,
     queries: Option<Query<PatrolLogQuery>>,
@@ -128,6 +129,7 @@ pub async fn patrol_log(
             }
         }
     }
+
     let logs = logs_map.into_values().collect();
     let template = Some(PatrolLogTemplate {
         logs,
