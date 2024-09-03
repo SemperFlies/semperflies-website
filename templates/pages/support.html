@@ -1,3 +1,4 @@
+{%- import "components/delete.html" as d -%}
 <div class="page">
   <section class="hero hero-transition">
     <h1>Support</h1>
@@ -31,17 +32,8 @@
         </p>
 
         {% endif %}
-
-        <button
-          x-show="admin"
-          hx-push-url="false"
-          hx-target="#delete-response"
-          hx-swap="innerHTML"
-          hx-delete="/data/auth/delete/{{ SUPPORT }}/{{ res.id }}"
-          class="material-symbols-outlined"
-        >
-          close
-        </button>
+        <!---->
+        {% call d::deletion(SUPPORT, res.id, "admin") %}
       </div>
       {% endfor %}
     </div>

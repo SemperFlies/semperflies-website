@@ -54,24 +54,42 @@ where
         Ok(strct)
     }
 
-    async fn delete_one_with_id(id: Uuid, pool: &Pool<Postgres>) -> anyhow::Result<()> {
+    async fn delete_one_with_id(id: Uuid, pool: &Pool<Postgres>) -> anyhow::Result<Self> {
         warn!("deleting item with id: {}", id);
         let query = format!(
             "DELETE FROM {} WHERE id = $1 RETURNING *;",
             Self::table_name()
         );
-        if sqlx::query_as::<_, Self>(&query)
+        match sqlx::query_as::<_, Self>(&query)
             .bind(id)
             .fetch_optional(pool)
             .await?
-            .is_none()
         {
-            warn!("nothing returned by deletion query");
-            return Err(anyhow!(
-                "problem with database deletion, no struct returned"
-            ));
+            Some(ret) => Ok(ret),
+            None => {
+                warn!("nothing returned by deletion query");
+                return Err(anyhow!(
+                    "problem with database deletion, no struct returned"
+                ));
+            }
         }
-        Ok(())
+    }
+
+    async fn delete_many_by_ids(
+        ids: Vec<Uuid>,
+        pool: &Pool<Postgres>,
+    ) -> anyhow::Result<Vec<Self>> {
+        let query = format!(
+            "DELETE FROM {} WHERE id = ANY($1) RETURNING *;",
+            Self::table_name()
+        );
+
+        let deleted_rows = sqlx::query_as::<_, Self>(&query)
+            .bind(&ids)
+            .fetch_all(pool)
+            .await?;
+
+        Ok(deleted_rows)
     }
 
     async fn delete_many(pool: &Pool<Postgres>) -> anyhow::Result<Vec<Self>> {
@@ -193,15 +211,19 @@ impl DBImage {
     {
         let query = format!(
             r#"
-        SELECT
-            d.*, i.*
-        FROM {} d
-        LEFT JOIN LATERAL unnest(d.img_ids) AS img_id ON true
-        LEFT JOIN {} i ON i.id = img_id::uuid
-        ORDER BY d.id, i.id
+SELECT
+     d.*, 
+     i.id AS i_id,
+     i.path, 
+     i.alt, 
+     i.subtitle
+FROM {} d
+LEFT JOIN LATERAL unnest(d.img_ids) AS img_id ON true
+LEFT JOIN {} i ON i.id = img_id
+ORDER BY d.id, i.id
         "#,
             D::table_name(),
-            Self::table_name()
+            Self::table_name(),
         );
         let rows = sqlx::query(&query)
             .fetch_all(pool)
@@ -213,48 +235,54 @@ impl DBImage {
         let mut current_item: Option<(D, Vec<DBImage>)> = None;
 
         for row in rows {
-            let item_id: Uuid = row.get("id");
-            let expected_imgs_amt: usize = row
-                .try_get::<Vec<Uuid>, _>("img_ids")
-                .ok()
-                .unwrap_or(vec![])
-                .len();
-            warn!("expecting {:?} images", expected_imgs_amt);
+            // for col in row.columns() {
+            //     warn!("{col:?}");
+            // }
+            if let Some(item_id) = row.try_get("id").ok() {
+                let expected_imgs_amt: usize = row
+                    .try_get::<Vec<Uuid>, _>("img_ids")
+                    .ok()
+                    .unwrap_or(vec![])
+                    .len();
+                warn!("expecting {:?} images", expected_imgs_amt);
 
-            if current_item.is_none()
-                || (current_item.as_ref().unwrap().0.id() != item_id
-                    && current_item.as_ref().unwrap().1.len() == expected_imgs_amt)
-            {
-                if let Some(item) = current_item {
-                    result.push(item);
+                if current_item.is_none()
+                    || (current_item.as_ref().unwrap().0.id() != item_id
+                        && current_item.as_ref().unwrap().1.len() == expected_imgs_amt)
+                {
+                    if let Some(item) = current_item {
+                        result.push(item);
+                    }
+                    let new_item: D = D::from_row(&row)?;
+                    current_item = Some((new_item, Vec::new()));
                 }
-                let new_item: D = D::from_row(&row)?;
-                current_item = Some((new_item, Vec::new()));
-            }
 
-            if row.try_get::<String, _>("path").is_ok()
-                && row.try_get::<String, _>("alt").is_ok()
-                && row.try_get::<Option<String>, _>("subtitle").is_ok()
-            {
-                if let Ok(image_id) = row.try_get::<Uuid, _>("id") {
-                    let image = DBImage {
-                        id: image_id,
-                        path: row.get("path"),
-                        alt: row.get("alt"),
-                        subtitle: row.get("subtitle"),
-                    };
-                    current_item.as_mut().unwrap().1.push(image);
+                if row.try_get::<String, _>("path").is_ok()
+                    && row.try_get::<String, _>("alt").is_ok()
+                    && row.try_get::<Option<String>, _>("subtitle").is_ok()
+                {
+                    if let Ok(image_id) = row.try_get::<Uuid, _>("i_id") {
+                        let image = DBImage {
+                            id: image_id,
+                            path: row.get("path"),
+                            alt: row.get("alt"),
+                            subtitle: row.get("subtitle"),
+                        };
+                        current_item.as_mut().unwrap().1.push(image);
+                    }
                 }
-            }
 
-            if let Some(item) = current_item.take() {
-                if item.1.len() == expected_imgs_amt {
-                    warn!("pushing item: {:?}", item);
-                    result.push(item);
-                } else {
-                    warn!("item: {:?} not ready", item);
-                    current_item = Some(item);
+                if let Some(item) = current_item.take() {
+                    if item.1.len() == expected_imgs_amt {
+                        warn!("pushing item: {:?}", item);
+                        result.push(item);
+                    } else {
+                        warn!("item: {:?} not ready", item);
+                        current_item = Some(item);
+                    }
                 }
+            } else {
+                warn!("row does not have an id field");
             }
         }
 
@@ -461,7 +489,7 @@ mod tests {
             bio: "A famous person".to_string(),
             birth: NaiveDate::from_ymd_opt(1980, 5, 15).unwrap(),
             death: NaiveDate::from_ymd_opt(2050, 12, 31).unwrap(),
-            img_params: images.clone(),
+            img_params: vec![],
         }];
 
         let logs = vec![DBPatrolLogParams {

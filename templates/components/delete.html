@@ -1,0 +1,32 @@
+{% macro deletion(typ, id, show_var) %}
+<style>
+  .delete-response:not(.material-symbols-outlined) {
+    color: green;
+  }
+  .delete-response:not(.material-symbols-outlined).fail {
+    color: red !important;
+  }
+</style>
+<button
+  class="delete-response material-symbols-outlined"
+  x-show="{{ show_var }}"
+  hx-push-url="false"
+  hx-target="this"
+  hx-confirm="Are you sure you want to delete this?"
+  hx-swap="outerHTML"
+  hx-delete="/data/auth/delete/{{ typ }}/{{ id }}"
+  @htmx:before-swap="
+      $el.classList.remove('material-symbols-outlined');
+      if ($event.detail.failed) {
+        $el.classList.add('fail')
+      } else {
+        $el.classList.remove('fail')
+      }
+  setTimeout(() => {
+    location.reload();
+  }, 3000);
+      "
+>
+  close
+</button>
+{% endmacro %}

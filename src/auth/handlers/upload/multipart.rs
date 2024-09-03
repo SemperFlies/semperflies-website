@@ -21,13 +21,33 @@ use reqwest::StatusCode;
 use std::ops::Deref;
 use tracing::warn;
 
-use super::{UploadItem, UploadItemType};
+use super::{UploadItem, UploadItemType, IMAGES_DIRECTORY};
 
 #[derive(Debug)]
 pub enum UploadMultipartItemType {
     PatrolLog,
     Dedications,
 }
+
+// impl UploadMultipartItemType {
+//     pub fn images_path(&self, item: &UploadItem) -> String {
+//         let subdir: &String = match &item {
+//             UploadItem::PatrolLog(item) => &item.heading,
+//             UploadItem::Dedication(item) => &item.name,
+//             other => panic!("{other:?} should not have been passed to this method"),
+//         };
+//
+//         format!(
+//             "./{}/{}{}",
+//             &IMAGES_DIRECTORY,
+//             match self {
+//                 UploadMultipartItemType::PatrolLog => PATROL_LOG,
+//                 UploadMultipartItemType::Dedications => DEDICATIONS,
+//             },
+//             subdir
+//         )
+//     }
+// }
 
 async fn handle_other(other: &str, field: Field<'_>, attachments: &mut Vec<FileAttachment>) {
     match other.split_once('_') {

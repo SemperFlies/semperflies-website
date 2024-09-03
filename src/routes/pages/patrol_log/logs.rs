@@ -97,15 +97,16 @@ pub async fn patrol_log(
 ) -> Html<String> {
     let r = data.read().await;
     let mut logs_map = HashMap::new();
+
+    for l in get_logs(&r.db).await.unwrap() {
+        logs_map.insert(l.heading.to_owned(), l);
+    }
+
     for l in generate_activities(5) {
         logs_map.insert(l.heading.to_owned(), l);
     }
 
     for l in builtin_logs() {
-        logs_map.insert(l.heading.to_owned(), l);
-    }
-
-    for l in get_logs(&r.db).await.unwrap() {
         logs_map.insert(l.heading.to_owned(), l);
     }
 

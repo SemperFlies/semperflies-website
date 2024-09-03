@@ -7,9 +7,10 @@ use tracing::warn;
 use uuid::Uuid;
 
 use crate::{
+    auth::handlers::upload::attachments::FileAttachment,
     database::{
         handles::DbData,
-        models::{DBDedication, DBPatrolLog, DBResource, DBTestimonial},
+        models::{DBDedication, DBImage, DBPatrolLog, DBResource, DBTestimonial},
     },
     error::{DataApiReturn, InternalError},
     state::SharedState,
@@ -66,18 +67,27 @@ pub async fn delete_item_handler(
                     .map_err(|err| UploadError::from(err).into_data_api_return())?;
             }
         },
-        GeneralItem::Multi(i) => match i {
-            UploadMultipartItemType::PatrolLog => {
-                DBPatrolLog::delete_one_with_id(id, pool)
-                    .await
-                    .map_err(|err| UploadError::from(err).into_data_api_return())?;
-            }
-            UploadMultipartItemType::Dedications => {
-                DBDedication::delete_one_with_id(id, pool)
-                    .await
-                    .map_err(|err| UploadError::from(err).into_data_api_return())?;
-            }
-        },
+        GeneralItem::Multi(i) => {
+            let (img_ids, subdir) = match i {
+                UploadMultipartItemType::PatrolLog => {
+                    let ret = DBPatrolLog::delete_one_with_id(id, pool)
+                        .await
+                        .map_err(|err| UploadError::from(err).into_data_api_return())?;
+                    (ret.img_ids, ret.heading)
+                }
+                UploadMultipartItemType::Dedications => {
+                    let ret = DBDedication::delete_one_with_id(id, pool)
+                        .await
+                        .map_err(|err| UploadError::from(err).into_data_api_return())?;
+                    (ret.img_ids, ret.name)
+                }
+            };
+            DBImage::delete_many_by_ids(img_ids, pool)
+                .await
+                .map_err(|err| UploadError::from(err).into_data_api_return())?;
+            FileAttachment::remove_from_filesys(Some(&subdir), &i)
+                .map_err(|err| UploadError::from(err).into_data_api_return())?;
+        }
     }
 
     let response = Response::new(success_message);

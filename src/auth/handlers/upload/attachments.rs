@@ -21,6 +21,20 @@ pub struct FileAttachment {
 }
 
 impl FileAttachment {
+    fn attachments_path(subdir: Option<&str>, typ: &UploadMultipartItemType) -> String {
+        format!(
+            "./{}/{}{}",
+            &IMAGES_DIRECTORY,
+            match typ {
+                UploadMultipartItemType::PatrolLog => PATROL_LOG,
+                UploadMultipartItemType::Dedications => DEDICATIONS,
+            },
+            match subdir {
+                Some(dir) => format!("/{}", dir),
+                None => "".to_string(),
+            }
+        )
+    }
     pub fn new(name: &str, bytes: &[u8]) -> Self {
         Self {
             name: name.to_owned(),
@@ -39,6 +53,33 @@ impl FileAttachment {
         }
     }
 
+    pub fn remove_from_filesys(
+        subdir: Option<&str>,
+        multipart_type: &UploadMultipartItemType,
+    ) -> anyhow::Result<()> {
+        let path_str = Self::attachments_path(subdir, multipart_type);
+
+        let parent_path_str = path_str.rsplit_once('/').unwrap().0;
+
+        let parent_metadata = fs::metadata(parent_path_str)?;
+        let mut parent_perms = parent_metadata.permissions();
+        parent_perms.set_readonly(false);
+
+        let path = std::path::Path::new(&path_str);
+        if !path.exists() {
+            warn!("tried to delete path that doesn't exist: {path:?}");
+            return Ok(());
+        }
+
+        if !path.is_dir() {
+            return Err(anyhow!("path: {path:?} is not a directory"));
+        }
+
+        fs::remove_dir_all(path)?;
+
+        Ok(())
+    }
+
     #[tracing::instrument(name = "save attachments to filesys", skip_all)]
     pub fn save_multiple_to_filesys(
         multiple: Vec<Self>,
@@ -46,19 +87,8 @@ impl FileAttachment {
         subdir: Option<&str>,
     ) -> anyhow::Result<Vec<DBImageParams>> {
         let mut return_params = vec![];
+        let path_str = Self::attachments_path(subdir, multipart_type);
 
-        let path_str = format!(
-            "./{}/{}{}",
-            &IMAGES_DIRECTORY,
-            match multipart_type {
-                UploadMultipartItemType::PatrolLog => PATROL_LOG,
-                UploadMultipartItemType::Dedications => DEDICATIONS,
-            },
-            match subdir {
-                Some(dir) => format!("/{}", dir),
-                None => "".to_string(),
-            }
-        );
         warn!("got path str: {}", path_str);
 
         let parent_path_str = path_str.rsplit_once('/').unwrap().0;

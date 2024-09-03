@@ -1,4 +1,18 @@
 <link rel="stylesheet" href="/public/styles/admin_upload.css" />
+<script>
+  function displayMessageAndResetForms(event, el) {
+    const forms = document.querySelectorAll("#logged-in form");
+    if (event.detail.failed) {
+      el.classList.add("fail");
+    } else {
+      el.classList.remove("fail");
+    }
+    setTimeout(() => {
+      el.textContent = "";
+      forms.forEach((form) => form.reset());
+    }, 3000);
+  }
+</script>
 <div
   x-style="flex; flex-col; flex-grow; m:2rem;"
   x-data="{logged_in: {{logged_in}}, toggle_logged_in() { this.logged_in = !this.logged_in; }}"
@@ -66,14 +80,7 @@
     </div>
   </section>
   <span
-    @htmx:before-swap="
-    if ($event.detail.failed) {
-      $el.classList.add('fail')
-    } else {
-      $el.classList.remove('fail')
-    }
-    setTimeout(() => $el.textContent = '', 3000);
-    "
+    @htmx:before-swap="displayMessageAndResetForms($event, $el)"
     id="upload-response"
   >
   </span>
