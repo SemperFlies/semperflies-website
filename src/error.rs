@@ -9,10 +9,7 @@ pub trait InternalError {
     /// All errors should implement data response. Data responses are coerced into
     /// HTML and are customer facing
     fn into_data_api_return(&self) -> DataApiReturn {
-        (
-            self.status_code(),
-            Json(DataResponse::error(&self.public_message())),
-        )
+        DataResponse::error(&self.public_message(), Some(self.status_code()))
     }
 }
 
@@ -38,22 +35,24 @@ impl Into<&'static str> for Status {
 }
 
 impl DataResponse {
-    pub fn error(message: &str) -> Self {
-        Self {
-            status: Status::Error,
-            message: message.to_string(),
-        }
+    pub fn error(message: impl ToString, code: Option<StatusCode>) -> DataApiReturn {
+        (
+            code.unwrap_or(StatusCode::INTERNAL_SERVER_ERROR),
+            Json(Self {
+                status: Status::Error,
+                message: message.to_string(),
+            }),
+        )
     }
 
-    pub fn success(message: &str) -> Self {
-        Self {
-            status: Status::Success,
-            message: message.to_string(),
-        }
-    }
-
-    pub fn from_internal_error(err: &impl InternalError) -> Self {
-        Self::error(&err.public_message())
+    pub fn success(message: impl ToString) -> DataApiReturn {
+        (
+            StatusCode::OK,
+            Json(Self {
+                status: Status::Success,
+                message: message.to_string(),
+            }),
+        )
     }
 }
 

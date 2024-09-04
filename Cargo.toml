@@ -28,4 +28,7 @@ anyhow = "1.0.86"
 chrono = { version = "0.4.38", features=["serde"] }
 time = "0.3.36"
 uuid = {version="1.10.0", features=["v4", "serde"]}
+image = "0.25.2"
+webp = "0.3.0"
+kamadak-exif = "0.5.5"
 

@@ -29,26 +29,6 @@ pub enum UploadMultipartItemType {
     Dedications,
 }
 
-// impl UploadMultipartItemType {
-//     pub fn images_path(&self, item: &UploadItem) -> String {
-//         let subdir: &String = match &item {
-//             UploadItem::PatrolLog(item) => &item.heading,
-//             UploadItem::Dedication(item) => &item.name,
-//             other => panic!("{other:?} should not have been passed to this method"),
-//         };
-//
-//         format!(
-//             "./{}/{}{}",
-//             &IMAGES_DIRECTORY,
-//             match self {
-//                 UploadMultipartItemType::PatrolLog => PATROL_LOG,
-//                 UploadMultipartItemType::Dedications => DEDICATIONS,
-//             },
-//             subdir
-//         )
-//     }
-// }
-
 async fn handle_other(other: &str, field: Field<'_>, attachments: &mut Vec<FileAttachment>) {
     match other.split_once('_') {
         None => {
@@ -244,7 +224,6 @@ pub async fn upload_multipart_handler(
         Ok(uploadable) => {
             let r = data.read().await;
             warn!("inserting: {:?}", uploadable);
-
             match uploadable {
                 UploadItem::Dedication(ded) => {
                     DBImage::insert_multiple_with_images::<DBDedication, DBDedicationParams>(

@@ -6,7 +6,7 @@ use tracing::warn;
 
 use crate::components::carousel::{CarouselTemplate, HasCarousel, Image};
 
-use super::util::all_images_in_directory;
+use crate::util::all_images_in_directory;
 
 #[derive(Template, Debug)]
 #[template(path = "pages/patrol_gear.html")]
@@ -152,17 +152,17 @@ fn builtin_gear() -> HashMap<String, Vec<Gear>> {
     for src in all_hats_imgs {
         let price = 40;
         let id = match src.rsplit_once("/").unwrap().1 {
-            "black-baseball.jpeg" => 1,
-            "black-baseball2.jpeg" => 2,
-            "black-beanie.jpeg" => 3,
-            "camo-baseball.jpeg" => 4,
-            "camo-flatbill.jpeg" => 5,
-            "camo-flatbill2.jpeg" => 6,
-            "camo-trucker.jpeg" => 7,
-            "grey-flatbill.jpeg" => 8,
-            "grey-flatbill2.jpeg" => 9,
-            "grey-red-flatbill.jpeg" => 10,
-            "white-beanie.jpeg" => 11,
+            "black-baseball.webp" => 1,
+            "black-baseball2.webp" => 2,
+            "black-beanie.webp" => 3,
+            "camo-baseball.webp" => 4,
+            "camo-flatbill.webp" => 5,
+            "camo-flatbill2.webp" => 6,
+            "camo-trucker.webp" => 7,
+            "grey-flatbill.webp" => 8,
+            "grey-flatbill2.webp" => 9,
+            "grey-red-flatbill.webp" => 10,
+            "white-beanie.webp" => 11,
             other => panic!("encountered unexpected hat img: {}", other),
         };
 

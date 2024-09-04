@@ -6,4 +6,3 @@ pub mod landing;
 pub mod patrol_gear;
 pub mod patrol_log;
 pub mod support;
-pub(super) mod util;

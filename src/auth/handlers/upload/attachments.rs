@@ -1,13 +1,16 @@
 use crate::{
     database::models::DBImageParams,
     routes::pages::{dedications::DEDICATIONS, patrol_log::logs::PATROL_LOG},
+    util,
 };
 use anyhow::anyhow;
 use std::{
     fs::{self, File},
     io::Write,
+    ops::Deref,
 };
 use tracing::{error, warn};
+use webp::WebPMemory;
 
 use super::{multipart::UploadMultipartItemType, IMAGES_DIRECTORY};
 
@@ -35,6 +38,7 @@ impl FileAttachment {
             }
         )
     }
+
     pub fn new(name: &str, bytes: &[u8]) -> Self {
         Self {
             name: name.to_owned(),
@@ -80,6 +84,45 @@ impl FileAttachment {
         Ok(())
     }
 
+    #[tracing::instrument(name = "save attachment as webp image", skip(self))]
+    pub fn save_as_webp(
+        &self,
+        subdir: Option<&str>,
+        multipart_type: &UploadMultipartItemType,
+    ) -> anyhow::Result<String> {
+        let attachment_path_str = format!(
+            "{}/{}",
+            Self::attachments_path(subdir, multipart_type),
+            self.new_name.to_owned().unwrap_or(self.name.to_owned())
+        );
+        let split = &attachment_path_str.rsplit_once('.').unwrap();
+        let path_str = format!("{}.webp", split.0);
+        let path = std::path::Path::new(&path_str);
+        warn!("path: {path_str}");
+
+        let webp_mem = util::bytes_to_webp(&self.bytes, split.1)?;
+        match path.exists() {
+            false => {
+                warn!("file: {:?} does not exist, writing", path);
+                let mut file = File::create_new(path).map_err(|err| anyhow!(err))?;
+                file.write_all(&webp_mem.deref())
+                    .map_err(|err| anyhow!(err))?;
+            }
+            true => {
+                warn!("file: {:?} already exists, overwriting", path);
+                fs::write(path, webp_mem.deref()).map_err(|err| {
+                    let m = format!(
+                        "there was a problem overriting the file: {:?}\n: {:?}",
+                        path, err
+                    );
+                    error!(m);
+                    anyhow!(m)
+                })?;
+            }
+        }
+        return Ok(path_str);
+    }
+
     #[tracing::instrument(name = "save attachments to filesys", skip_all)]
     pub fn save_multiple_to_filesys(
         multiple: Vec<Self>,
@@ -117,37 +160,41 @@ impl FileAttachment {
         }
 
         for attachment in multiple.into_iter() {
-            let attachment_path_str = format!(
-                "{}/{}",
-                path_str,
-                attachment
-                    .new_name
-                    .to_owned()
-                    .unwrap_or(attachment.name.to_owned())
-            );
-            let path = std::path::Path::new(&attachment_path_str);
-            match path.exists() {
-                false => {
-                    warn!("file: {:?} does not exist, writing", path);
-                    let mut file = File::create_new(path).map_err(|err| anyhow!(err))?;
-                    file.write_all(&attachment.bytes)
-                        .map_err(|err| anyhow!(err))?;
-                }
-                true => {
-                    warn!("file: {:?} already exists, overwriting", path);
-                    fs::write(path, &attachment.bytes).map_err(|err| {
-                        error!(
-                            "there was a problem overriting the file: {:?}\n: {:?}",
-                            path, err
-                        );
-                        anyhow!(
-                            "there was a problem overriting the file: {:?}\n: {:?}",
-                            path,
-                            err
-                        )
-                    })?;
-                }
-            }
+            let attachment_path_str = attachment
+                .save_as_webp(subdir, multipart_type)
+                .expect("failed to save image as webp");
+            // let attachment_path_str = format!(
+            //     "{}/{}",
+            //     path_str,
+            //     attachment
+            //         .new_name
+            //         .to_owned()
+            //         .unwrap_or(attachment.name.to_owned())
+            // );
+            //
+            // let path = std::path::Path::new(&attachment_path_str);
+            // match path.exists() {
+            //     false => {
+            //         warn!("file: {:?} does not exist, writing", path);
+            //         let mut file = File::create_new(path).map_err(|err| anyhow!(err))?;
+            //         file.write_all(&attachment.bytes)
+            //             .map_err(|err| anyhow!(err))?;
+            //     }
+            //     true => {
+            //         warn!("file: {:?} already exists, overwriting", path);
+            //         fs::write(path, &attachment.bytes).map_err(|err| {
+            //             error!(
+            //                 "there was a problem overriting the file: {:?}\n: {:?}",
+            //                 path, err
+            //             );
+            //             anyhow!(
+            //                 "there was a problem overriting the file: {:?}\n: {:?}",
+            //                 path,
+            //                 err
+            //             )
+            //         })?;
+            //     }
+            // }
             return_params.push(attachment.into_db_image_params(&attachment_path_str));
         }
 

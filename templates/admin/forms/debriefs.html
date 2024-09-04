@@ -1,6 +1,9 @@
 <form
-  hx-trigger="submit"
+  hx-push-url="false"
   hx-target="#upload-response"
+  hx-indicator="#upload-response"
+  hx-history="false"
+  hx-trigger="submit"
   hx-swap="innerHTML"
   hx-post="/data/auth/upload_form/debriefs"
 >

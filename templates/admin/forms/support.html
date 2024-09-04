@@ -38,6 +38,10 @@
 </script>
 
 <form
+  hx-push-url="false"
+  hx-indicator="#upload-response"
+  hx-history="false"
+  hx-trigger="submit"
   hx-target="#upload-response"
   hx-swap="innerHTML"
   hx-post="/data/auth/upload_form/support"

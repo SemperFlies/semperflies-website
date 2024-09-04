@@ -16,8 +16,8 @@ use crate::{
     auth::middleware::SoftAuthExtension,
     components::carousel::{CarouselTemplate, HasCarousel, Image},
     database::models::{DBImage, DBPatrolLog, DBPatrolLogParams},
-    routes::pages::util,
     state::SharedState,
+    util,
 };
 
 #[derive(Template, Debug)]
@@ -173,9 +173,9 @@ fn builtin_logs() -> Vec<Log> {
 fn generate_activities(amt: i32) -> Vec<Log> {
     let mut rng = rand::thread_rng();
     let image_urls = vec![
-        "public/assets/images/board_members/business.jpg".to_string(),
-        "public/assets/images/board_members/business2.jpg".to_string(),
-        "public/assets/images/board_members/old.jpg".to_string(),
+        "public/assets/images/board_members/business.webp".to_string(),
+        "public/assets/images/board_members/business2.webp".to_string(),
+        "public/assets/images/board_members/old.webp".to_string(),
     ];
 
     let mut activities = Vec::new();

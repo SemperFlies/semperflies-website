@@ -2,6 +2,9 @@
 <script>
   function displayMessageAndResetForms(event, el) {
     const forms = document.querySelectorAll("#logged-in form");
+    const imageUploadsContainers = document.querySelectorAll(
+      "#image-uploads-container",
+    );
     if (event.detail.failed) {
       el.classList.add("fail");
     } else {
@@ -10,6 +13,9 @@
     setTimeout(() => {
       el.textContent = "";
       forms.forEach((form) => form.reset());
+      imageUploadsContainers.forEach((container) => {
+        container.innerHTML = "";
+      });
     }, 3000);
   }
 </script>

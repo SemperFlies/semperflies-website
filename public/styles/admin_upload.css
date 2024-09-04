@@ -44,3 +44,21 @@
 #upload-response.fail {
   color: var(--semper-red);
 }
+
+#upload-response.htmx-request::before {
+  color: var(--semper-orange);
+  content: "Uploading...";
+}
+
+/* .upload-indicator { */
+/*   display: none; */
+/*   opacity: 0; */
+/*   transition: opacity 500ms ease-in; */
+/* } */
+/* .htmx-request .upload-indicator { */
+/*   display: ; */
+/*   opacity: 1; */
+/* } */
+/* .htmx-request.upload-indicator { */
+/*   opacity: 1; */
+/* } */

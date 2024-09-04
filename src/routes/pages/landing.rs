@@ -13,7 +13,7 @@ pub struct LandingTemplate {
 
 impl HasCarousel for LandingTemplate {}
 pub async fn landing() -> Html<String> {
-    let paths = super::util::all_images_in_directory("public/assets/images/landing_page").unwrap();
+    let paths = crate::util::all_images_in_directory("public/assets/images/landing_page").unwrap();
     let images = paths_to_ordered_images(paths);
     let carousel = CarouselTemplate {
         show_subtitles: true,

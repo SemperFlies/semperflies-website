@@ -102,9 +102,9 @@ pub async fn dedications(
 fn generate_dedications(amt: i32) -> Vec<Dedication> {
     let mut rng = thread_rng();
     let image_urls = vec![
-        "public/assets/images/board_members/business.jpg".to_string(),
-        "public/assets/images/board_members/business2.jpg".to_string(),
-        "public/assets/images/board_members/old.jpg".to_string(),
+        "public/assets/images/board_members/business.webp".to_string(),
+        "public/assets/images/board_members/business2.webp".to_string(),
+        "public/assets/images/board_members/old.webp".to_string(),
     ];
 
     let mut dedications = Vec::new();

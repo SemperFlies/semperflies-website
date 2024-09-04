@@ -1,6 +1,10 @@
 <form
+  hx-push-url="false"
+  hx-history="false"
+  hx-indicator="#upload-response"
   hx-target="#upload-response"
   hx-trigger="submit"
+  hx-swap="innerHTML"
   hx-post="/data/auth/upload_multipart/dedications"
   enctype="multipart/form-data"
 >

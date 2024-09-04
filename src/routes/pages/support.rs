@@ -199,7 +199,7 @@ fn generate_support_resources() -> Vec<SupportResource> {
             phone,
             email,
             physical_address,
-            website_url: Some(String::from("https://www.linkedin.com/feed/")),
+            website_url: Some(String::from("https://www.linkedin.com/feed")),
         });
     }
 

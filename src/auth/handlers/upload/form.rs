@@ -7,7 +7,7 @@ use crate::{
             DBTestimonialParams,
         },
     },
-    error::{DataApiReturn, InternalError},
+    error::{DataApiReturn, DataResponse, InternalError},
     routes::pages::{
         debriefs::DEBRIEFS,
         support::{Address, SUPPORT},
@@ -38,7 +38,7 @@ pub async fn upload_form_handler(
     Path(item_str): Path<String>,
     State(data): State<SharedState>,
     Form(form): Form<Value>,
-) -> Result<impl IntoResponse, DataApiReturn> {
+) -> DataApiReturn {
     let item =
         UploadFormItemType::try_from_str(item_str.as_str()).expect("failed to get upload item");
     let success_message = format!("succesfully uploaded {}", item_str);
@@ -48,43 +48,35 @@ pub async fn upload_form_handler(
             let r = data.read().await;
             warn!("inserting: {:?}", uploadable);
 
-            match uploadable {
-                UploadItem::Address(add) => {
-                    DBAddress::insert_one(add, &r.db)
-                        .await
-                        .map_err(|err| UploadError::from(err).into_data_api_return())?;
-                }
-                UploadItem::Support(res) => {
-                    DBResource::insert_one(res, &r.db)
-                        .await
-                        .map_err(|err| UploadError::from(err).into_data_api_return())?;
-                }
-
-                UploadItem::Debrief(test) => {
-                    DBTestimonial::insert_one(test, &r.db)
-                        .await
-                        .map_err(|err| UploadError::from(err).into_data_api_return())?;
-                }
+            if let Err(e) = match uploadable {
+                UploadItem::Address(add) => match DBAddress::insert_one(add, &r.db).await {
+                    Ok(_) => Ok(()),
+                    Err(e) => Err(UploadError::from(e)),
+                },
+                UploadItem::Support(res) => match DBResource::insert_one(res, &r.db).await {
+                    Ok(_) => Ok(()),
+                    Err(e) => Err(UploadError::from(e)),
+                },
+                UploadItem::Debrief(test) => match DBTestimonial::insert_one(test, &r.db).await {
+                    Ok(_) => Ok(()),
+                    Err(e) => Err(UploadError::from(e)),
+                },
                 other => {
-                    let m = format!(
+                    let msg = format!(
                         "{:?} is not a supported upload type for a form upload",
                         other
                     );
-                    warn!(m);
-                    return Ok(Response::new(m));
+                    warn!("{}", msg);
+                    return DataResponse::success(msg.as_str());
                 }
+            } {
+                return DataResponse::error(format!("Failed to upload item: {e:?}"), None);
             }
-
-            let response = Response::new(success_message);
-            Ok(response)
+            DataResponse::success(&success_message)
         }
         Err(err) => {
             warn!("returning err: {:?}", err);
-            let r = Response::builder()
-                .status(StatusCode::INTERNAL_SERVER_ERROR)
-                .body(err.to_string())
-                .unwrap();
-            return Ok(r);
+            return DataResponse::error(err, None);
         }
     }
 }

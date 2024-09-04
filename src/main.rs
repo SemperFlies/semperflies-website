@@ -5,6 +5,7 @@ mod error;
 mod routes;
 mod state;
 mod telemetry;
+mod util;
 use axum::http::{
     header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
     HeaderValue, Method,
