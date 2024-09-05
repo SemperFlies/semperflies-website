@@ -17,7 +17,7 @@ FROM linuxcontainers/debian-slim:latest
 ARG APP=/usr/src/app
 
 RUN apt-get update \
-    && apt-get install -y ca-certificates tzdata libssl3\
+    && apt-get install -y ca-certificates tzdata libssl3 systemd\
     && rm -rf /var/lib/apt/lists/*
 
 EXPOSE ${PORT} 
