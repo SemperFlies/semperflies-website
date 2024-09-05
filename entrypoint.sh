@@ -21,7 +21,14 @@ setup_nfs() {
     echo "${APP}/public *(rw,sync,no_subtree_check)" > /etc/exports
     exportfs -a
 
-    # Start NFS server
+     # Load the nfsd module
+    echo "Loading nfsd module..."
+    modprobe nfsd
+
+    # Mount the nfsd filesystem
+    echo "Mounting nfsd filesystem..."
+    mount -t nfsd nfsd /proc/fs/nfsd
+
     # systemctl restart nfs-kernel-server
     # systemctl enable nfs-kernel-server
     /usr/sbin/rpc.nfsd  # Start NFS daemon
