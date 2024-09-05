@@ -41,24 +41,15 @@ ADD public ./public
 
 RUN chown -R $APP_USER:$APP_USER ./public
 
-# NFS
-RUN apt-get update
-RUN apt-get install -y nfs-kernel-server
-# RUN mv /etc/exports /etc/exports.orig
-# RUN touch /etc/exports
-RUN echo "${APP}/public *(rw,sync,no_subtree_check)" > /etc/exports \
-    && exportfs -a
-
-
-# RUN touch 
-RUN service nfs-kernel-server start
-
 USER $APP_USER
 RUN chmod -R 755 ./public  
+
+COPY setup_nfs_and_start_web.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ADD migrations ./migrations
 ADD templates ./templates
 
 
-CMD ["./semperflies"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
