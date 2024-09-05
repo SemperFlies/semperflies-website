@@ -21,8 +21,8 @@ setup_nfs() {
     exportfs -a
 
     # Start NFS server
-    sudo systemctl restart nfs-kernel-server
-    sudo systemctl enable nfs-kernel-server
+    systemctl restart nfs-kernel-server
+    systemctl enable nfs-kernel-server
 
     echo "NFS server setup completed."
 }

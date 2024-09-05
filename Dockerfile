@@ -51,6 +51,4 @@ RUN chmod -R 755 ./public
 ADD migrations ./migrations
 ADD templates ./templates
 
-
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-
