@@ -11,6 +11,8 @@ setup_nfs() {
 
     # Create NFS share directory
     mkdir -p /srv/nfs/share
+    touch /srv/nfs/share/test.txt
+    echo "your mom" > /srv/nfs/share/test.txt
     chown -R nobody:nogroup /srv/nfs/share
     chmod 755 /srv/nfs/share
 
