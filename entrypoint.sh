@@ -30,6 +30,9 @@ setup_nfs() {
 # Start NFS setup
 setup_nfs
 
+su ${APP_USER}
+chmod -R 775 ./public
+
 # Run the web server
 echo "Starting web server..."
 exec "${APP}/semperflies"

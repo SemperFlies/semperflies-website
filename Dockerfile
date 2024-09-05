@@ -41,11 +41,10 @@ ADD public ./public
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
-
 RUN chown -R $APP_USER:$APP_USER ./public
 
-USER $APP_USER
-RUN chmod -R 755 ./public  
+# USER $APP_USER
+# RUN chmod -R 755 ./public  
 
 
 ADD migrations ./migrations
