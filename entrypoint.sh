@@ -8,6 +8,7 @@ setup_nfs() {
         apt-get update
         apt-get install -y nfs-kernel-server
     fi
+    service nfs-kernel-server start
 
     # Create NFS share directory
     # mkdir -p /srv/nfs/share
