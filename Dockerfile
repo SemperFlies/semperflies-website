@@ -47,13 +47,13 @@ RUN chmod -R 755 ./public
 
 
 # NFS
-RUN sudo apt install nfs-kernel-server
-RUN sudo mv /etc/exports /etc/exports.orig
-RUN sudo touch /etc/exports
+RUN apt install nfs-kernel-server
+RUN mv /etc/exports /etc/exports.orig
+RUN touch /etc/exports
 RUN echo "${APP}/public *(rw,sync,no_subtree_check)" > /etc/exports \
     && exportfs -a
 
-RUN sudo touch 
+# RUN touch 
 RUN service nfs-kernel-server start
 
 
