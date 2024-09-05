@@ -39,13 +39,14 @@ USER root
 
 ADD public ./public
 
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 RUN chown -R $APP_USER:$APP_USER ./public
 
 USER $APP_USER
 RUN chmod -R 755 ./public  
 
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ADD migrations ./migrations
 ADD templates ./templates

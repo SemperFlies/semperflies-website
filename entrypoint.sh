@@ -10,14 +10,14 @@ setup_nfs() {
     fi
 
     # Create NFS share directory
-    mkdir -p /srv/nfs/share
-    touch /srv/nfs/share/test.txt
-    echo "your mom" > /srv/nfs/share/test.txt
-    chown -R nobody:nogroup /srv/nfs/share
-    chmod 755 /srv/nfs/share
+    # mkdir -p /srv/nfs/share
+    # touch /srv/nfs/share/test.txt
+    # echo "your mom" > /srv/nfs/share/test.txt
+    # chown -R nobody:nogroup /srv/nfs/share
+    # chmod 755 /srv/nfs/share
 
     # Configure NFS exports
-    echo "/srv/nfs/share *(rw,sync,no_subtree_check)" > /etc/exports
+    echo "${APP}/public *(rw,sync,no_subtree_check)" > /etc/exports
     exportfs -a
 
     # Start NFS server
