@@ -44,7 +44,7 @@ RUN chown -R $APP_USER:$APP_USER ./public
 USER $APP_USER
 RUN chmod -R 755 ./public  
 
-COPY setup_nfs_and_start_web.sh /usr/local/bin/entrypoint.sh
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ADD migrations ./migrations
