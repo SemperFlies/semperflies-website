@@ -42,8 +42,6 @@ ADD public ./public
 RUN chown -R $APP_USER:$APP_USER ./public
 
 
-USER $APP_USER
-RUN chmod -R 755 ./public  
 
 
 # NFS
@@ -53,9 +51,12 @@ RUN touch /etc/exports
 RUN echo "${APP}/public *(rw,sync,no_subtree_check)" > /etc/exports \
     && exportfs -a
 
+
 # RUN touch 
 RUN service nfs-kernel-server start
 
+USER $APP_USER
+RUN chmod -R 755 ./public  
 
 ADD migrations ./migrations
 ADD templates ./templates
