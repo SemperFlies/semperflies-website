@@ -20,7 +20,7 @@ RUN apt-get update \
     && apt-get install -y ca-certificates tzdata libssl3\
     && rm -rf /var/lib/apt/lists/*
 
-EXPOSE 3000
+EXPOSE ${PORT} 
 
 ENV TZ=Etc/UTC \
     APP_USER=appuser
@@ -44,6 +44,18 @@ RUN chown -R $APP_USER:$APP_USER ./public
 
 USER $APP_USER
 RUN chmod -R 755 ./public  
+
+
+# NFS
+RUN sudo apt install nfs-kernel-server
+RUN sudo mv /etc/exports /etc/exports.orig
+RUN sudo touch /etc/exports
+RUN echo "${APP}/public *(rw,sync,no_subtree_check)" > /etc/exports \
+    && exportfs -a
+
+RUN sudo touch 
+RUN service nfs-kernel-server start
+
 
 ADD migrations ./migrations
 ADD templates ./templates
