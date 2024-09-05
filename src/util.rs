@@ -292,21 +292,21 @@ mod tests {
 
     // #[test]
     fn do_it() {
-        // let dir_path = "public/assets/images/merchandise/hats";
+        // let dir_path = "public/assets/images/landing_page";
         // convert_all_files_in_directory(dir_path).unwrap();
         // remove_all_non_webp_imgs_in_directory(&dir_path).unwrap();
 
-        let dir_path = "public/assets/images/merchandise/misc";
-        convert_all_files_in_directory(dir_path).unwrap();
-        remove_all_non_webp_imgs_in_directory(&dir_path).unwrap();
-
-        let dir_path = "public/assets/images/merchandise/tops";
-        convert_all_files_in_directory(dir_path).unwrap();
-        remove_all_non_webp_imgs_in_directory(&dir_path).unwrap();
-
-        let dir_path = "public/assets/images/patrol_log/fishing_trip";
-        convert_all_files_in_directory(dir_path).unwrap();
-        remove_all_non_webp_imgs_in_directory(&dir_path).unwrap();
+        // let dir_path = "public/assets/images/merchandise/misc";
+        // convert_all_files_in_directory(dir_path).unwrap();
+        // remove_all_non_webp_imgs_in_directory(&dir_path).unwrap();
+        //
+        // let dir_path = "public/assets/images/merchandise/tops";
+        // convert_all_files_in_directory(dir_path).unwrap();
+        // remove_all_non_webp_imgs_in_directory(&dir_path).unwrap();
+        //
+        // let dir_path = "public/assets/images/patrol_log/fishing_trip";
+        // convert_all_files_in_directory(dir_path).unwrap();
+        // remove_all_non_webp_imgs_in_directory(&dir_path).unwrap();
     }
 
     // #[test]
