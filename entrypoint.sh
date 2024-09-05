@@ -17,11 +17,12 @@ setup_nfs() {
     # chmod 755 /srv/nfs/share
 
     # Configure NFS exports
-    sudo echo "${APP}/public *(rw,sync,no_subtree_check)" > /etc/exports
+    echo "${APP}/public *(rw,sync,no_subtree_check)" > /etc/exports
     exportfs -a
 
     # Start NFS server
-    service nfs-kernel-server start
+    sudo systemctl restart nfs-kernel-server
+    sudo systemctl enable nfs-kernel-server
 
     echo "NFS server setup completed."
 }
