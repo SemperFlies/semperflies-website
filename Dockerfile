@@ -14,13 +14,13 @@ RUN cargo build --release
 
 
 FROM linuxcontainers/debian-slim:latest
-ENV APP=/usr/src/app
+ARG APP=/usr/src/app
 
 RUN apt-get update \
     && apt-get install -y ca-certificates tzdata libssl3\
     && rm -rf /var/lib/apt/lists/*
 
-EXPOSE ${PORT} 
+EXPOSE 3000
 
 ENV TZ=Etc/UTC \
     APP_USER=appuser
@@ -39,15 +39,15 @@ USER root
 
 ADD public ./public
 
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
 RUN chown -R $APP_USER:$APP_USER ./public
 
-# USER $APP_USER
-# RUN chmod -R 755 ./public  
 
+USER $APP_USER
+RUN chmod -R 755 ./public  
 
 ADD migrations ./migrations
 ADD templates ./templates
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+CMD ["./semperflies"]
+
