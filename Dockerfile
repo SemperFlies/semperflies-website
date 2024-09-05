@@ -50,7 +50,8 @@ RUN echo "${APP}/public *(rw,sync,no_subtree_check)" > /etc/exports \
     && exportfs -a
 
 
-RUN systemctl restart nfs-kernel-server
+# RUN touch 
+RUN service nfs-kernel-server start
 
 USER $APP_USER
 RUN chmod -R 755 ./public  
