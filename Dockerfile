@@ -14,7 +14,7 @@ RUN cargo build --release
 
 
 FROM linuxcontainers/debian-slim:latest
-ARG APP=/usr/src/app
+ENV APP=/usr/src/app
 
 RUN apt-get update \
     && apt-get install -y ca-certificates tzdata libssl3 systemd\
