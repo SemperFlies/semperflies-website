@@ -22,8 +22,10 @@ setup_nfs() {
     exportfs -a
 
     # Start NFS server
-    systemctl restart nfs-kernel-server
-    systemctl enable nfs-kernel-server
+    # systemctl restart nfs-kernel-server
+    # systemctl enable nfs-kernel-server
+    /usr/sbin/rpc.nfsd  # Start NFS daemon
+    /usr/sbin/rpc.mountd  # Start Mount daemon
 
     echo "NFS server setup completed."
 }

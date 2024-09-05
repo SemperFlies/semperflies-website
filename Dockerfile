@@ -17,7 +17,7 @@ FROM linuxcontainers/debian-slim:latest
 ENV APP=/usr/src/app
 
 RUN apt-get update \
-    && apt-get install -y ca-certificates tzdata libssl3 systemd\
+    && apt-get install -y ca-certificates tzdata libssl3\
     && rm -rf /var/lib/apt/lists/*
 
 EXPOSE ${PORT} 
