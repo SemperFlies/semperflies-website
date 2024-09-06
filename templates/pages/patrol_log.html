@@ -21,7 +21,8 @@
   >
     <button
       x-show.important="showing_vids == false"
-      x-style="lg|align-self:flex-end; align-self:center; m:1rem; mr:4rem; text:sm;"
+      class="small"
+      x-style="lg|align-self:flex-end; align-self:center; m:1rem; mr:2rem; "
       @click="toggle()"
       hx-get="/videos"
       hx-target="#log-content"
@@ -30,7 +31,8 @@
     </button>
     <button
       x-show.important="showing_vids"
-      x-style="lg|align-self:flex-end; align-self:center; m:1rem; mr:4rem;text:sm;"
+      class="small"
+      x-style="lg|align-self:flex-end; align-self:center; m:1rem; mr:2rem;"
       @click="toggle()"
       hx-get="/patrol_log"
       hx-select="#log-content"
