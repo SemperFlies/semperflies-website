@@ -116,6 +116,7 @@ body {
 }
 
 .hero > p {
+  font-size: 1.2rem;
   margin: 0 2rem;
 }
 
@@ -153,6 +154,14 @@ button.small {
   border-bottom: 1px solid var(--semper-orange); /* Adjust the border style as needed */
   margin-top: 0.5rem; /* Add some spacing between the h1 and the horizontal rule */
   margin-right: 5rem;
+}
+.underlined.center::after {
+  margin-right: 3rem;
+  margin-left: 3rem;
+}
+
+.underlined.red::after {
+  border-color: var(--semper-red); /* Adjust the border style as needed */
 }
 
 @media screen and (max-width: 920px) {

@@ -25,12 +25,26 @@
   </section>
   <section
     class="main-section-transition"
-    x-style="flex; flex-col; lg|mx:8rem; mx:3rem;"
+    x-style="flex; flex-col; lg|mx:4rem; mx:2rem;"
   >
-    <div x-style="flex; flex-col; justify-content:space-between;">
+    <div
+      x-style="
+      flex;
+      flex-col;
+      justify-content:space-between;
+      bg:@primary-dark;
+      b:1px @primary-light solid;
+      p:1rem;
+      radius:xl;"
+    >
       <div x-style="flex; flex-col;  justify-self:center;">
-        <h1 class="tattoo">Our Mission</h1>
-        <ul>
+        <h1
+          class="tattoo underlined red center"
+          x-style="font-size: 2.5rem; color: @semper-red; text-align:center;"
+        >
+          Our Mission
+        </h1>
+        <ul x-style="mx:2rem;">
           <li>
             <strong> E.A.S </strong> - <strong>E</strong>ducate,
             <strong>A</strong>dvocate and <strong>S</strong>upport Veterans

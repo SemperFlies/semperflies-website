@@ -38,7 +38,7 @@
 }
 
 #landing-carousel .carousel-container .images {
-  place-content: center;
+  place-content: flex-start;
 }
 
 #landing-carousel .carousel-container .images img {
@@ -46,4 +46,13 @@
   width: 60vw !important;
   height: auto !important;
   object-fit: contain !important;
+}
+
+.main-section-transition ul li {
+  font-size: 1.8rem;
+}
+
+.main-section-transition ul li strong {
+  font-family: "Tattoo";
+  font-weight: 900;
 }
