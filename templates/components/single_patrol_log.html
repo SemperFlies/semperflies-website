@@ -6,14 +6,17 @@
   x-style="flex; flex-col; flex-grow;"
   class="subsection-transition"
 >
-  <div x-style="flex; flex-row; justify-content: space-between;">
+  <div
+    x-style="flex; lg|flex-row; col-reverse; justify-content: space-between;"
+  >
     <div x-style="flex; lg|mx:5rem; mx:1.5rem; flex-col;">
       <h1 x-style="mb:0; ">{{log.heading}}</h1>
       <small>{{ log.date }}</small>
       <p>{{ log.description }}</p>
     </div>
     <button
-      x-style=" h: fit-content; w: fit-content; align-self:center; m:1rem;"
+      x-style="h:fit-content; w:fit-content; align-self:center; m:1rem; my:2rem;"
+      class="small"
       hx-target="#route-content"
       hx-swap="innerHTML transition:true"
       hx-push-url="true"

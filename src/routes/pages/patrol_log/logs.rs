@@ -86,7 +86,7 @@ async fn get_logs(pool: &Pool<Postgres>) -> anyhow::Result<Vec<Log>> {
 
 #[derive(Debug, Deserialize)]
 pub struct PatrolLogQuery {
-    log_heading: Option<String>,
+    heading: Option<String>,
 }
 
 #[tracing::instrument(name = "patrol log template rendering", skip_all)]
@@ -112,7 +112,7 @@ pub async fn patrol_log(
 
     if let Some(q) = queries {
         warn!("got query: {:?}", q);
-        if let Some(heading) = q.0.log_heading {
+        if let Some(heading) = q.0.heading {
             match logs_map.get(&heading) {
                 Some(log) => {
                     warn!("building template for log: {:?}", log);

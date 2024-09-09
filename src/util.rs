@@ -55,14 +55,15 @@ pub fn bytes_to_webp(bytes: &[u8], ext: &str) -> anyhow::Result<WebPMemory> {
     if !already_webp {
         warn!("file is not already webp");
         let exif_reader = exif::Reader::new();
-        let exif_ = exif_reader.read_from_container(&mut cursor)?;
-        if let Some(tag) = exif_.get_field(Tag::Orientation, exif::In::PRIMARY) {
-            if let Some(codes) = tag
-                .value
-                .iter_uint()
-                .and_then(|ints| Some(ints.into_iter().collect()))
-            {
-                orientation_fn = Some(orientation_codes_to_fn(codes))
+        if let Some(exif_) = exif_reader.read_from_container(&mut cursor).ok() {
+            if let Some(tag) = exif_.get_field(Tag::Orientation, exif::In::PRIMARY) {
+                if let Some(codes) = tag
+                    .value
+                    .iter_uint()
+                    .and_then(|ints| Some(ints.into_iter().collect()))
+                {
+                    orientation_fn = Some(orientation_codes_to_fn(codes))
+                }
             }
         }
         cursor.rewind().unwrap();

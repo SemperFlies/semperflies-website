@@ -55,16 +55,16 @@
         x-style="grid; place-items:center;"
       >
         <div x-style="box-sizing: content-box; flex; flex-col;">
-          <img
-            x-style="w:80vw; h:75vw; radius:lg; object-fit:cover;"
-            x-bind:src="slide.imgSrc"
-            x-bind:alt="slide.imgAlt"
-          />
           <h1
             x-show="showSubtitles"
             x-style="mt:0rem; justify-self:left;"
             x-html="slide.imgSub"
           ></h1>
+          <img
+            x-style="w:80vw; h:75vw; radius:lg; object-fit:cover;"
+            x-bind:src="slide.imgSrc"
+            x-bind:alt="slide.imgAlt"
+          />
         </div>
       </div>
     </template>
