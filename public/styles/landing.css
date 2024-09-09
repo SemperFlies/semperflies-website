@@ -48,8 +48,9 @@
   object-fit: contain !important;
 }
 
-.main-section-transition ul li {
-  font-size: 1.8rem;
+.main-section-transition ul {
+  list-style-type: square;
+  padding-left: 1rem;
 }
 
 .main-section-transition ul li strong {
