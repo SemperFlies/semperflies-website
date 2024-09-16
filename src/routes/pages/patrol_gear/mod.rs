@@ -67,7 +67,7 @@ fn builtin_gear() -> HashMap<String, Vec<Gear>> {
             let images = vec![Image {
                 src,
                 alt: String::new(),
-                subtitle: String::new(),
+                subtitle: String::from("2 inches Tall and 3 ¾ Wide"),
             }];
             all_misc.push(Gear {
                 id: 1,
@@ -75,7 +75,22 @@ fn builtin_gear() -> HashMap<String, Vec<Gear>> {
                 carousel: CarouselTemplate {
                     images,
                     auto_scroll: false,
-                    show_subtitles: false,
+                    show_subtitles: true,
+                },
+            })
+        } else if src.contains("patch") {
+            let images = vec![Image {
+                src,
+                alt: String::new(),
+                subtitle: String::from("2 ¾ inches round"),
+            }];
+            all_misc.push(Gear {
+                id: 2,
+                price: 10,
+                carousel: CarouselTemplate {
+                    images,
+                    auto_scroll: false,
+                    show_subtitles: true,
                 },
             })
         } else {
@@ -85,7 +100,7 @@ fn builtin_gear() -> HashMap<String, Vec<Gear>> {
                 subtitle: String::new(),
             }];
             all_misc.push(Gear {
-                id: 2,
+                id: 3,
                 price: 22,
                 carousel: CarouselTemplate {
                     images,

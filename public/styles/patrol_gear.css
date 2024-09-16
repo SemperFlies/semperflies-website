@@ -2,7 +2,7 @@
   margin-top: 2rem;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(30vw, 1fr));
-  gap: 1rem;
+  gap: 0.5rem;
   justify-content: center;
   align-content: center;
 }
@@ -20,12 +20,19 @@
   object-fit: cover;
   min-width: 250px;
   min-height: 350px;
-  max-width: 30vw;
-  max-height: 60vw;
+  max-width: 35vw;
+  max-height: 55vw;
 }
 
 .merch-grid h4 {
   text-align: center;
+  margin-top: 0.25rem;
+  color: var(--semper-orange);
+}
+
+.carousel-image-container h1 {
+  text-align: center;
+  font-size: 1rem;
   color: var(--semper-orange);
 }
 

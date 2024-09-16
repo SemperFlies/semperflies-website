@@ -32,7 +32,7 @@
         src="{{member.image_url}}"></img>
       <div 
         x-style="flex; flex-col; lg|m:1rem 0rem 1rem 1rem; m:1rem; p:2rem 3rem; flex-grow; bg-color:@primary-dark; b:1px @primary-light solid; radius:lg;">
-        <h1 class="tattoo">{{member.name}}</h1>
+        <h1 class="tattoo" x-style="color:@semper-orange;">{{member.name}}</h1>
         <h2 x-style='mb:0.25rem;'>{{member.role}}</h2>
         <p>{{member.description|safe}}</p>
       </div>

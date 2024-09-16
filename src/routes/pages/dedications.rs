@@ -9,6 +9,7 @@ use rand::seq::SliceRandom;
 use rand::{thread_rng, Rng};
 use serde::Deserialize;
 use sqlx::{Pool, Postgres};
+use uuid::Uuid;
 
 use crate::auth::middleware::SoftAuthExtension;
 use crate::components::carousel::{self, CarouselTemplate, HasCarousel, Image};
@@ -86,6 +87,7 @@ pub async fn dedications(
     match get_dedications(&r.db).await {
         Ok(mut dedications) => {
             dedications.append(&mut generate_dedications(10));
+            dedications.append(&mut builtin_dedications());
             let template = DedicationsTemplate {
                 dedications,
                 admin: soft_auth_ext.is_logged_in,
@@ -99,12 +101,42 @@ pub async fn dedications(
     }
 }
 
+fn builtin_dedications() -> Vec<Dedication> {
+    let mileo = Dedication {
+        id: Uuid::new_v4(),
+        name: "Corporal Jason David Mileo".to_string(),
+        birth: NaiveDate::from_ymd_opt(1982, 12, 14).unwrap(),
+        death: NaiveDate::from_ymd_opt(2003, 4, 13).unwrap(),
+        bio: r#"Corporal Jason David Mileo deployed to Iraq with 3rd Battalion 4th Marines in 2003. He fought along side his Marine Brothers during the Shock-N-Awe, the push on Baghdad, and he was in the city square when the statue of Saddam Hussein fell.
+<br/>
+<br/>
+On April 14, 2003, Corporal Mileo bravely crawled into an elevated position on a night patrol so he could provide security over watch for his Marines. They were on a movement to contact patrol and had departed friendly lines with one thing in mind; contact. That evening there was an elevation in activity. Gunfire was being exchanged directly outside the walls of the Marines fortified position in downtown Baghdad. The gun fire continued intermittently throughout the late afternoon and into the dusk of night. Marine Scout Snipers (8541’s) from an elite unit were manning the most elevated position of the Marines stronghold. “The tragic death of Corporal Mileo was the result of several significant breakdowns in discipline, coordination and communication that set the stage for this horrific incident”.
+<br/>
+-Maj. Gen. J.N. Mattis, commander of the 1st Marine Division.
+<br/>
+<br/>
+General Mattis also wrote:
+<br/>
+“Even though no one event or person was the catalyst for Corporal Mileo's death, one break in the chain of events may have spared his life." That night, Corporal Mileo was tragically mistaken for an enemy fighter and engaged by that Marine Scout Sniper Team. Everyone was doing what they were trained to do; believing he was an enemy target preparing a rooftop position, the snipers shot and killed him. “The devastation on the faces of every Marine that was present at his memorial the following morning can never be embodied in words. I’ve wished I can go back and say something, or I think I did.. I don’t remember. One second the memory is clear, the next it’s blank. But the faces, the faces of his Marine Brothers.. those will be burned into my mind. This moment redefined my entire life. The loss of that Warrior will have catastrophic effects on me for the rest of my life. I’ll never be able to leave that rooftop in my mind; life sentence.” -Marine Scout Sniper
+<br/>
+(Spotter/Jamie Martin Guajardo)
+ "#.to_string(),
+        carousel: CarouselTemplate { images: vec![Image {
+            src: "public/assets/images/dedications/mileo.webp".to_string(),
+            alt: "An image of a soldier".to_string(),
+            subtitle: "".to_string(),
+        }], auto_scroll: false, show_subtitles: false }
+    };
+
+    vec![mileo]
+}
+
 fn generate_dedications(amt: i32) -> Vec<Dedication> {
     let mut rng = thread_rng();
     let image_urls = vec![
         "public/assets/images/board_members/business.webp".to_string(),
         "public/assets/images/board_members/business2.webp".to_string(),
-        "public/assets/images/board_members/old.webp".to_string(),
+        "public/assets/images/board_members/old.".to_string(),
     ];
 
     let mut dedications = Vec::new();

@@ -44,16 +44,12 @@
       <div x-style="flex; flex-col; " class="subsection-transition">
         {% for l in logs %}
         <div
+          class="bordered-box"
           x-style="
-          m:2rem;
           flex;
           lg|flex-row;
           flex-col;
           justify-content:space-between;
-          b: 1px @primary-light solid;
-          radius:xl;
-          p: 1rem;
-          bg-color:@primary-dark;
           "
         >
           <div x-style="flex; flex-col; flex-grow; m:1rem; lg|max-width:60%;">

@@ -3,39 +3,21 @@
 <div class="page">
   <section class="hero hero-transition">
     <h1>Speak their names</h1>
-    <p>Brothers lost</p>
   </section>
   <section class="main-section-transition" x-data="{ admin: {{admin}} }">
     <div x-style="flex; flex-col; lg|mx:4rem; mx:2rem;">
       {% for ded in dedications %}
       <section
+        class="bordered-box"
         x-style="
-        p: 1rem;
-        m:2rem;
         w:100%;
         align-self:center;
         flex;
         lg|flex-row;
         flex-col;
         justify-content:space-between;
-        b: 1px @primary-light solid;
-        radius:xl;
-        bg-color:@primary-dark;
         mb:1rem;"
       >
-        <div x-style="flex; flex-col; flex-grow; m:1rem;">
-          <h1
-            x-style="my: 0.25rem; color:@semper-orange;"
-            class="tattoo underlined"
-          >
-            {{ ded.name }}
-          </h1>
-          <p>{{ ded.bio }}</p>
-          <div>
-            <h3>Insert: {{ ded.birth }}</h3>
-            <h3>Extract: {{ ded.death }}</h3>
-          </div>
-        </div>
         <section x-style="align-self:center;">
           {% if !ded.carousel.images.is_empty() %}
           <!---->
@@ -43,6 +25,19 @@
           <!---->
           {% endif %}
         </section>
+        <div x-style="flex; flex-col; flex-grow; m:1rem; lg|max-w: 50%">
+          <h1
+            x-style="my: 0.25rem; color:@semper-orange;"
+            class="tattoo underlined"
+          >
+            {{ ded.name }}
+          </h1>
+          <div class="insert-extract">
+            <h3>Insert: {{ ded.birth }}</h3>
+            <h3>Extract: {{ ded.death }}</h3>
+          </div>
+          <p>{{ ded.bio|safe }}</p>
+        </div>
 
         {% call d::deletion(DEDICATIONS, ded.id, "admin") %}
       </section>

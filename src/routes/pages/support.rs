@@ -97,7 +97,7 @@ pub async fn support(
     let r = data.read().await;
     match get_resources(&r.db).await {
         Ok(mut resources) => {
-            resources.append(&mut generate_support_resources());
+            resources.append(&mut builtin_support_resources());
             let template = SupportTemplate {
                 resources,
                 admin: soft_auth_ext.is_logged_in,
@@ -110,8 +110,25 @@ pub async fn support(
         Err(err) => Html(format!("A database error occured: {:?}", err)),
     }
 }
-fn generate_support_resources() -> Vec<SupportResource> {
+
+fn builtin_support_resources() -> Vec<SupportResource> {
     let mut resources = Vec::new();
+
+    //     let motivational_marine = SupportResource {
+    //         id: Uuid::new_v4(),
+    //         name: "The Motivational Marine".to_string(),
+    //         description: r#"
+    // The Motivational Marine is dedicated to empowering individuals to break free from the confines of their minds and fully engage with their lives.
+    // Using evidence-based knowledge, we provide insightful coaching that reveals the often-overlooked aspects of how our minds work.
+    // Understanding is the first step to improvement—because you can't change what you don't know exists.
+    // Our mission is to illuminate these hidden facets, enabling you to live with intention, purpose, and clarity."#.to_string(),
+    //         phone: Some("260-466-8929".to_string()),
+    //         missions: vec![
+    //             "Mindfulness".to_string(),
+    //         ];
+    //
+    //
+    //     }
 
     let names = vec![
         "Red Cross",

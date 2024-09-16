@@ -164,6 +164,14 @@ button.small {
   border-color: var(--semper-red); /* Adjust the border style as needed */
 }
 
+.bordered-box {
+  padding: 1rem;
+  margin: 2rem;
+  border: 1px var(--primary-light) solid;
+  border-radius: 15px;
+  background-color: var(--primary-dark);
+}
+
 @media screen and (max-width: 920px) {
   .underlined::after {
     margin-top: 0.5rem;

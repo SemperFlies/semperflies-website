@@ -2,10 +2,20 @@
   box-sizing: content-box;
 }
 
-.carousel-container .images img {
-  justify-self: center;
-  min-width: 250px;
+.insert-extract h3 {
+  margin: 0.25rem 0rem;
+}
+
+.carousel-image-container img {
+  object-fit: contain;
+  min-width: 200px;
   min-height: 350px;
-  max-width: 30vw;
-  max-height: 40vw;
+  max-width: 40vw;
+  max-height: 80%;
+}
+
+@media screen and (max-width: 920px) {
+  .carousel-container .images img {
+    align-self: center;
+  }
 }

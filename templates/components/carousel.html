@@ -54,7 +54,10 @@
         x-show.important="currentSlideIndex == index + 1"
         x-style="grid; place-items:center;"
       >
-        <div x-style="box-sizing: content-box; flex; flex-col;">
+        <div
+          class="carousel-image-container"
+          x-style="box-sizing: content-box; flex; flex-col;"
+        >
           <h1
             x-show="showSubtitles"
             x-style="mt:0rem; justify-self:left;"
