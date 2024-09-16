@@ -32,7 +32,6 @@ pub async fn debriefs(
 
     match get_testimonials(&r.db).await {
         Ok(mut testimonials) => {
-            testimonials.append(&mut generate_testimonials());
             testimonials.append(&mut builtin_testimonials());
             let template = DebriefsTemplate {
                 testimonials,
@@ -49,7 +48,7 @@ pub async fn debriefs(
 }
 
 fn builtin_testimonials() -> Vec<DBTestimonial> {
-    vec![DBTestimonial {
+    let jose_garcia = DBTestimonial {
         id: Uuid::new_v4(),
         firstname: "Jose".to_owned(),
         lastname: "Garcia".to_owned(),
@@ -68,31 +67,49 @@ Being out there in the middle of nowhere, with the only sounds being of birds an
 <br />
 <br />
 Thank you and Semper Fidelis!"#.to_owned(),
-    }]
-}
+    };
 
-fn generate_testimonials() -> Vec<DBTestimonial> {
-    vec![
-        DBTestimonial {
-            id: uuid::Uuid::new_v4(),
-            firstname: "Jane".to_string(),
-            lastname: "Doe".to_string(),
-            bio: Some("Widow of vet".to_string()),
-            content: "I got to meet other women who struggle with what i have".to_string(),
-        },
-        DBTestimonial {
-            id: uuid::Uuid::new_v4(),
-            firstname: "Jack".to_string(),
-            lastname: "Smith".to_string(),
-            bio: Some("Vietnam Veteran".to_string()),
-            content: "Semperflies got me in touch with other vets".to_string(),
-        },
-        DBTestimonial {
-            id: uuid::Uuid::new_v4(),
-            firstname: "John".to_string(),
-            lastname: "Doe".to_string(),
-            bio: None,
-            content: "I love semperflies".to_string(),
-        },
-    ]
+    let lawrence_turner = DBTestimonial {
+        id: Uuid::new_v4(),
+        firstname: "Lawrence".to_owned(),
+        lastname: "Turner".to_owned(),
+        bio: None,
+        content: r#"
+        To whoever is out there thinking of trying the fishing trip with Semper Flies and Lake Tahoe Fly Fishing, I
+highly recommend.
+<br/>
+<br/>
+Some of us Veterans have experienced unfathomable things overseas that live with us day in and day
+out that are unexplainable that would just not make sense, if we attempted to put into words.
+<br/>
+<br/>
+Jamie Guajardo is a Special Forces Marine, we did not serve together but chewed the same dirt at the
+same time, he is a Giant! And a special person trying to heal his brothers.
+<br/>
+<br/>
+Long story short, Jamie knows what it is like to have the feeling that lives with us. It’s an amazing thing
+what he is doing for us on this level to try to heal.
+Jamie set us up with South Lake Tahoe Fly Fishing for a beautiful day outdoors to help heal and figure
+out our damage and wounds.
+<br/>
+<br/>
+Started our day off at the shop where all of the staff were Awesome! Headed out to the river where we
+trekked in about a 15-20 min ride on a brand new side by side with amazing views on the way in,
+beautiful water, and unspeakable experience.
+<br/>
+<br/>
+Our guide was very knowledgeable, patient, and put us on fun fighting fish! I really appreciate what
+Jamie and South Lake Tahoe Fly Fishing Shop are doing for Veterans. It’s one step closer to normalcy!
+Lol!
+It’s only for a day please go drop a line with Semper Flies and South Lake Tahoe Fly Fishing Shop!
+<br/>
+<br/>
+Semper Fidelis!
+<br/>
+3/5 Kilo Co.
+<br/>
+Phantom Fury.
+        "#.to_owned(),
+    };
+    vec![jose_garcia, lawrence_turner]
 }

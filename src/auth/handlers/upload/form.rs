@@ -173,8 +173,9 @@ impl UploadItemType<Value> for UploadFormItemType {
                 warn!("phone: {:?}", phone);
 
                 let email = get_optional_string_from_form("email", &form);
-                let description = get_optional_string_from_form("description", &form)
+                let mut description = get_optional_string_from_form("description", &form)
                     .ok_or(UploadError::user_facing("description is none"))?;
+                description = description.replace("\n", "<br/>");
                 let name = get_optional_string_from_form("name", &form)
                     .ok_or(UploadError::user_facing("name is none"))?;
 
@@ -205,8 +206,9 @@ impl UploadItemType<Value> for UploadFormItemType {
                     .ok_or(UploadError::user_facing("firstname is none"))?;
                 let lastname = get_optional_string_from_form("lastname", &form)
                     .ok_or(UploadError::user_facing("lastname is none"))?;
-                let content = get_optional_string_from_form("content", &form)
+                let mut content = get_optional_string_from_form("content", &form)
                     .ok_or(UploadError::user_facing("content is none"))?;
+                content = content.replace("\n", "<br/>");
                 let bio = get_optional_string_from_form("bio", &form);
                 let test = DBTestimonialParams {
                     firstname,

@@ -135,9 +135,13 @@ impl UploadItemType<Multipart> for UploadMultipartItemType {
                     .expect("failed to save attachments to filesys");
                 }
 
+                let description = description
+                    .expect("expected description")
+                    .replace("\n", "<br/>");
+
                 let log = DBPatrolLogParams {
                     heading,
-                    description: description.expect("no description"),
+                    description,
                     date: date.expect("no date"),
                     img_params,
                 };
@@ -197,9 +201,10 @@ impl UploadItemType<Multipart> for UploadMultipartItemType {
                             .expect("failed to save attachments to filesys");
                 }
 
+                let bio = bio.expect("expected bio").replace("\n", "<br/>");
                 let ded = DBDedicationParams {
                     name,
-                    bio: bio.expect("no bio"),
+                    bio,
                     birth: birth.expect("no birth"),
                     death: death.expect("no death"),
                     img_params,
