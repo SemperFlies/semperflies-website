@@ -86,8 +86,8 @@ pub async fn dedications(
     let r = data.read().await;
     match get_dedications(&r.db).await {
         Ok(mut dedications) => {
-            dedications.append(&mut generate_dedications(10));
             dedications.append(&mut builtin_dedications());
+            dedications.append(&mut generate_dedications(10));
             let template = DedicationsTemplate {
                 dedications,
                 admin: soft_auth_ext.is_logged_in,
