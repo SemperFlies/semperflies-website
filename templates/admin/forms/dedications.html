@@ -1,3 +1,43 @@
+<script>
+  function addName() {
+    const container = document.getElementById("names-container");
+
+    const inputWrapper = document.createElement("div");
+    inputWrapper.classList.add("input-wrapper");
+
+    const newInput = document.createElement("input");
+    newInput.type = "text";
+    newInput.classList.add("names");
+    newInput.placeholder = "Enter name";
+    newInput.style.margin = "0.5rem 1rem";
+    newInput.addEventListener("change", updateHiddenNames);
+
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.classList.add("material-symbols-outlined");
+    removeButton.classList.add("small");
+    removeButton.textContent = "close";
+    removeButton.onclick = function () {
+      inputWrapper.remove();
+      updateHiddenNames();
+    };
+
+    inputWrapper.appendChild(newInput);
+    inputWrapper.appendChild(removeButton);
+    container.appendChild(inputWrapper);
+  }
+
+  function updateHiddenNames() {
+    console.log("updating hidden input");
+    let missionsInput = document.getElementById("names-input");
+    const inputs = document.querySelectorAll("#names-container input.names");
+    console.log(inputs);
+    const values = Array.from(inputs).map((input) => input.value);
+    missionsInput.value = values;
+    console.log(missionsInput);
+  }
+</script>
+
 <form
   hx-push-url="false"
   hx-history="false"
@@ -10,14 +50,10 @@
 >
   <h1>Dedications</h1>
 
-  <label for="name">Full Name:</label>
-  <input
-    type="text"
-    id="name"
-    name="name"
-    placeholder="John Middle Doe"
-    required
-  />
+  <div id="names-container">
+    <button class="small" type="button" @click="addName()">Add Name</button>
+    <input style="visibility: hidden" id="names-input" name="names[]" />
+  </div>
 
   <div x-style="flex; flex-row; my:0.5rem; gap:0.5rem;">
     <label for="birth"

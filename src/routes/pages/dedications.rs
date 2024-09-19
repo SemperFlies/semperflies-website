@@ -30,7 +30,7 @@ pub const DEDICATIONS: &str = "dedications";
 #[derive(Debug)]
 pub struct Dedication {
     pub id: uuid::Uuid,
-    pub name: String,
+    pub names: Vec<String>,
     pub bio: String,
     // insert
     pub birth: NaiveDate,
@@ -59,7 +59,7 @@ impl From<(DBDedication, Vec<DBImage>)> for Dedication {
         };
         Self {
             id: ded.id,
-            name: ded.name,
+            names: ded.names,
             bio: ded.bio,
             birth: ded.birth,
             death: ded.death,
@@ -104,9 +104,9 @@ pub async fn dedications(
 fn builtin_dedications() -> Vec<Dedication> {
     let mileo = Dedication {
         id: Uuid::new_v4(),
-        name: "Corporal Jason David Mileo".to_string(),
+        names:vec![ "Corporal Jason David Mileo".to_string()],
         birth: NaiveDate::from_ymd_opt(1982, 12, 14).unwrap(),
-        death: NaiveDate::from_ymd_opt(2003, 4, 13).unwrap(),
+        death: NaiveDate::from_ymd_opt(2003, 4, 14).unwrap(),
         bio: r#"Corporal Jason David Mileo deployed to Iraq with 3rd Battalion 4th Marines in 2003. He fought along side his Marine Brothers during the Shock-N-Awe, the push on Baghdad, and he was in the city square when the statue of Saddam Hussein fell.
 <br/>
 <br/>
@@ -128,7 +128,32 @@ General Mattis also wrote:
         }], auto_scroll: false, show_subtitles: false }
     };
 
-    vec![mileo]
+    let fifth_platoon = Dedication {
+        id: Uuid::new_v4(),
+        names: vec![
+            "SSgt Vincent Sabasteanski".to_string(),
+            "SSgt David Galloway".to_string(),
+            "SSgt Jeffrey Starling".to_string(),
+            "Cpl Mark Baca".to_string(),
+            "HM1 Jay Asis".to_string(),
+            "GySgt James Paige".to_string(),
+            "SSgt William Dame".to_string(),
+        ],
+        birth: NaiveDate::from_ymd_opt(1776, 11, 10).unwrap(),
+        death: NaiveDate::from_ymd_opt(1999, 12, 9).unwrap(),
+        bio: r#"On December 9, 1999 1st Force Reconnaissance Company suffered a major loss. A CH-46 was carrying 5th Platoon for a V.B.S.S (Visit Board Search Seizure). As the helicopter made the approach to the USNS Pecos the piolet became tangled in the netting causing it to flip upside down into the Pacific Ocean off the coast of Point Loma, Ca. This was a joint operation with the Navy SEALS. The SEALS had safety boats in the water and were able to rescue eleven survivors. The seven Warriors that lost their life’s that day paid the ultimate sacrifice in defense of our country. I still communicate with family of the fallen warriors. As a platoon we suffered mentally together and individually forever. The wives of the fallen Warriors showed us unmeasurable strength. Huge “Thank You” to the Navy SEALS for being so tactically proficient and bringing our Brothers aboard in the time of crisis."#.to_string(),
+        carousel: CarouselTemplate {
+            images: vec![Image {
+                src: "public/assets/images/dedications/5th_platoon.webp".to_string(),
+                alt: "a dedication to multiple solidiers".to_string(),
+                subtitle: "".to_string(),
+            }],
+            auto_scroll: false,
+            show_subtitles: false,
+        },
+    };
+
+    vec![mileo, fifth_platoon]
 }
 
 fn generate_dedications(amt: i32) -> Vec<Dedication> {
@@ -171,12 +196,11 @@ fn generate_dedications(amt: i32) -> Vec<Dedication> {
 
         dedications.push(Dedication {
             id: uuid::Uuid::new_v4(),
-            name,
+            names: vec![name],
             bio,
             birth,
             death,
             carousel,
-            // images,
         });
     }
 

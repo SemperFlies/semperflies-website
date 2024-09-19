@@ -147,7 +147,7 @@ where
 }
 
 impl DBImage {
-    fn insert_query<D, P>() -> String
+    pub(super) fn insert_query<D, P>() -> String
     where
         P: std::fmt::Debug + Serialize + for<'de> Deserialize<'de> + Send + Unpin,
         D: DbData<P>,
@@ -485,7 +485,7 @@ mod tests {
         ];
 
         let dedications = vec![DBDedicationParams {
-            name: "John Doe".to_string(),
+            names: vec!["John Doe".to_string()],
             bio: "A famous person".to_string(),
             birth: NaiveDate::from_ymd_opt(1980, 5, 15).unwrap(),
             death: NaiveDate::from_ymd_opt(2050, 12, 31).unwrap(),
@@ -521,6 +521,13 @@ mod tests {
                     line_1: "456 Elm St".to_string(),
                     line_2: Some("Apt 2".to_string()),
                 }),
+                twitter: None,
+                facebook: None,
+                instagram: None,
+                linkedin: None,
+                threads: None,
+                youtube: None,
+                img_params: images.clone(),
             },
             DBResourceParams {
                 name: "Resource 2".to_string(),
@@ -536,6 +543,13 @@ mod tests {
                     line_1: "123 Main St".to_string(),
                     line_2: None,
                 }),
+                twitter: None,
+                facebook: None,
+                instagram: None,
+                linkedin: None,
+                threads: None,
+                youtube: None,
+                img_params: images.clone(),
             },
         ];
 

@@ -24,7 +24,7 @@ CREATE TABLE
 CREATE TABLE
     "dedications" (
         id UUID NOT NULL PRIMARY KEY DEFAULT (uuid_generate_v4()),
-        name VARCHAR(100) NOT NULL,
+        names VARCHAR(100)[] NOT NULL,
         bio TEXT NOT NULL,
         birth DATE NOT NULL,
         death DATE NOT NULL,
@@ -54,12 +54,19 @@ CREATE TABLE
 CREATE TABLE
     "support_resources" (
         id UUID NOT NULL PRIMARY KEY DEFAULT (uuid_generate_v4()),
+        img_ids UUID[] NOT NULL,
         name VARCHAR(100) NOT NULL,
         description TEXT NOT NULL,
         missions TEXT[] NOT NULL,
         phone VARCHAR(100),
         website_url VARCHAR(255),
         email VARCHAR(255),
+        twitter VARCHAR(255),
+        facebook VARCHAR(255),
+        youtube VARCHAR(255),
+        linkedin VARCHAR(255),
+        threads VARCHAR(255),
+        instagram VARCHAR(255),
         address_id UUID,
         FOREIGN KEY (address_id) REFERENCES addresses(id)
     );

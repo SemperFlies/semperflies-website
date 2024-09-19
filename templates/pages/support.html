@@ -1,39 +1,135 @@
 {%- import "components/delete.html" as d -%}
+
+<link rel="stylesheet" href="/public/styles/support.css" />
 <div class="page">
   <section class="hero hero-transition">
     <h1>Support</h1>
   </section>
   <section class="main-section-transition" x-data="{ admin: {{ admin }} }">
-    <div x-style="flex; flex-col; lg|mx:6rem; mx:2rem; align-self:center;">
+    <div x-style="flex; flex-col; lg|mx:6rem; mx:1rem; align-self:center;">
       {% for res in resources %}
-      <div>
-        <h1>{{ res.name }}</h1>
-        <div x-style="flex; flex-row;">
-          {% for m in res.missions %}
-          <div
-            x-style="bg-color:@semper-orange; radius:pill; color:@primary-dark; py:0.25rem; px:0.4rem; mr:1rem;"
-          >
-            {{ m }}
+      <div class="bordered-box" x-style="flex; flex-col;">
+        <div x-style="flex; lg|flex-row; flex-col;">
+          {% if let Some(logo) = res.logo %}
+          <img
+            x-style="
+              lg|align-self: flex-start;
+              align-self: center;
+              lg|max-width: 20%;
+          max-width: 35%;
+              object-fit: contain;
+              margin-right: 1rem;
+            "
+            src="{{logo.src}}"
+            alt="{{logo.alt}}"
+          />
+          {% endif %}
+          <div x-style="flex; flex-col; flex-grow;">
+            <h1 class="tattoo" x-style="color:@semper-orange">
+              {{ res.name }}
+            </h1>
+            <div x-style="flex; flex-row; flex-grow;">
+              {% for m in res.missions %}
+              <div
+                x-style="bg-color:@semper-orange; radius:pill; color:@primary-dark; py:0.25rem; px:0.4rem; mr:1rem;"
+              >
+                {{ m }}
+              </div>
+              {% endfor %}
+            </div>
+            <p>{{ res.description|safe }}</p>
+            {% if let Some(url) = res.website_url %}
+            <a x-style="color:@semper-orange" href="{{ url }}">Website</a>
+            {% endif %}
+            <!---->
+            <div class="contact">
+              {% if let Some(phone) = res.phone %}
+              <p>{{ phone }}</p>
+              {% endif %}
+              <!---->
+              {% if let Some(email) = res.email %}
+              <p>{{ email }}</p>
+              {% endif %}
+            </div>
+            <!---->
+            {% if let Some(phys_addy) = res.physical_address %}
+            <div class="address">
+              <p>{{ phys_addy.line_1 }}</p>
+              <p>
+                {% if let Some(line2) = phys_addy.line_2 %} {{ line2 }} {% endif
+                %}
+              </p>
+              <p>
+                {{ phys_addy.city }} , {{ phys_addy.state }}, {{ phys_addy.zip
+                }}
+              </p>
+            </div>
+            {% endif %}
+            <!---->
+            {% call d::deletion(SUPPORT, res.id, "admin") %}
           </div>
-          {% endfor %}
         </div>
-        <p>{{ res.description }}</p>
-        {% if let Some(url) = res.website_url %}
-        <a x-style="color:@semper-orange" href="{{ url }}">Website</a>
-        {% endif %} {% if let Some(phone) = res.phone %}
-        <p>Phone: {{ phone }}</p>
-        {% endif %} {% if let Some(email) = res.email %}
-        <p>Email: {{ email }}</p>
-        {% endif %} {% if let Some(phys_addy) = res.physical_address %}
-        <p>
-          {{ phys_addy.line_1 }} <br />
-          {% if let Some(line2) = phys_addy.line_2 %} {{ line2 }} {% endif %}
-          <br />{{ phys_addy.city }}, {{ phys_addy.state }}, {{ phys_addy.zip }}
-        </p>
 
-        {% endif %}
-        <!---->
-        {% call d::deletion(SUPPORT, res.id, "admin") %}
+        <div
+          id="logos"
+          x-style="flex; flex-row; gap:1; mt:0.5rem; align-self:center;"
+        >
+          {% if let Some(twitter) = res.twitter%}
+          <a href="{{twitter}}">
+            <img
+              src="/public/assets/images/media_logos/twitter-logo.svg"
+              loading="lazy"
+              alt="twitter Icon"
+              width="30"
+            />
+          </a>
+          {%endif %} {% if let Some(facebook) = res.facebook %}
+          <a href="{{facebook}}">
+            <img
+              src="/public/assets/images/media_logos/Facebook_icon.svg"
+              loading="lazy"
+              alt="Facebook Icon"
+              width="30"
+            />
+          </a>
+          {% endif %} {% if let Some(youtube) = res.youtube %}
+          <a href="{{youtube}}">
+            <img
+              src="/public/assets/images/media_logos/youtube-logo.svg"
+              loading="lazy"
+              alt="Youtube Icon"
+              width="30"
+            />
+          </a>
+          {% endif %} {% if let Some(linkedin) = res.linkedin%}
+          <a href="{{linkedin}}">
+            <img
+              src="/public/assets/images/media_logos/Linkedin_logo.svg"
+              loading="lazy"
+              alt="LinkedIn Icon"
+              width="30"
+            />
+          </a>
+          {% endif %} {% if let Some(threads) = res.threads%}
+          <a href="{{threads}}">
+            <img
+              src="/public/assets/images/media_logos/Threads_icon.svg"
+              loading="lazy"
+              alt="Threads Icon"
+              width="30"
+            />
+          </a>
+          {% endif %} {% if let Some(instagram) = res.instagram%}
+          <a href="{{instagram}}">
+            <img
+              loading="lazy"
+              src="/public/assets/images/media_logos/Instagram_icon.svg"
+              alt="Instagram Icon"
+              width="30"
+            />
+          </a>
+          {% endif %}
+        </div>
       </div>
       {% endfor %}
     </div>

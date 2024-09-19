@@ -29,7 +29,7 @@ use super::{UploadItem, UploadItemType};
 
 #[derive(Debug)]
 pub enum UploadFormItemType {
-    Support,
+    // Support,
     Debriefs,
 }
 
@@ -100,7 +100,7 @@ impl UploadItemType<Value> for UploadFormItemType {
     fn try_from_str(str: &str) -> anyhow::Result<Self> {
         warn!("getting item: {}", str);
         match str {
-            _ if str == SUPPORT => Ok(Self::Support),
+            // _ if str == SUPPORT => Ok(Self::Support),
             _ if str == DEBRIEFS => Ok(Self::Debriefs),
             other => {
                 warn!("none found for: {}", other);
@@ -110,97 +110,6 @@ impl UploadItemType<Value> for UploadFormItemType {
     }
     async fn into_item(self, form: Value) -> anyhow::Result<UploadItem> {
         match self {
-            Self::Support => {
-                let physical_address = match get_optional_string_from_form("city", &form) {
-                    Some(city) => {
-                        let state = get_optional_string_from_form("state", &form)
-                            .ok_or(UploadError::user_facing("state is none"))?;
-                        let zip = get_optional_string_from_form("zip", &form)
-                            .ok_or(UploadError::user_facing("zip is none"))?;
-                        let line_1 = get_optional_string_from_form("line1", &form)
-                            .ok_or(UploadError::user_facing("line_1 is none"))?;
-                        let line_2 = get_optional_string_from_form("line2", &form);
-                        Some(Address {
-                            city,
-                            state,
-                            zip,
-                            line_1,
-                            line_2,
-                        })
-                    }
-                    None => None,
-                };
-
-                let missions: Vec<String> = match form.get("missions[]") {
-                    Some(mis) => {
-                        warn!("got serialized missions: {:?}", mis);
-                        let mis = serde_json::from_value::<String>(mis.to_owned())?;
-                        mis.split(',')
-                            .filter_map(|m| {
-                                if !m.trim().is_empty() {
-                                    Some(m.to_string())
-                                } else {
-                                    None
-                                }
-                            })
-                            .collect()
-                    }
-                    None => {
-                        warn!("got no missions");
-                        vec![]
-                    }
-                };
-                warn!("got deserialized missions: {:?}", missions);
-
-                let website_url = get_optional_string_from_form("website", &form);
-                let mut phone = get_optional_string_from_form("phone", &form);
-
-                if let Some(ref ph) = phone {
-                    match ph.len() {
-                        10 => phone = Some(format!("({})-{}-{}", &ph[..3], &ph[3..6], &ph[6..10],)),
-                        11 => {
-                            phone = Some(format!(
-                                "{}-({})-{}-{}",
-                                &ph[..=0],
-                                &ph[1..4],
-                                &ph[4..7],
-                                &ph[7..11],
-                            ))
-                        }
-                        other => warn!("{} is not a valid phone number len", other),
-                    }
-                }
-                warn!("phone: {:?}", phone);
-
-                let email = get_optional_string_from_form("email", &form);
-                let mut description = get_optional_string_from_form("description", &form)
-                    .ok_or(UploadError::user_facing("description is none"))?;
-                description = description.replace("\n", "<br/>");
-                let name = get_optional_string_from_form("name", &form)
-                    .ok_or(UploadError::user_facing("name is none"))?;
-
-                let address = physical_address.and_then(|add| {
-                    Some(DBAddressParams {
-                        city: add.city,
-                        state: add.state,
-                        zip: add.zip,
-                        line_1: add.line_1,
-                        line_2: add.line_2,
-                    })
-                });
-
-                let res = DBResourceParams {
-                    name,
-                    description,
-                    missions,
-                    website_url,
-                    phone,
-                    email,
-                    address,
-                };
-                Ok(UploadItem::Support(res))
-            }
-
             Self::Debriefs => {
                 let firstname = get_optional_string_from_form("firstname", &form)
                     .ok_or(UploadError::user_facing("firstname is none"))?;

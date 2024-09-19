@@ -7,16 +7,16 @@
     );
     if (event.detail.failed) {
       el.classList.add("fail");
+      setTimeout(() => {
+        el.textContent = "";
+        forms.forEach((form) => form.reset());
+        imageUploadsContainers.forEach((container) => {
+          container.innerHTML = "";
+        });
+      }, 3000);
     } else {
       el.classList.remove("fail");
     }
-    setTimeout(() => {
-      el.textContent = "";
-      forms.forEach((form) => form.reset());
-      imageUploadsContainers.forEach((container) => {
-        container.innerHTML = "";
-      });
-    }, 3000);
   }
 </script>
 <div

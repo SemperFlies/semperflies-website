@@ -10,7 +10,7 @@
     newInput.classList.add("missions");
     newInput.placeholder = "Enter value";
     newInput.style.margin = "0.5rem 1rem";
-    newInput.addEventListener("change", updateHiddenInput());
+    newInput.addEventListener("change", updateHiddenValues);
 
     const removeButton = document.createElement("button");
     removeButton.type = "button";
@@ -19,7 +19,7 @@
     removeButton.textContent = "close";
     removeButton.onclick = function () {
       inputWrapper.remove();
-      updateHiddenInput();
+      updateHiddenValues();
     };
 
     inputWrapper.appendChild(newInput);
@@ -27,7 +27,7 @@
     container.appendChild(inputWrapper);
   }
 
-  function updateHiddenInput() {
+  function updateHiddenValues() {
     let missionsInput = document.getElementById("missionsInput");
     const inputs = document.querySelectorAll("#inputContainer input.missions");
     console.log(inputs);
@@ -44,7 +44,8 @@
   hx-trigger="submit"
   hx-target="#upload-response"
   hx-swap="innerHTML"
-  hx-post="/data/auth/upload_form/support"
+  hx-post="/data/auth/upload_multipart/support"
+  enctype="multipart/form-data"
   x-data="{ 
   phys_address: false,
   buttontext: 'Add Physical Address',
@@ -100,6 +101,31 @@
       name="website"
       placeholder="www.somename.com"
   /></label>
+
+  <label for="instagram"
+    >instagram: <input type="url" id="instagram" name="instagram"
+  /></label>
+
+  <label for="facebook"
+    >facebook: <input type="url" id="facebook" name="facebook"
+  /></label>
+
+  <label for="youtube"
+    >youtube: <input type="url" id="youtube" name="youtube"
+  /></label>
+
+  <label for="linkedin"
+    >linkedin: <input type="url" id="linkedin" name="linkedin"
+  /></label>
+
+  <label for="threads"
+    >threads: <input type="url" id="threads" name="threads"
+  /></label>
+
+  <label for="twitter"
+    >twitter: <input type="url" id="twitter" name="twitter"
+  /></label>
+
   <button
     x-text="buttontext"
     x-style="align-self:flex-end; mt:1rem; mb:0.5rem;"
@@ -195,5 +221,6 @@
     />
   </div>
 
+  {% include "admin/forms/images.html" %}
   <button type="submit">Upload</button>
 </form>

@@ -109,6 +109,7 @@ fn builtin_gear() -> HashMap<String, Vec<Gear>> {
                 },
             })
         };
+        all_misc.sort_by(|a, b| b.id.cmp(&a.id))
     }
 
     let all_tops_imgs: Vec<String> = all_images_in_directory(&tops_path)

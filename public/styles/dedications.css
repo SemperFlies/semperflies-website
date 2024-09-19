@@ -8,8 +8,10 @@
 
 .carousel-image-container img {
   object-fit: contain;
-  min-width: 200px;
+  /* min-width: 200px; */
   min-height: 350px;
+  min-width: 40vw;
+  /* height: 75vw; */
   max-width: 40vw;
   max-height: 80%;
 }

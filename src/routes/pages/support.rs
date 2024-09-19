@@ -4,13 +4,15 @@ use axum::{extract::State, response::Html, Extension};
 use rand::prelude::*;
 use serde::Deserialize;
 use sqlx::{Pool, Postgres};
+use tracing::warn;
 use uuid::Uuid;
 
 use crate::{
     auth::middleware::SoftAuthExtension,
+    components::carousel::Image,
     database::{
         handles::DbData,
-        models::{DBAddress, DBResource},
+        models::{DBAddress, DBImage, DBResource, DBResourceParams},
     },
     state::SharedState,
 };
@@ -37,12 +39,19 @@ pub struct Address {
 pub struct SupportResource {
     pub id: uuid::Uuid,
     pub name: String,
+    pub logo: Option<Image>,
     pub description: String,
     pub missions: Vec<String>,
     pub phone: Option<String>,
     pub website_url: Option<String>,
     pub email: Option<String>,
     pub physical_address: Option<Address>,
+    pub twitter: Option<String>,
+    pub facebook: Option<String>,
+    pub youtube: Option<String>,
+    pub linkedin: Option<String>,
+    pub threads: Option<String>,
+    pub instagram: Option<String>,
 }
 
 impl From<DBAddress> for Address {
@@ -57,26 +66,57 @@ impl From<DBAddress> for Address {
     }
 }
 
-impl From<(DBResource, Option<DBAddress>)> for SupportResource {
-    fn from((res, add): (DBResource, Option<DBAddress>)) -> Self {
+impl From<(DBResource, Option<DBAddress>, Vec<DBImage>)> for SupportResource {
+    fn from((res, add, imgs): (DBResource, Option<DBAddress>, Vec<DBImage>)) -> Self {
+        if imgs.len() > 1 {
+            warn!("this resource has more than one image, taking the 0th");
+        }
         Self {
             id: res.id,
+            logo: imgs.first().and_then(|dbimg| Some(dbimg.to_owned().into())),
             name: res.name,
             description: res.description,
-            missions: res.missions,
+            missions: res
+                .missions
+                .into_iter()
+                .filter_map(|m| if m.trim().is_empty() { None } else { Some(m) })
+                .collect(),
             phone: res.phone,
-            email: res.email,
-            website_url: res.website_url,
+            email: res
+                .email
+                .and_then(|s| if s.trim().is_empty() { None } else { Some(s) }),
+            website_url: res
+                .website_url
+                .and_then(|s| if s.trim().is_empty() { None } else { Some(s) }),
             physical_address: add.and_then(|a| Some(Address::from(a))),
+            instagram: res
+                .instagram
+                .and_then(|s| if s.trim().is_empty() { None } else { Some(s) }),
+            threads: res
+                .threads
+                .and_then(|s| if s.trim().is_empty() { None } else { Some(s) }),
+            youtube: res
+                .youtube
+                .and_then(|s| if s.trim().is_empty() { None } else { Some(s) }),
+            facebook: res
+                .facebook
+                .and_then(|s| if s.trim().is_empty() { None } else { Some(s) }),
+            linkedin: res
+                .linkedin
+                .and_then(|s| if s.trim().is_empty() { None } else { Some(s) }),
+            twitter: res
+                .twitter
+                .and_then(|s| if s.trim().is_empty() { None } else { Some(s) }),
         }
     }
 }
 
 async fn get_resources(pool: &Pool<Postgres>) -> anyhow::Result<Vec<SupportResource>> {
-    let res = DBResource::get_multiple(pool).await?;
+    let all_res_and_imgs =
+        DBImage::get_multiple_with_images::<DBResource, DBResourceParams>(&pool).await?;
     let mut all = vec![];
 
-    for r in res {
+    for (r, imgs) in all_res_and_imgs {
         let mut address = Option::<DBAddress>::None;
         if let Some(id) = r.address_id {
             let add = DBAddress::get_single_by(pool, id)
@@ -84,8 +124,9 @@ async fn get_resources(pool: &Pool<Postgres>) -> anyhow::Result<Vec<SupportResou
                 .ok_or(anyhow!("no address with id: {:?}", id))?;
             address = Some(add);
         }
-        all.push(SupportResource::from((r, address)))
+        all.push(SupportResource::from((r, address, imgs)))
     }
+    warn!("returning resources from database: {all:?}");
 
     Ok(all)
 }
@@ -112,113 +153,60 @@ pub async fn support(
 }
 
 fn builtin_support_resources() -> Vec<SupportResource> {
-    let mut resources = Vec::new();
+    let motivational_marine = SupportResource {
+        id: Uuid::new_v4(),
+        name: "The Motivational Marine".to_string(),
+        description: r#"The Motivational Marine is dedicated to empowering individuals to break free from the confines of their minds and fully engage with their lives. 
+Using evidence-based knowledge, we provide insightful coaching that reveals the often-overlooked aspects of how our minds work. 
+Understanding is the first step to improvement—because you can't change what you don't know exists. 
+Our mission is to illuminate these hidden facets, enabling you to live with intention, purpose, and clarity.
+        "#.to_string(),
+        phone: Some("(260)-466-8929".to_string()),
+        facebook: Some("https://www.facebook.com/themotivationalmarine?mibextid=LQQJ4d".to_string()),
+        linkedin: Some("https://www.linkedin.com/in/briangagye?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app".to_string()),
+    logo: Some(Image {
+            src: "public/assets/images/support/motivational_marine.webp".to_string(),
+            alt: "the motivational marine logo".to_string(),
+            subtitle: String::new(),
+        }),
+        email: None,
+        instagram: None,
+        missions: vec![],
+        twitter: None,
+        threads: None,
+        youtube: None,
+        physical_address: None,
+        website_url: None,
 
-    //     let motivational_marine = SupportResource {
-    //         id: Uuid::new_v4(),
-    //         name: "The Motivational Marine".to_string(),
-    //         description: r#"
-    // The Motivational Marine is dedicated to empowering individuals to break free from the confines of their minds and fully engage with their lives.
-    // Using evidence-based knowledge, we provide insightful coaching that reveals the often-overlooked aspects of how our minds work.
-    // Understanding is the first step to improvement—because you can't change what you don't know exists.
-    // Our mission is to illuminate these hidden facets, enabling you to live with intention, purpose, and clarity."#.to_string(),
-    //         phone: Some("260-466-8929".to_string()),
-    //         missions: vec![
-    //             "Mindfulness".to_string(),
-    //         ];
-    //
-    //
-    //     }
+    };
 
-    let names = vec![
-        "Red Cross",
-        "Salvation Army",
-        "Habitat for Humanity",
-        "United Way",
-        "Feeding America",
-    ];
+    let mission_22 = SupportResource {
+        id: Uuid::new_v4(),
+        name: "Mission 22".to_string(),
+        description: r#"Mission 22 provides support to Veterans and their families when they need it most: right now. Through a comprehensive approach of outreach, events, and programs, we’re promoting long-term wellness and sustainable growth."#.to_string(),
+        physical_address: Some(Address {
+                line_2: Some("#910".to_string()),
+                line_1: "649 N Larch St".to_string(),
+                city: "Sisters".to_string(),
+                state: "OR".to_string(),
+                zip: "97759".to_string(),
+            }),
+        phone: Some("(503)-908-8505".to_string()),
+        website_url: Some("https://mission22.com/".to_string()),
+        logo: Some(Image {
+            src: "public/assets/images/support/mission_22.webp".to_string(),
+            alt: "the mission 22 logo".to_string(),
+            subtitle: String::new(),
+        }),
+    linkedin: None,
+        email: None,
+        instagram: None,
+        missions: vec![],
+        twitter: None,
+        threads: None,
+        youtube: None,
+        facebook: None,
+    };
 
-    let descriptions = vec![
-        "Providing emergency assistance and disaster relief.",
-        "Offering shelter, food, and social services.",
-        "Building affordable housing and revitalizing communities.",
-        "Supporting health, education, and financial stability programs.",
-        "Fighting hunger and distributing food to those in need.",
-    ];
-
-    let missions = vec![
-        vec!["Disaster Relief", "Blood Donation", "Health Services"],
-        vec!["Homeless Services", "Rehabilitation", "Youth Programs"],
-        vec![
-            "Affordable Housing",
-            "Home Repairs",
-            "Neighborhood Revitalization",
-        ],
-        vec!["Education", "Income", "Health"],
-        vec!["Food Pantries", "Meal Programs", "Nutrition Education"],
-    ];
-
-    let mut rng = rand::thread_rng();
-
-    for _ in 0..5 {
-        let name = names.choose(&mut rng).unwrap();
-        let description = descriptions.choose(&mut rng).unwrap();
-        let missions = missions
-            .choose(&mut rng)
-            .unwrap()
-            .iter()
-            .map(|m| m.to_string())
-            .collect();
-        let phone = if rng.gen_bool(0.7) {
-            Some(format!(
-                "1-800-{:03}-{:04}",
-                rng.gen_range(100..999),
-                rng.gen_range(1000..9999)
-            ))
-        } else {
-            None
-        };
-        let email = if rng.gen_bool(0.8) {
-            Some(format!(
-                "info@{}.org",
-                name.replace(" ", "_").to_lowercase()
-            ))
-        } else {
-            None
-        };
-        let physical_address = if rng.gen_bool(0.6) {
-            Some(Address {
-                line_1: format!(
-                    "{} Something {}",
-                    rng.gen_range(100..999),
-                    ["St", "Ave", "Blvd", "Rd"].choose(&mut rng).unwrap()
-                ),
-                line_2: None,
-                city: ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix"]
-                    .choose(&mut rng)
-                    .unwrap()
-                    .to_string(),
-                state: ["NY", "CA", "IL", "TX", "AZ"]
-                    .choose(&mut rng)
-                    .unwrap()
-                    .to_string(),
-                zip: format!("{:05}", rng.gen_range(10000..99999)),
-            })
-        } else {
-            None
-        };
-
-        resources.push(SupportResource {
-            id: Uuid::new_v4(),
-            name: name.to_string(),
-            description: description.to_string(),
-            missions,
-            phone,
-            email,
-            physical_address,
-            website_url: Some(String::from("https://www.linkedin.com/feed")),
-        });
-    }
-
-    resources
+    vec![motivational_marine, mission_22]
 }

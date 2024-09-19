@@ -26,12 +26,14 @@
           {% endif %}
         </section>
         <div x-style="flex; flex-col; flex-grow; m:1rem; lg|max-w: 50%">
+          {% for name in ded.names %}
           <h1
             x-style="my: 0.25rem; color:@semper-orange;"
             class="tattoo underlined"
           >
-            {{ ded.name }}
+            {{ name }}
           </h1>
+          {% endfor %}
           <div class="insert-extract">
             <h3>Insert: {{ ded.birth }}</h3>
             <h3>Extract: {{ ded.death }}</h3>

@@ -56,11 +56,6 @@ pub async fn delete_item_handler(
     let pool = &r.db;
     match item {
         GeneralItem::Form(i) => match i {
-            UploadFormItemType::Support => {
-                DBResource::delete_one_with_id(id, pool)
-                    .await
-                    .map_err(|err| UploadError::from(err).into_data_api_return())?;
-            }
             UploadFormItemType::Debriefs => {
                 DBTestimonial::delete_one_with_id(id, pool)
                     .await
@@ -69,6 +64,12 @@ pub async fn delete_item_handler(
         },
         GeneralItem::Multi(i) => {
             let (img_ids, subdir) = match i {
+                UploadMultipartItemType::Support => {
+                    let ret = DBResource::delete_one_with_id(id, pool)
+                        .await
+                        .map_err(|err| UploadError::from(err).into_data_api_return())?;
+                    (ret.img_ids, ret.name)
+                }
                 UploadMultipartItemType::PatrolLog => {
                     let ret = DBPatrolLog::delete_one_with_id(id, pool)
                         .await
@@ -79,7 +80,7 @@ pub async fn delete_item_handler(
                     let ret = DBDedication::delete_one_with_id(id, pool)
                         .await
                         .map_err(|err| UploadError::from(err).into_data_api_return())?;
-                    (ret.img_ids, ret.name)
+                    (ret.img_ids, ret.names.join("-"))
                 }
             };
             DBImage::delete_many_by_ids(img_ids, pool)
