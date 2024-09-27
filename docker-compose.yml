@@ -3,7 +3,7 @@ services:
   postgres:
     image: postgres:latest
     restart: always
-    container_name: semperflies
+    container_name: semperfliesDB
     ports:
       - "6500:5432"
     volumes:
@@ -12,7 +12,7 @@ services:
       - ./.env
   pgAdmin:
     image: dpage/pgadmin4
-    container_name: semperfliesAdmin
+    container_name: semperfliesDBAdmin
     ports:
       - "5050:80"
     env_file:
@@ -25,8 +25,9 @@ services:
     ports:
       - "3000:3000"
     env_file:
-      - "./.env"
+      - ./.env
     depends_on:
       - postgres
+      - pgAdmin
 volumes:
   progresDB:
