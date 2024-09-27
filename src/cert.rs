@@ -20,10 +20,12 @@ pub struct Ports {
 }
 
 pub async fn get_cert_config() -> RustlsConfig {
+    let main_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let entries = fs::read_dir(main_path.clone()).unwrap();
+    info!("entries: {entries:?}");
+
     let certs_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("certifications");
     info!("certs directory: {certs_dir:?}");
-    let entries = fs::read_dir(certs_dir.clone()).unwrap();
-    info!("entries: {entries:?}");
     RustlsConfig::from_pem_file(certs_dir.join("cert.pem"), certs_dir.join("key.pem"))
         .await
         .unwrap()

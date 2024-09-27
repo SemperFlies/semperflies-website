@@ -49,6 +49,5 @@ ADD migrations ./migrations
 ADD templates ./templates
 ADD certifications ./certifications
 
-
 CMD ["./semperflies"]
 
