@@ -1,3 +1,4 @@
+use dotenv::dotenv;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
@@ -22,6 +23,7 @@ pub struct Config {
 
 impl Config {
     pub fn init() -> Config {
+        dotenv().ok();
         let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
         let jwt_secret = std::env::var("JWT_SECRET").expect("JWT_SECRET must be set");
         // let jwt_expires_in = std::env::var("JWT_EXPIRED_IN").expect("JWT_EXPIRED_IN must be set");
