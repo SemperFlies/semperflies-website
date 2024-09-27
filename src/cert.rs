@@ -3,12 +3,15 @@ use axum::{
     handler::HandlerWithoutStateExt,
     http::{StatusCode, Uri},
     response::Redirect,
-    routing::get,
-    BoxError, Router,
+    BoxError,
 };
 use axum_server::tls_rustls::RustlsConfig;
-use std::{net::SocketAddr, path::PathBuf};
-use tracing::warn;
+use std::{
+    fs::{self, File},
+    net::SocketAddr,
+    path::PathBuf,
+};
+use tracing::info;
 
 #[derive(Clone, Copy)]
 pub struct Ports {
@@ -17,16 +20,13 @@ pub struct Ports {
 }
 
 pub async fn get_cert_config() -> RustlsConfig {
-    RustlsConfig::from_pem_file(
-        PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("certifications")
-            .join("cert.pem"),
-        PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("certifications")
-            .join("key.pem"),
-    )
-    .await
-    .unwrap()
+    let certs_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("certifications");
+    info!("certs directory: {certs_dir:?}");
+    let entries = fs::read_dir(certs_dir.clone()).unwrap();
+    info!("entries: {entries:?}");
+    RustlsConfig::from_pem_file(certs_dir.join("cert.pem"), certs_dir.join("key.pem"))
+        .await
+        .unwrap()
 }
 
 pub async fn redirect_http_to_https(ports: Ports) {
