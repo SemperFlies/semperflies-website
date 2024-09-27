@@ -17,12 +17,6 @@ pub struct Ports {
 }
 
 pub async fn get_cert_config() -> RustlsConfig {
-    warn!(
-        "{:?}",
-        PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("certificationss")
-            .join("cert.pem"),
-    );
     RustlsConfig::from_pem_file(
         PathBuf::from(env!("CARGO_MANIFEST_DIR"))
             .join("certifications")
