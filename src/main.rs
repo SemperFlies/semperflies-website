@@ -1,4 +1,5 @@
 mod auth;
+mod cert;
 mod components;
 mod database;
 mod error;
@@ -10,11 +11,15 @@ use axum::http::{
     header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
     HeaderValue, Method,
 };
+use cert::{get_cert_config, redirect_http_to_https, Ports};
 use core::panic;
 use reqwest::StatusCode;
 use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
 pub(crate) use state::AppState;
-use std::sync::{Arc, LazyLock};
+use std::{
+    net::SocketAddr,
+    sync::{Arc, LazyLock},
+};
 use telemetry::{get_subscriber, init_subscriber};
 use tokio::sync::RwLock;
 use tower_http::cors::CorsLayer;
@@ -42,14 +47,24 @@ async fn main() {
     tracing::info!("Tracing Initialized");
     let port = std::env::var("PORT").expect("Failed to get port env variable");
 
-    let config = state::Config::init();
+    let ports = Ports {
+        http: 7878,
+        https: port.parse().unwrap(),
+    };
+
+    let cert_config = get_cert_config().await;
+
+    tokio::spawn(redirect_http_to_https(ports));
+
+    let app_config = state::Config::init();
     tracing::info!(
         "attempting to connect to database: {:?}",
-        &config.database_url
+        &app_config.database_url
     );
+
     let pool = match PgPoolOptions::new()
         .max_connections(10)
-        .connect(&config.database_url)
+        .connect(&app_config.database_url)
         .await
     {
         Ok(pool) => {
@@ -83,11 +98,22 @@ async fn main() {
     let app = routes::create_router(Arc::new(RwLock::new(AppState {
         db: pool.clone(),
         admin_session_id: None,
-        env: config.clone(),
+        env: app_config.clone(),
     })))
     .layer(cors);
-    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", port))
+
+    let addr = SocketAddr::from(([127, 0, 0, 1], ports.https));
+    tracing::debug!("listening on {}", addr);
+    axum_server::bind_rustls(addr, cert_config)
+        .serve(app.into_make_service())
         .await
         .unwrap();
-    axum::serve(listener, app).await.unwrap();
+    // }
+    // let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", ports.https))
+    //     .await
+    //     .unwrap();
+    //
+    //
+    //
+    // axum::serve(listener, app).await.unwrap();
 }

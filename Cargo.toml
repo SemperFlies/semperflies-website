@@ -10,6 +10,7 @@ tokio = { version = "1.37.0", features = ["full"] }
 
 axum-htmx = "0.4.0"
 axum-macros = "0.3.8"
+axum-server = { version = "0.7.1", features = ["tls-rustls"] }
 tracing = "0.1.40"
 tracing-log = "0.2.0"
 tracing-subscriber = {version= "0.3.17", features=["env-filter"]}
