@@ -311,7 +311,7 @@ mod tests {
 
     async fn connect_to_database() -> Pool<Postgres> {
         dotenv::dotenv().ok();
-        let database_url = std::env::var("DATABASE_PRIVATE_URL").expect("DATABASE_URL must be set");
+        let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
         match PgPoolOptions::new()
             .max_connections(10)
             .connect(&database_url)
