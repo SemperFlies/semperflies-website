@@ -1,23 +1,16 @@
-.carousel-container {
-  box-sizing: content-box;
-}
-
 .insert-extract h3 {
   margin: 0.25rem 0rem;
 }
 
-.carousel-image-container img {
-  object-fit: contain;
-  /* min-width: 200px; */
-  min-height: 350px;
-  min-width: 40vw;
-  /* height: 75vw; */
-  max-width: 40vw;
-  max-height: 80%;
+#ded-content .carousel-container {
+  box-sizing: content-box;
 }
 
-@media screen and (max-width: 920px) {
-  .carousel-container .images img {
-    align-self: center;
-  }
+#ded-content .carousel-container img {
+  object-fit: cover;
+  justify-self: center;
+  min-width: 250px;
+  min-height: 350px;
+  max-width: 30vw;
+  max-height: 40vw;
 }

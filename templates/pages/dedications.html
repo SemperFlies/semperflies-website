@@ -5,20 +5,23 @@
     <h1>Speak their names</h1>
   </section>
   <section class="main-section-transition" x-data="{ admin: {{admin}} }">
-    <div x-style="flex; flex-col; lg|mx:4rem; mx:2rem;">
+    <div id="ded-content" x-style="flex; flex-col; lg|mx:4rem; mx:1rem;">
       {% for ded in dedications %}
       <section
         class="bordered-box"
         x-style="
-        w:100%;
-        align-self:center;
         flex;
         lg|flex-row;
         flex-col;
         justify-content:space-between;
-        mb:1rem;"
+        m:1rem;
+        "
       >
-        <section x-style="align-self:center;">
+        <section
+          x-style="align-self:center;
+          w:100%;
+          "
+        >
           {% if !ded.carousel.images.is_empty() %}
           <!---->
           {{ Self::render_carousel(ded.carousel)|safe }}

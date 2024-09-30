@@ -36,7 +36,7 @@
   box-sizing: content-box;
 }
 
-#log-content .carousel-container .images img {
+#log-content .carousel-container img {
   justify-self: center;
   min-width: 250px;
   min-height: 350px;
