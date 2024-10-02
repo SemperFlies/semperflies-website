@@ -39,17 +39,20 @@ pub static TRACING: LazyLock<()> = LazyLock::new(|| {
 });
 
 const LOCALHOST: &str = "http://localhost";
+const DEV_ENV: &str = "DEV";
+const PROD_ENV: &str = "PROD";
 
 #[tokio::main]
 async fn main() {
     dotenv::dotenv().ok();
     LazyLock::force(&TRACING);
     tracing::info!("Tracing Initialized");
-    let port = std::env::var("PORT").expect("Failed to get port env variable");
+    // let port = std::env::var("PORT").expect("Failed to get port env variable");
+    let env_ = std::env::var("ENVIRONMENT").unwrap();
 
     let ports = Ports {
         http: 7878,
-        https: port.parse().unwrap(),
+        https: 443,
     };
 
     let cert_config = get_cert_config().await;
@@ -79,10 +82,10 @@ async fn main() {
 
     let allowed_origin = std::env::var("ALLOWED_ORIGIN").unwrap_or_else(|_| {
         warn!("No allowed origin env var, falling back to localhost");
-        format!("{}:{}", LOCALHOST, port)
+        format!("{}:{}", LOCALHOST, 3000)
     });
 
-    if allowed_origin != format!("{}:{}", LOCALHOST, port) {
+    if allowed_origin != format!("{}:{}", LOCALHOST, 3000) {
         sqlx::migrate!("./migrations")
             .run(&pool)
             .await
@@ -102,8 +105,12 @@ async fn main() {
     })))
     .layer(cors);
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], ports.https));
-    // let addr = SocketAddr::from(([127, 0, 0, 1], ports.https));
+    let addr = match env_.as_str() {
+        DEV_ENV => SocketAddr::from(([127, 0, 0, 1], ports.http)),
+        PROD_ENV => SocketAddr::from(([0, 0, 0, 0], ports.https)),
+        _ => panic!("unexpected env: {env_}"),
+    };
+
     tracing::debug!("listening on {}", addr);
     axum_server::bind_rustls(addr, cert_config)
         .serve(app.into_make_service())
