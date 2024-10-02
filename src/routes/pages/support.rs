@@ -208,7 +208,7 @@ Our mission is to illuminate these hidden facets, enabling you to live with inte
         facebook: None,
     };
 
-    let reconasaince_foundataion = SupportResource {
+    let reconnaissance_foundataion = SupportResource {
         id: Uuid::new_v4(),
         name: "Marine Reconnaissance Foundation".to_string(),
         description: r#"The Marine Reconnaissance Foundation (MRF) is committed to serving the Marine Reconnaissance Community by providing support to active-duty, retired and former teammates via reoccurring annual and emergency support programs for Reconnaissance Marines, and Special Amphibious Reconnaissance Corpsmen (SARC) deployed and our families."#.to_string(),
@@ -236,5 +236,38 @@ Our mission is to illuminate these hidden facets, enabling you to live with inte
         facebook: None,
     };
 
-    vec![motivational_marine, mission_22, reconasaince_foundataion]
+    let ltffo = SupportResource {
+        id: Uuid::new_v4(),
+        name: "Lake Tahoe Fly Fishing Outfitters".to_string(),
+        description: r#"Tahoe Fly Fishing Outfitters was an integral part of getting Semper Flies Foundation started. I source my materials here and received advice & coaching for the first Semper Flie ever made. In addition, they are a huge supporter of Veterans. Located on the south shore of Lake Tahoe offering the most complete fly-fishing outfitter and shop for all things fly fishing in the Sierra. They offer private and group guided fishing trips. And, they have all the gear available at their shop for rent or purchase."#.to_string(),
+        physical_address: Some(Address {
+                line_2: None,
+                line_1: "2705 Lake Tahoe Blvd.".to_string(),
+                city: "South Lake Tahoe".to_string(),
+                state: "CA".to_string(),
+                zip: "96150".to_string(),
+            }),
+        phone: Some("(530) 541-8208".to_string()),
+        website_url: Some("https://tahoeflyfishing.com/".to_string()),
+        email: None,
+        logo: Some(Image {
+            src: "public/assets/images/support/ltffo.webp".to_string(),
+            alt: "the Lake Tahoe Fly Fishing Outfitters logo".to_string(),
+            subtitle: String::new(),
+        }),
+    linkedin: None,
+        instagram: None,
+        missions: vec![],
+        twitter: None,
+        threads: None,
+        youtube: None,
+        facebook: None,
+    };
+
+    vec![
+        motivational_marine,
+        mission_22,
+        reconnaissance_foundataion,
+        ltffo,
+    ]
 }

@@ -20,7 +20,7 @@ RUN apt-get update \
     && apt-get install -y ca-certificates tzdata libssl3 \
     && rm -rf /var/lib/apt/lists/*
 
-EXPOSE 3000
+EXPOSE 443
 
 ENV TZ=Etc/UTC \
     APP_USER=appuser

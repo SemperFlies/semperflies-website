@@ -23,7 +23,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "443:443"
     env_file:
       - ./.env
     depends_on:

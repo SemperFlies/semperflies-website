@@ -16,6 +16,16 @@
   transform: scale(1.05);
 }
 
+.inactive {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.inactive img {
+  pointer-events: none;
+  opacity: 1 !important;
+}
+
 #desktop-nav > button {
   margin: 0rem 0.5rem;
   color: var(--primary-light);

@@ -105,23 +105,24 @@ async fn main() {
     })))
     .layer(cors);
 
-    let addr = match env_.as_str() {
-        DEV_ENV => SocketAddr::from(([127, 0, 0, 1], ports.http)),
-        PROD_ENV => SocketAddr::from(([0, 0, 0, 0], ports.https)),
-        _ => panic!("unexpected env: {env_}"),
-    };
+    match env_.as_str() {
+        DEV_ENV => {
+            let listener = tokio::net::TcpListener::bind(format!("127.0.0.1:{}", 3000))
+                .await
+                .unwrap();
 
-    tracing::debug!("listening on {}", addr);
-    axum_server::bind_rustls(addr, cert_config)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+            tracing::debug!("listening on {listener:#?}");
+            axum::serve(listener, app).await.unwrap();
+        }
+        PROD_ENV => {
+            let addr = SocketAddr::from(([0, 0, 0, 0], ports.https));
+            tracing::debug!("listening on {}", addr);
+            axum_server::bind_rustls(addr, cert_config)
+                .serve(app.into_make_service())
+                .await
+                .unwrap();
+        }
+        _ => panic!("unexpected env: {env_}"),
+    }
     // }
-    // let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", ports.https))
-    //     .await
-    //     .unwrap();
-    //
-    //
-    //
-    // axum::serve(listener, app).await.unwrap();
 }

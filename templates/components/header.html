@@ -18,20 +18,66 @@
       hx-push-url="true"
       x-show.important="is_mobile == false"
       x-cloak
+      x-data="{
+        activePage: location.pathname,
+        setActivePage(path) {
+          console.log(this.activePage);
+          this.activePage = path;
+        }
+      }"
     >
-      <button hx-get="/about_us">About Us</button>
-      <button hx-get="/support">Support</button>
-      <button hx-get="/patrol_gear">Patrol Gear</button>
+      <button
+        hx-get="/about_us"
+        :class="{ 'inactive': activePage === '/about_us' }"
+        @click="setActivePage('/about_us')"
+      >
+        About Us
+      </button>
+      <button
+        hx-get="/support"
+        :class="{ 'inactive': activePage === '/support' }"
+        @click="setActivePage('/support')"
+      >
+        Support
+      </button>
+      <button
+        hx-get="/patrol_gear"
+        :class="{ 'inactive': activePage === '/patrol_gear' }"
+        @click="setActivePage('/patrol_gear')"
+      >
+        Patrol Gear
+      </button>
+
       <img
         loading="lazy"
         class="logo"
         src="/public/assets/images/logoTrans.png"
         hx-get="/"
         hx-select="#route-content"
+        :class="{ 'inactive': activePage === '/landing' }"
+        @click="setActivePage('/landing')"
       />
-      <button hx-get="/dedications">Speak their names</button>
-      <button hx-get="/patrol_log">Patrol Log</button>
-      <button hx-get="/debriefs">Debriefs</button>
+      <button
+        hx-get="/dedications"
+        :class="{ 'inactive': activePage === '/dedications' }"
+        @click="setActivePage('/dedications')"
+      >
+        Speak their names
+      </button>
+      <button
+        hx-get="/patrol_log"
+        :class="{ 'inactive': activePage === '/patrol_log' }"
+        @click="setActivePage('/patrol_log')"
+      >
+        Patrol Log
+      </button>
+      <button
+        hx-get="/debriefs"
+        :class="{ 'inactive': activePage === '/debriefs' }"
+        @click="setActivePage('/debriefs')"
+      >
+        Debriefs
+      </button>
     </nav>
     <div
       x-show.important="is_mobile"
