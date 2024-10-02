@@ -87,7 +87,6 @@ pub async fn dedications(
     match get_dedications(&r.db).await {
         Ok(mut dedications) => {
             dedications.append(&mut builtin_dedications());
-            dedications.append(&mut generate_dedications(10));
             let template = DedicationsTemplate {
                 dedications,
                 admin: soft_auth_ext.is_logged_in,
@@ -153,56 +152,26 @@ General Mattis also wrote:
         },
     };
 
-    vec![mileo, fifth_platoon]
-}
-
-fn generate_dedications(amt: i32) -> Vec<Dedication> {
-    let mut rng = thread_rng();
-    let image_urls = vec![
-        "public/assets/images/board_members/business.webp".to_string(),
-        "public/assets/images/board_members/business2.webp".to_string(),
-        "public/assets/images/board_members/old.".to_string(),
-    ];
-
-    let mut dedications = Vec::new();
-
-    for _ in 0..amt {
-        let name = format!("Veteran {}", dedications.len() + 1);
-        let bio = "Served in the military".to_string();
-        let birth_year = rng.gen_range(1950..1990);
-        let birth_month = rng.gen_range(1..13);
-        let birth_day = rng.gen_range(1..29);
-        let birth = NaiveDate::from_ymd_opt(birth_year, birth_month, birth_day).unwrap();
-
-        let death_year = birth_year + rng.gen_range(20..70);
-        let death_month = rng.gen_range(1..13);
-        let death_day = rng.gen_range(1..29);
-        let death = NaiveDate::from_ymd_opt(death_year, death_month, death_day).unwrap();
-
-        let amt_imgs = rng.gen_range(0..=3);
-        let mut images = vec![];
-        for i in 0..amt_imgs {
-            images.push(Image {
-                src: image_urls[i].to_owned(),
-                alt: "".to_string(),
+    let maxwell = Dedication {
+        id: Uuid::new_v4(),
+        names: vec![
+            "Sergeant Jason Maxwel".to_string()
+        ],
+        birth: NaiveDate::from_ymd_opt(1978, 03, 04).unwrap(),
+        death: NaiveDate::from_ymd_opt(2003, 10, 30).unwrap(),
+        bio: r#"Sergeant Jason Maxwell was all heart & the epitome of a Force Recon Marine. I met him when we were standing by for the Iraq Invasion at Camp Commando in Kuwait. Our GP (general purpose) platoon size tents were right next to each other. Our platoons spent a lot of time together; it’s a small community anyway so a lot of us knew each other as a result from time in the unit. They were deployed to Iraq from Kāné Ohe Bay, Hawai’i, 4th Force Reconnaissance Co. Our platoon was out of Camp Pendleton, Ca, 1st Force Reconnaissance Co. After Combat Operations in Iraq our platoons returned back to our respective bases. I went out to Yuma, Az. to be an instructor at the Military Free Fall School, H.A.L.O. Shortly after becoming an instructor I looked up one day with the biggest smile and it was returned as Maxwell walked through the door to be a student. It was great to see him again; like I said small community. Maxwell did great progressing through the course. Another Force Recon Marine and myself were his instructors. Maxwell lost his life training to defend this country, an already accomplished Combat Veteran. He had a full malfunction on his parachute and left this life way too early. He will never be forgotten. 
+RIP Warrior. 
+S/F. 
+ML&R. "#.to_string(),
+        carousel: CarouselTemplate {
+            images: vec![Image {
+                src: "public/assets/images/dedications/maxwell.webp".to_string(),
+                alt: "a dedication to maxwell".to_string(),
                 subtitle: "".to_string(),
-            })
-        }
-        let carousel = CarouselTemplate {
-            show_subtitles: false,
-            images,
+            }],
             auto_scroll: false,
-        };
-
-        dedications.push(Dedication {
-            id: uuid::Uuid::new_v4(),
-            names: vec![name],
-            bio,
-            birth,
-            death,
-            carousel,
-        });
-    }
-
-    dedications
+            show_subtitles: false,
+        },
+    };
+    vec![mileo, fifth_platoon, maxwell]
 }
