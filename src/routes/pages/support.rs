@@ -208,5 +208,33 @@ Our mission is to illuminate these hidden facets, enabling you to live with inte
         facebook: None,
     };
 
-    vec![motivational_marine, mission_22]
+    let reconasaince_foundataion = SupportResource {
+        id: Uuid::new_v4(),
+        name: "Marine Reconnaissance Foundation".to_string(),
+        description: r#"The Marine Reconnaissance Foundation (MRF) is committed to serving the Marine Reconnaissance Community by providing support to active-duty, retired and former teammates via reoccurring annual and emergency support programs for Reconnaissance Marines, and Special Amphibious Reconnaissance Corpsmen (SARC) deployed and our families."#.to_string(),
+        physical_address: Some(Address {
+                line_2: None,
+                line_1: "91-1000 Hoomanao St".to_string(),
+                city: "Ewa Beach".to_string(),
+                state: "HI".to_string(),
+                zip: "96706".to_string(),
+            }),
+        phone: Some("(808)-690-7025".to_string()),
+        email: Some("info@reconfoundation.org".to_string()),
+        website_url: Some("https://reconfoundation.org/".to_string()),
+        logo: Some(Image {
+            src: "public/assets/images/support/marine-recon-foundation-logo.webp".to_string(),
+            alt: "the marine recon foundation logo".to_string(),
+            subtitle: String::new(),
+        }),
+    linkedin: None,
+        instagram: None,
+        missions: vec![],
+        twitter: None,
+        threads: None,
+        youtube: None,
+        facebook: None,
+    };
+
+    vec![motivational_marine, mission_22, reconasaince_foundataion]
 }
