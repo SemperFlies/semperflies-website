@@ -106,7 +106,7 @@ pub async fn patrol_log(
         logs_map.insert(l.heading.to_owned(), l);
     }
 
-    for l in builtin_logs() {
+    for l in crate::database::builtins::builtin_logs() {
         logs_map.insert(l.heading.to_owned(), l);
     }
 
@@ -141,33 +141,6 @@ pub async fn patrol_log(
         Ok(r) => Html(r),
         Err(err) => Html(format!("Error rendering Layout: {}", err.to_string())),
     }
-}
-
-fn builtin_logs() -> Vec<Log> {
-    let images =
-        util::all_images_in_directory("public/assets/images/patrol_log/fishing_trip").unwrap();
-    let images = images
-        .into_iter()
-        .map(|path| Image {
-            src: path.to_str().unwrap().to_string(),
-            alt: String::new(),
-            subtitle: String::new(),
-        })
-        .collect();
-
-    let carousel = CarouselTemplate {
-        show_subtitles: false,
-        images,
-        auto_scroll: false,
-    };
-    let fishing_trip = Log {
-        id: Uuid::new_v4(),
-        heading: "Semperflies Fishing Trip".to_string(),
-        description: "Semper Flies Foundation & Tahoe Fly Fishing Outfitters teamed up to send (2) Combat Veterans on a fly fishing trip they would remember for the rest of their lives.".to_string(),
-        date: NaiveDate::from_ymd_opt(2023, 06, 21).unwrap(),
-        carousel,
-    };
-    vec![fishing_trip]
 }
 
 fn generate_activities(amt: i32) -> Vec<Log> {
