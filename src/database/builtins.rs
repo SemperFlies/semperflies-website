@@ -10,7 +10,7 @@ use crate::{
     util::all_images_in_directory,
 };
 use chrono::NaiveDate;
-use std::collections::HashMap;
+use std::colblections::HashMap;
 use uuid::Uuid;
 
 /// This module contains all 'builtin' database data
