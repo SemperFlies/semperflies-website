@@ -85,8 +85,9 @@ pub async fn dedications(
 ) -> Html<String> {
     let r = data.read().await;
     match get_dedications(&r.db).await {
-        Ok(mut dedications) => {
-            dedications.append(&mut crate::database::builtins::builtin_dedications());
+        Ok(mut got_dedications) => {
+            let mut dedications = crate::database::builtins::builtin_dedications();
+            dedications.append(&mut got_dedications);
             let template = DedicationsTemplate {
                 dedications,
                 admin: soft_auth_ext.is_logged_in,

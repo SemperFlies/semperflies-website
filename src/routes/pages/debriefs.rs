@@ -31,8 +31,9 @@ pub async fn debriefs(
     let r = data.read().await;
 
     match get_testimonials(&r.db).await {
-        Ok(mut testimonials) => {
-            testimonials.append(&mut crate::database::builtins::builtin_testimonials());
+        Ok(mut got_testimonials) => {
+            let mut testimonials = crate::database::builtins::builtin_testimonials();
+            testimonials.append(&mut got_testimonials);
             let template = DebriefsTemplate {
                 testimonials,
                 admin: soft_auth_ext.is_logged_in,

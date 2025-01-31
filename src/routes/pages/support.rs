@@ -137,8 +137,9 @@ pub async fn support(
 ) -> Html<String> {
     let r = data.read().await;
     match get_resources(&r.db).await {
-        Ok(mut resources) => {
-            resources.append(&mut crate::database::builtins::builtin_support_resources());
+        Ok(mut got_resources) => {
+            let mut resources = crate::database::builtins::builtin_support_resources();
+            resources.append(&mut got_resources);
             let template = SupportTemplate {
                 resources,
                 admin: soft_auth_ext.is_logged_in,
