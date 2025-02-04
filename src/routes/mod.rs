@@ -51,6 +51,7 @@ pub fn create_router(state: SharedState) -> Router {
         .route("/support", get(pages::support::support))
         .layer(middleware::from_fn_with_state(state.clone(), soft_auth))
         .route("/patrol_gear", get(pages::patrol_gear::patrol_gear))
+        .route("/shopping_cart", get(pages::shopping_cart::shopping_cart))
         .route("/patrol_log", get(pages::patrol_log::logs::patrol_log))
         .layer(middleware::from_fn_with_state(state.clone(), soft_auth))
         .route("/dedications", get(pages::dedications::dedications))

@@ -14,7 +14,7 @@ use std::collections::HashMap;
 use uuid::Uuid;
 
 /// This module contains all 'builtin' database data
-/// This is done this way (rather than through a migration file) for the sake of brevity.
+/// This is done this way (rather got_jmi(than through a migration file) for the sake of brevity.
 /// The alternative would be to manually create UUIDs for all images & entries and put that into
 /// a .sql migration file
 ///

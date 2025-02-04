@@ -1,7 +1,7 @@
-use std::collections::HashMap;
-
 use askama::Template;
+use axum::extract::Path;
 use axum::response::Html;
+use std::collections::HashMap;
 use tracing::warn;
 
 use crate::components::carousel::{CarouselTemplate, HasCarousel, Image};
@@ -24,6 +24,7 @@ pub async fn patrol_gear() -> Html<String> {
         Err(err) => Html(format!("Error rendering Layout: {}", err.to_string())),
     }
 }
+
 impl HasCarousel for PatrolGearTemplate {}
 
 #[derive(Debug)]

@@ -5,9 +5,7 @@
 
     <p x-style="text-align:center;">
       Email
-      <span x-style="decoration:underline;"
-        >Jamie@semperfliesfoundation.com</span
-      >
+      <span x-style="decoration:underline;">Jamie@semperfliesfoundation.com</span>
       To place your order today!
       <br />
       <br />
@@ -26,28 +24,16 @@
       <br />
     </p>
   </section>
-  <section
-    class="main-section-transition"
-    x-init="$watch('current_gear', value=> console.log(value))"
-    x-data="{ current_gear: '{{ HATS }}' }"
-  >
+  <section class="main-section-transition" x-init="$watch('current_gear', value=> console.log(value))"
+    x-data="{ current_gear: '{{ HATS }}' }">
     <div x-style="flex; flex-row; justify-content: space-around;">
-      <button
-        :class="current_gear === '{{ HATS }}' ? 'selected' : ''"
-        @click="current_gear = '{{ HATS }}'"
-      >
+      <button :class="current_gear === '{{ HATS }}' ? 'selected' : ''" @click="current_gear = '{{ HATS }}'">
         {{ HATS }}
       </button>
-      <button
-        :class="current_gear === '{{ MISC }}' ? 'selected' : ''"
-        @click="current_gear = '{{ MISC }}'"
-      >
+      <button :class="current_gear === '{{ MISC }}' ? 'selected' : ''" @click="current_gear = '{{ MISC }}'">
         {{ MISC }}
       </button>
-      <button
-        :class="current_gear === '{{ TOPS }}' ? 'selected' : ''"
-        @click="current_gear = '{{ TOPS }}'"
-      >
+      <button :class="current_gear === '{{ TOPS }}' ? 'selected' : ''" @click="current_gear = '{{ TOPS }}'">
         {{ TOPS }}
       </button>
     </div>
@@ -102,4 +88,19 @@
       </template>
     </div>
   </section>
+
+
+  <shop-item id="item-1" name="Cool Hat" price="19.99"
+    imgs='["public/assets/images/merchandise/hats/black-baseball.webp", "public/assets/images/merchandise/hats/black-baseball2.webp"]'
+    description="A stylish and comfortable hat."></shop-item>
+
+  <shop-item id="item-2" name="Cool Hoodie" price="19.99" imgs='[
+"public/assets/images/merchandise/tops/hoodie-back.webp",
+"public/assets/images/merchandise/tops/hoodie-front.webp",
+"public/assets/images/merchandise/tops/hoodie-side.webp"
+]' description="A stylish and comfortable hoodie.">
+  </shop-item>
+
+  <shopping-cart></shopping-cart>
+
 </div>
