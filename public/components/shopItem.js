@@ -12,13 +12,6 @@
     }
 
     /**
-     * Retrieves the item's data from its attributes.
-     * @typedef {Object} ShopItemData
-     * @property {string} id - The item's ID.
-     * @property {string} name - The name of the item.
-     * @property {number} price - The price of the item.
-     * @property {string[]} imgs - An array of image URLs for the item.
-     * @property {string|null} description - The description of the item.
      * @returns {ShopItemData}
      */
     get itemData() {

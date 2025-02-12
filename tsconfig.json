@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    // ...
+  },
+  "include": [
+    "./types.js",
+    "src/**/*.js"
+  ],
+}
