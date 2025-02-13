@@ -1,15 +1,19 @@
 #!/bin/bash
 
-# Define the source and target directories
-SOURCE_DIR="$HOME/semperflies_backups/imgs_tmp"
+# Define source and target directories
+SOURCE_DIR="$HOME/semperflies_backups/imgs_tmp/images"
+
+# Define your Docker container name
+CONTAINER_NAME="semperflies-website-semperflies-1"
 TARGET_DIR="/usr/src/app/public/assets/images"
 
-# Function to move files and directories
-move_files() {
+# Function to move files into Docker container
+move_files_to_container() {
     local source="$1"
-    local target="$2"
+    local container="$2"
+    local target_path="$3"
 
-    # Loop through the items (files or directories) in the source directory
+    # Loop through the files in the source directory
     for item in "$source"/*; do
         # Skip if no files are found
         [ -e "$item" ] || continue
@@ -17,21 +21,11 @@ move_files() {
         # Get the basename (file or directory name)
         basename_item=$(basename "$item")
         
-        # Check if the item exists in the target directory
-        if [ ! -e "$target/$basename_item" ]; then
-            if [ -d "$item" ]; then
-                # If it's a directory, recursively call the function
-                echo "Moving directory $item to $target"
-                mv -v "$item" "$target"
-            else
-                # If it's a file, move it
-                echo "Moving file $item to $target"
-                mv -v "$item" "$target"
-            fi
-        fi
+        # Check if the item exists in the target directory inside the container
+        echo "Copying $item to container $container:$target_path"
+        sudo docker cp "$item" "$container:$target_path"
     done
 }
 
-# Call the function to move files and directories from source to target
-move_files "$SOURCE_DIR" "$TARGET_DIR"
-
+# Move the files to the container
+move_files_to_container "$SOURCE_DIR" "$CONTAINER_NAME" "$TARGET_DIR"
