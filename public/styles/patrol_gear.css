@@ -1,3 +1,12 @@
+#shop-items-container {
+  margin: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  justify-content: center;
+  align-content: start;
+}
+
 #gear-display .merch-grid {
   margin-top: 2rem;
   display: grid;
@@ -7,7 +16,7 @@
   align-content: start;
 }
 
-.merch-grid > div {
+.merch-grid>div {
   display: flex;
   flex-direction: column;
   align-items: center;
