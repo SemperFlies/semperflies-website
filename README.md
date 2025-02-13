@@ -9,7 +9,7 @@ If you ever need to manually backup the database, just run `backup_db.sh`
 
 To restore from a backup:
 ```shell
-cat path/to/dump | docker exec -i semperfliesDB psql -U admin
+cat path/to/dump | docker exec -i semperfliesDB psql -U admin -d rust_hs256
 ```
 > **TIP**: See `.env` for info on postgres database credentials
 
@@ -21,6 +21,8 @@ When changes are made to the website code, a few steps need to be taken to pull 
 
 First, backup images in the container
 ```shell
+# You might want to clear previously backed up images
+rm -rf ~/semperflies_backups/imgs_tmp/*
 sudo docker cp semperflies-website-semperflies-1:/usr/src/app/public/assets/images ~/semperflies_backups/imgs_tmp
 ```
 Then it should be safe to stop the container
@@ -44,8 +46,8 @@ sudo docker compose up -d --no-deps --build semperflies
 
 to restore the backup up images:
 ```shell
-sudo docker cp ~/semperflies_backups/imgs_tmp/images semperflies-website-semperflies-1:/usr/src/app/public/assets/images
-# remove the images after this
+./move_imgs.sh
+# remove the images after this if you want
 rm -rf ~/semperflies_backups/imgs_tmp/*
 ```
 
