@@ -34,7 +34,7 @@ impl FileAttachment {
                 UploadMultipartItemType::Support => SUPPORT,
             },
             match subdir {
-                Some(dir) => format!("/{}", dir),
+                Some(dir) => format!("/{}", dir.replace(" ", "_")),
                 None => "".to_string(),
             }
         )
@@ -58,6 +58,7 @@ impl FileAttachment {
         }
     }
 
+    #[tracing::instrument("remove from filesystem")]
     pub fn remove_from_filesys(
         subdir: Option<&str>,
         multipart_type: &UploadMultipartItemType,
