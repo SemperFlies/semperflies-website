@@ -2,12 +2,7 @@
 > From [This helpful site](https://sqlbak.com/blog/how-to-automate-postgresql-database-backups-in-linux/)
   And [this stackoverflow](https://stackoverflow.com/questions/24718706/backup-restore-a-dockerized-postgresql-database)
 
-
-Once you've shhed into the vps, you'll need to get into the docker container that contains the database. Do this by running:
-(This is in `backup_db.sh`, which should be added as a cron job)
-```shell
-docker exec -t semperfliesDB pg_dumpall -c -U admin > backups/dump_`date +%Y-%m-%d"_"%H_%M_%S`.sql
-```
+If you ever need to manually backup the database, just run `backup_db.sh`
 
 To restore from a backup:
 ```shell
