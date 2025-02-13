@@ -8,7 +8,7 @@ BACKUP_FILE="$BACKUP_DIR/dump_$TIMESTAMP.sql"
 mkdir -p $BACKUP_DIR
 
 # Perform the backup
-docker exec -t semperfliesDB pg_dumpall -c -U admin > $BACKUP_FILE
+sudo docker exec -t semperfliesDB pg_dumpall -c -U admin > $BACKUP_FILE
 
 echo "Backup completed: $BACKUP_FILE"
 

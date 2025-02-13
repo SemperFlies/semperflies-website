@@ -1,3 +1,6 @@
+# Semperflies site readme
+This contains helpful information for backing up and updating the site on the VPS side.
+
 ## Backup instructions (from the VPS)
 > From [This helpful site](https://sqlbak.com/blog/how-to-automate-postgresql-database-backups-in-linux/)
   And [this stackoverflow](https://stackoverflow.com/questions/24718706/backup-restore-a-dockerized-postgresql-database)
@@ -13,7 +16,6 @@ cat path/to/dump | docker exec -i semperfliesDB psql -U admin
 ## Pulling changes for the website
 When changes are made to the website code, a few steps need to be taken to pull those changes into the docker container without interfering with the database.
 
-
 > **TIP**: If you ever need to access the image: `sudo docker exec -it semperflies-website-semperflies-1 /bin/bash
 `
 
@@ -24,7 +26,11 @@ sudo docker cp semperflies-website-semperflies-1:/usr/src/app/public/assets/imag
 Then it should be safe to stop the container
 ```shell
 sudo docker compose stop semperflies
+# then remove
+sudo docker rm semperflies-website-semperflies-1
 ```
+
+
 ..and pull from github
 ```shell
 git pull
