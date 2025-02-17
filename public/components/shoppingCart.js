@@ -51,7 +51,7 @@
             container.appendChild(countSpan);
 
             container.addEventListener("click", () => {
-                window.location.href = "/shopping_cart";
+                window.location.href = "/stripe/checkout";
             });
 
             const style = document.createElement("style");

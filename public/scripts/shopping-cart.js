@@ -1,6 +1,5 @@
 
 function renderCart() {
-  /** @type {CartData} */
   const cartData = JSON.parse(localStorage.getItem("cart-items") || "{}");
   const cartContainer = document.getElementById("cart-items");
   const totalPriceElement = document.getElementById("cart-total");

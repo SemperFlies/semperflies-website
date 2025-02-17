@@ -8,30 +8,28 @@
     }
 
     connectedCallback() {
+      console.log(this.product);
       this.render();
     }
 
     /**
-     * @returns {ShopItemData}
+     * This component expects to receive a product JSON object as a string in the 'product' attribute
+     * @returns {Product} - the parsed product
      */
-    get itemData() {
-      return {
-        id: this.getAttribute('id'),
-        name: this.getAttribute('name'),
-        price: parseFloat(this.getAttribute('price') || 0),
-        imgs: this.getAttribute('imgs') ? JSON.parse(this.getAttribute('imgs')) : [],
-        description: this.getAttribute('description')
-      };
+    get product() {
+      let str = this.getAttribute("product");
+      let product  = JSON.parse(str);
+      return product;
     }
 
     addToCart() {
       const cartItems = JSON.parse(localStorage.getItem("cart-items") || `{}`);
-      const { id, name, price, imgs, description } = this.itemData;
+      const { id }  = this.product;
 
       if (id in cartItems) {
-        cartItems[id].quantity += 1;
+        cartItems[id] += 1;
       } else {
-        cartItems[id] = { name, price, imgs, description, quantity: 1 };
+        cartItems[id] = 1;
       }
 
       localStorage.setItem("cart-items", JSON.stringify(cartItems));
@@ -40,48 +38,10 @@
       window.dispatchEvent(new Event("storage"));
     }
 
-    /**
-    * @param {string[]} imgs
-    */
-    renderCarousel(imgs) {
-      let currentIndex = 0;
 
-      const carouselContainer = document.createElement("div");
-      carouselContainer.classList.add("carousel-container");
-      const prevNextButtons = document.createElement("div");
-      prevNextButtons.classList.add("prev-next-buttons");
-
-      const imgElement = document.createElement("img");
-      imgElement.src = imgs[currentIndex];
-      imgElement.alt = "Product Image";
-
-      carouselContainer.appendChild(imgElement);
-      if (imgs.length > 1) { 
-          const prevButton = document.createElement("button");
-          prevButton.classList.add("material-symbols-outlined");
-          prevButton.textContent = "chevron_left";
-          prevButton.addEventListener("click", () => {
-            currentIndex = (currentIndex - 1 + imgs.length) % imgs.length;
-            imgElement.src = imgs[currentIndex];
-          });
-
-          const nextButton = document.createElement("button");
-          nextButton.classList.add("material-symbols-outlined");
-          nextButton.textContent = "chevron_right";
-          nextButton.addEventListener("click", () => {
-            currentIndex = (currentIndex + 1) % imgs.length;
-            imgElement.src = imgs[currentIndex];
-          });
-          prevNextButtons.appendChild(prevButton);
-          prevNextButtons.appendChild(nextButton);
-          carouselContainer.appendChild(prevNextButtons);
-     }      
-
-      return carouselContainer;
-    }
 
     render() {
-      const { name, price, imgs, description } = this.itemData;
+      const { name, default_price, images, description } = this.product;
 
       const container = document.createElement("div");
       container.classList.add("shop-item");
@@ -93,7 +53,10 @@
       desc.textContent = description;
 
       const priceTag = document.createElement("p");
-      priceTag.textContent = `$${price.toFixed(2)}`;
+
+      // unit_amount is in cents
+      const formattedPrice = (default_price.unit_amount / 100).toFixed(2);
+      priceTag.textContent = `$${formattedPrice}`;
       priceTag.classList.add("price");
 
       const addButton = document.createElement("button");
@@ -102,7 +65,7 @@
       addButton.addEventListener("click", () => this.addToCart());
 
       container.appendChild(title);
-      container.appendChild(this.renderCarousel(imgs));
+      container.appendChild(this.renderCarousel(images));
       container.appendChild(desc);
       container.appendChild(priceTag);
       container.appendChild(addButton);
@@ -162,7 +125,49 @@
       this.shadowRoot.appendChild(style);
       this.shadowRoot.appendChild(container);
     }
+
+    
+    /**
+    * @param {string[]} imgs
+    */
+    renderCarousel(imgs) {
+      let currentIndex = 0;
+
+      const carouselContainer = document.createElement("div");
+      carouselContainer.classList.add("carousel-container");
+      const prevNextButtons = document.createElement("div");
+      prevNextButtons.classList.add("prev-next-buttons");
+
+      const imgElement = document.createElement("img");
+      imgElement.src = imgs[currentIndex];
+      imgElement.alt = "Product Image";
+
+      carouselContainer.appendChild(imgElement);
+      if (imgs.length > 1) { 
+          const prevButton = document.createElement("button");
+          prevButton.classList.add("material-symbols-outlined");
+          prevButton.textContent = "chevron_left";
+          prevButton.addEventListener("click", () => {
+            currentIndex = (currentIndex - 1 + imgs.length) % imgs.length;
+            imgElement.src = imgs[currentIndex];
+          });
+
+          const nextButton = document.createElement("button");
+          nextButton.classList.add("material-symbols-outlined");
+          nextButton.textContent = "chevron_right";
+          nextButton.addEventListener("click", () => {
+            currentIndex = (currentIndex + 1) % imgs.length;
+            imgElement.src = imgs[currentIndex];
+          });
+          prevNextButtons.appendChild(prevButton);
+          prevNextButtons.appendChild(nextButton);
+          carouselContainer.appendChild(prevNextButtons);
+     }      
+
+      return carouselContainer;
+    }
   }
+
 
   customElements.define('shop-item', ShopItem);
 })();
