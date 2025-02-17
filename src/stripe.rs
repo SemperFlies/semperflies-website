@@ -1,5 +1,8 @@
-use std::sync::LazyLock;
+use std::{collections::HashMap, sync::LazyLock};
 
+use stripe::{Product, ProductId};
+
+pub type CachedProducts = HashMap<ProductId, Product>;
 pub const STRIPE_CLIENT: LazyLock<stripe::Client> = LazyLock::new(|| {
     dotenv::dotenv().ok();
     let key = std::env::var("STRIPE_SECRET").expect("STRIPE_SECRET env var must not exist");
@@ -24,9 +27,8 @@ pub fn products_path() -> std::path::PathBuf {
 /// The server expects a .json file that contains all available products
 /// In production, this is maintained by a cron job that runs the `save_products` binary
 /// In development, this json file is written to manually by running the `save_products` binary
-pub fn get_products() -> Vec<stripe::Product> {
+pub fn get_products() -> CachedProducts {
     let str = std::fs::read_to_string(products_path()).expect("could not read path to string");
-    let products: Vec<stripe::Product> =
-        serde_json::from_str(&str).expect("could not coerce to json");
+    let products: CachedProducts = serde_json::from_str(&str).expect("could not coerce to json");
     products
 }

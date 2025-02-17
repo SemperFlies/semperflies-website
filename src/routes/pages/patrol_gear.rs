@@ -1,4 +1,4 @@
-use crate::stripe::{get_products, STRIPE_CLIENT};
+use crate::stripe::{get_products, CachedProducts, STRIPE_CLIENT};
 use askama::Template;
 use axum::extract::Path;
 use axum::response::Html;
@@ -14,10 +14,21 @@ pub struct PatrolGearTemplate {
 }
 
 pub async fn patrol_gear() -> Html<String> {
-    let products: Vec<stripe::Product> = get_products()
+    let mut products: Vec<stripe::Product> = get_products()
         .into_iter()
-        .filter(|p| p.name.as_ref().and_then(|s| Some(s.as_str())) != Some("Donation"))
+        .filter_map(|(_id, p)| {
+            if p.name.as_ref().is_some_and(|s| s.as_str() != "Donation") {
+                Some(p)
+            } else {
+                None
+            }
+        })
         .collect();
+    products.sort_by(|a, b| {
+        a.created
+            .unwrap_or(i64::MAX)
+            .cmp(&b.created.unwrap_or(i64::MAX))
+    });
 
     let template = PatrolGearTemplate {
         products, // gear: crate::database::builtins::builtin_gear(),

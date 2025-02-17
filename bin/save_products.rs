@@ -1,6 +1,6 @@
 use futures_util::StreamExt;
-use semperflies::stripe::{products_path, STRIPE_CLIENT};
-use std::sync::LazyLock;
+use semperflies::stripe::{products_path, CachedProducts, STRIPE_CLIENT};
+use std::{collections::HashMap, sync::LazyLock};
 use stripe::ListProducts;
 
 #[tokio::main]
@@ -14,7 +14,7 @@ async fn main() {
         ..Default::default()
     };
 
-    let mut all_products = vec![];
+    let mut all_products: CachedProducts = HashMap::new();
     let paginator = stripe::Product::list(client, &params)
         .await
         .expect("could not get products")
@@ -30,7 +30,8 @@ async fn main() {
                 .expect("failed to retrieve price");
             product.default_price = Some(stripe::Expandable::Object(Box::new(obj)));
         }
-        all_products.push(product);
+
+        all_products.insert(product.id.to_owned(), product);
     }
 
     let path = products_path();
