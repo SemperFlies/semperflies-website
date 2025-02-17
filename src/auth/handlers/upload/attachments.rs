@@ -134,47 +134,47 @@ impl FileAttachment {
         let mut return_params = vec![];
         let path_str = Self::attachments_path(subdir, multipart_type);
 
-        warn!("got path str: {path_str}");
+        let path = std::path::Path::new(&path_str);
+        warn!("got path: {path:#?}");
 
-        let parent_path_str = path_str.rsplit_once('/').unwrap().0;
-        let public_path_str = parent_path_str.rsplit_once('/').unwrap().0;
+        let mut all_parent_perms = vec![];
+        let mut push_perms_to_all = |fnpath: &std::path::Path| {
+            if !fnpath.exists() {
+                fs::create_dir_all(fnpath)
+                    .map_err(|err| {
+                        error!(
+                            "there s an error when creating the parent assets directory: {:?}",
+                            err
+                        );
+                        anyhow!(
+                            "there was an error when creating the parent assets directory: {:?}",
+                            err
+                        )
+                    })
+                    .expect("failed to create");
+            }
+            let metadata = fs::metadata(fnpath)
+                .map_err(|e| {
+                    warn!("probelm getting parent metadata: {e:?}");
+                    e
+                })
+                .expect("failed to get metadata");
+            let perms = metadata.permissions();
+            all_parent_perms.push(perms);
+        };
 
-        let parent_path = std::path::Path::new(&parent_path_str);
-        let public_path = std::path::Path::new(&public_path_str);
+        push_perms_to_all(path);
+        if let Some(parent) = path.parent() {
+            warn!("got parent: {path:#?}");
 
-        warn!("parent: {parent_path:?}\npublic: {public_path:?}");
-
-        let public_metadata = fs::metadata(public_path).map_err(|e| {
-            warn!("probelm getting public path metadata: {e:?}");
-            e
-        })?;
-        let mut public_perms = public_metadata.permissions();
-        public_perms.set_readonly(false);
-        warn!("changing public permissions");
-
-        if !parent_path.exists() {
-            fs::create_dir(parent_path).map_err(|err| {
-                error!(
-                    "there s an error when creating the parent assets directory: {:?}",
-                    err
-                );
-                anyhow!(
-                    "there was an error when creating the parent assets directory: {:?}",
-                    err
-                )
-            })?;
+            push_perms_to_all(parent);
         }
 
-        let parent_metadata = fs::metadata(parent_path).map_err(|e| {
-            warn!("probelm getting parent path metadata: {e:?}");
-            e
-        })?;
-        let mut parent_perms = parent_metadata.permissions();
-        parent_perms.set_readonly(false);
-        warn!("changing parent permissions");
+        warn!("changing permissions");
+        all_parent_perms
+            .iter_mut()
+            .for_each(|p| p.set_readonly(false));
 
-        let path = std::path::Path::new(&path_str);
-        warn!("got path: {path:?}");
         if !path.exists() {
             fs::create_dir(path).map_err(|err| {
                 error!(
@@ -195,8 +195,60 @@ impl FileAttachment {
             return_params.push(attachment.into_db_image_params(&attachment_path_str));
         }
 
-        public_perms.set_readonly(true);
-        parent_perms.set_readonly(true);
+        all_parent_perms
+            .iter_mut()
+            .for_each(|p| p.set_readonly(true));
+
         Ok(return_params)
+    }
+}
+
+mod tests {
+    use std::sync::LazyLock;
+
+    use crate::{auth::handlers::upload::UploadMultipartItemType, TRACING};
+
+    use super::FileAttachment;
+
+    #[test]
+    fn save_multiple_works() {
+        LazyLock::force(&TRACING);
+        let attachments = vec![
+            FileAttachment {
+                name: "test".to_string(),
+                bytes: vec![0, 0, 0, 0],
+                new_name: None,
+                alt: None,
+                subtitle: None,
+            },
+            FileAttachment {
+                name: "test1".to_string(),
+                bytes: vec![0, 0, 0, 0],
+                new_name: None,
+                alt: None,
+                subtitle: None,
+            },
+            FileAttachment {
+                name: "test2".to_string(),
+                bytes: vec![0, 0, 0, 0],
+                new_name: None,
+                alt: None,
+                subtitle: None,
+            },
+            FileAttachment {
+                name: "test3".to_string(),
+                bytes: vec![0, 0, 0, 0],
+                new_name: None,
+                alt: None,
+                subtitle: None,
+            },
+        ];
+
+        FileAttachment::save_multiple_to_filesys(
+            attachments,
+            &UploadMultipartItemType::Dedications,
+            Some("unittest"),
+        )
+        .expect("failed");
     }
 }
