@@ -1,46 +1,23 @@
-mod auth;
-mod cert;
-mod components;
-mod database;
-mod error;
-mod routes;
-mod state;
-mod telemetry;
-mod util;
 use axum::http::{
     header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
     HeaderValue, Method,
 };
-use cert::{get_cert_config, redirect_http_to_https, Ports};
 use core::panic;
 use reqwest::StatusCode;
+use semperflies::state::AppState;
+use semperflies::telemetry::{get_subscriber, init_subscriber};
+use semperflies::{
+    cert::{get_cert_config, redirect_http_to_https, Ports},
+    TRACING,
+};
 use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
-pub(crate) use state::AppState;
 use std::{
     net::SocketAddr,
     sync::{Arc, LazyLock},
 };
-use telemetry::{get_subscriber, init_subscriber};
 use tokio::sync::RwLock;
 use tower_http::cors::CorsLayer;
 use tracing::warn;
-
-pub static TRACING: LazyLock<()> = LazyLock::new(|| {
-    let default_filter_level = "info".to_string();
-    let subscriber_name = "main".to_string();
-
-    if std::env::var("MAIN_LOG").is_ok() {
-        let subscriber = get_subscriber(subscriber_name, default_filter_level, std::io::stdout);
-        init_subscriber(subscriber);
-    } else {
-        let subscriber = get_subscriber(subscriber_name, default_filter_level, std::io::sink);
-        init_subscriber(subscriber);
-    }
-});
-
-const LOCALHOST: &str = "http://localhost";
-const DEV_ENV: &str = "DEV";
-const PROD_ENV: &str = "PROD";
 
 #[tokio::main]
 async fn main() {
@@ -59,7 +36,7 @@ async fn main() {
 
     tokio::spawn(redirect_http_to_https(ports));
 
-    let app_config = state::Config::init();
+    let app_config = semperflies::state::Config::init();
     tracing::info!(
         "attempting to connect to database: {:?}",
         &app_config.database_url
@@ -82,10 +59,10 @@ async fn main() {
 
     let allowed_origin = std::env::var("ALLOWED_ORIGIN").unwrap_or_else(|_| {
         warn!("No allowed origin env var, falling back to localhost");
-        format!("{}:{}", LOCALHOST, 3000)
+        format!("{}:{}", semperflies::LOCALHOST, 3000)
     });
 
-    if allowed_origin != format!("{}:{}", LOCALHOST, 3000) {
+    if allowed_origin != format!("{}:{}", semperflies::LOCALHOST, 3000) {
         sqlx::migrate!("./migrations")
             .run(&pool)
             .await
@@ -98,7 +75,7 @@ async fn main() {
         .allow_credentials(true)
         .allow_headers([AUTHORIZATION, ACCEPT, CONTENT_TYPE]);
 
-    let app = routes::create_router(Arc::new(RwLock::new(AppState {
+    let app = semperflies::routes::create_router(Arc::new(RwLock::new(AppState {
         db: pool.clone(),
         admin_session_id: None,
         env: app_config.clone(),
@@ -106,7 +83,7 @@ async fn main() {
     .layer(cors);
 
     match env_.as_str() {
-        DEV_ENV => {
+        semperflies::DEV_ENV => {
             let listener = tokio::net::TcpListener::bind(format!("127.0.0.1:{}", 3000))
                 .await
                 .unwrap();
@@ -114,7 +91,7 @@ async fn main() {
             tracing::debug!("listening on {listener:#?}");
             axum::serve(listener, app).await.unwrap();
         }
-        PROD_ENV => {
+        semperflies::PROD_ENV => {
             let addr = SocketAddr::from(([0, 0, 0, 0], ports.https));
             tracing::debug!("listening on {}", addr);
             axum_server::bind_rustls(addr, cert_config)

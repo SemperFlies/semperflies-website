@@ -1,6 +1,7 @@
 mod index;
 mod middlware;
 pub mod pages;
+mod stripe;
 use crate::{
     auth::{
         handlers::{
@@ -44,6 +45,8 @@ pub fn create_router(state: SharedState) -> Router {
         .route_layer(middleware::from_fn_with_state(state.clone(), admin_auth))
         .route("/auth/login", post(login_admin_handler));
 
+    let stripe_routes = Router::new().route("/checkout", get(stripe::checkout::create_checkout));
+
     Router::new()
         .route("/", get(index::index))
         .route("/landing", get(pages::landing::landing))
@@ -62,6 +65,7 @@ pub fn create_router(state: SharedState) -> Router {
         .nest("/admin", admin_routes)
         .layer(middleware::from_fn(htmx_request_check))
         .nest("/data", data_routes)
+        .nest("/stripe", stripe_routes)
         .fallback(index::custom_404)
         .with_state(state)
         .nest_service("/public", ServeDir::new("public"))

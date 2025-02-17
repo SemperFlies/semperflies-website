@@ -3,9 +3,21 @@ name = "semperflies"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+path="src/lib.rs"
+
+[[bin]]
+name="save_products"
+path="bin/save_products.rs"
+
+[[bin]]
+name="server"
+path="bin/server.rs"
+
 [dependencies]
+async-stripe = { version = "0.31", features = ["runtime-tokio-hyper"] }
 axum = { version = "0.7.5", features = ["form", "json", "query", "multipart"]}
-askama = "0.12.1"
+askama = { version = "0.12.1", features = ["serde-json"]}
 tokio = { version = "1.37.0", features = ["full"] }
 
 axum-htmx = "0.4.0"
@@ -32,4 +44,5 @@ uuid = {version="1.10.0", features=["v4", "serde"]}
 image = "0.25.2"
 webp = "0.3.0"
 kamadak-exif = "0.5.5"
+futures-util = "0.3.31"
 

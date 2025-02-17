@@ -10,7 +10,7 @@ ADD . ./
 
 
 RUN rm ./target/release/semperflies
-RUN cargo build --release
+RUN cargo build --bin server --release
 
 
 FROM linuxcontainers/debian-slim:latest
@@ -29,7 +29,7 @@ RUN groupadd $APP_USER \
     && useradd -g $APP_USER $APP_USER \
     && mkdir -p ${APP}
 
-COPY --from=builder /semperflies/target/release/semperflies ${APP}/semperflies
+COPY --from=builder /semperflies/target/release/server ${APP}/server
 
 RUN chown -R $APP_USER:$APP_USER ${APP}
 
@@ -49,5 +49,5 @@ ADD migrations ./migrations
 ADD templates ./templates
 ADD certifications ./certifications
 
-CMD ["./semperflies"]
+CMD ["./server"]
 

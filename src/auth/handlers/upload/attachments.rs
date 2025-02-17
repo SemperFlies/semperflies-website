@@ -58,6 +58,7 @@ impl FileAttachment {
         }
     }
 
+    #[tracing::instrument("remove from filesystem")]
     pub fn remove_from_filesys(
         subdir: Option<&str>,
         multipart_type: &UploadMultipartItemType,

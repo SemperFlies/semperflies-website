@@ -2,3 +2,4 @@
 .env
 espx-ls.toml
 /.espx-ls
+./semperflies_products.json

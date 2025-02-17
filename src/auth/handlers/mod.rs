@@ -6,7 +6,6 @@ use crate::{
     auth::{error::AuthError, ADMIN_CREDENTIALS},
     error::{DataApiReturn, InternalError},
     state::SharedState,
-    AppState,
 };
 use anyhow::anyhow;
 use axum::{
