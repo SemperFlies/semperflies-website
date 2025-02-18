@@ -1,7 +1,7 @@
 'use strict';
 
 (function() {
-    class ShoppingCart extends HTMLElement {
+    class ShoppingCartComponent extends HTMLElement {
         constructor() {
             super();
             this.attachShadow({ mode: 'open' });
@@ -16,12 +16,21 @@
             window.removeEventListener("storage", () => this.updateCount());
         }
 
-        get items() {
-            return JSON.parse(localStorage.getItem("cart-items") || `{}`);
+        /**
+        * @returns {ShoppingCart} the shopping cart in localStorage
+        */
+        get cart() {
+           let cart = localStorage.getItem("cart");
+           if (!cart || !JSON.parse(cart).items) {
+                const emptyCart = { items: {} }; 
+                localStorage.setItem("cart", JSON.stringify(emptyCart));
+                return emptyCart;
+            }
+            return JSON.parse(cart);
         }
 
         get itemCount() {
-            return Object.values(this.items).reduce((acc, item) => acc + (item.quantity || 1), 0);
+            return Object.values(this.cart.items).reduce((acc, item) => acc + (item.quantity || 1), 0);
         }
 
         updateCount() {
@@ -51,7 +60,9 @@
             container.appendChild(countSpan);
 
             container.addEventListener("click", () => {
-                window.location.href = "/stripe/checkout";
+              let url = "/shopping_cart"; 
+              // window.history.pushState({}, "", url);
+              window.location.assign(url);
             });
 
             const style = document.createElement("style");
@@ -86,5 +97,5 @@
         }
     }
 
-    customElements.define('shopping-cart', ShoppingCart);
+    customElements.define('shopping-cart', ShoppingCartComponent);
 })();

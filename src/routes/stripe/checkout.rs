@@ -1,91 +1,109 @@
-use std::sync::LazyLock;
+use crate::{
+    error::{DataApiReturn, DataResponse},
+    stripe::{shopping_cart_to_line_items, STRIPE_CLIENT},
+};
+use axum::{
+    extract::{Query, Request},
+    http::Response,
+    response::IntoResponse,
+    Json,
+};
+use std::{collections::HashMap, sync::LazyLock};
+use tracing::warn;
 
-use axum::{http::Response, response::IntoResponse, Json};
+#[derive(Debug, Clone, serde::Deserialize)]
+pub struct Address {
+    line1: String,
+    line2: String,
+    #[serde(rename = "zipCode")]
+    zip: String,
+    state: String,
+    city: String,
+}
 
-use crate::{error::DataApiReturn, stripe::STRIPE_CLIENT};
+#[derive(Debug, Clone, serde::Deserialize)]
+pub struct CustomerInfo {
+    name: String,
+    email: String,
+    #[serde(flatten)]
+    address: Address,
+}
+
+#[derive(Debug, Clone, serde::Deserialize)]
+pub struct CheckoutPayload {
+    customer: CustomerInfo,
+    items: HashMap<stripe::ProductId, usize>,
+}
 
 pub async fn create_checkout(
-    Json(items_payload): Json<Vec<stripe::CreateCheckoutSessionLineItems>>,
-    // Json(items_payload): Json<Vec<stripe::Product>>,
-    // Should accept a hashmap of productIds and their quantities
-    // The server should have a static instance of all available products
-    // Json(items_payload): Json<HashMap<ProductId, usize>>,
+    Json(payload): Json<CheckoutPayload>,
 ) -> anyhow::Result<impl IntoResponse, DataApiReturn> {
+    warn!("got payload: {payload:#?}");
+
     let c = STRIPE_CLIENT;
     let client = LazyLock::force(&c);
-    let customer = stripe::Customer::create(
+    let items = shopping_cart_to_line_items(payload.items);
+
+    let customer = match stripe::Customer::create(
         &client,
         stripe::CreateCustomer {
-            name: Some("Alexander Lyon"),
-            email: Some("test@async-stripe.com"),
-            description: Some(
-                "A fake customer that is used to illustrate the examples in async-stripe.",
-            ),
-            metadata: Some(std::collections::HashMap::from([(
-                String::from("async-stripe"),
-                String::from("true"),
-            )])),
-
+            name: Some(&payload.customer.name),
+            email: Some(&payload.customer.email),
+            address: Some(stripe::Address {
+                country: Some(String::from("US")),
+                city: Some(payload.customer.address.city),
+                line1: Some(payload.customer.address.line1),
+                line2: Some(payload.customer.address.line2),
+                postal_code: Some(payload.customer.address.zip),
+                state: Some(payload.customer.address.state),
+            }),
             ..Default::default()
         },
     )
     .await
-    .unwrap();
-
-    println!(
-        "created a customer at https://dashboard.stripe.com/test/customers/{}",
-        customer.id
-    );
-
-    // create a new example project
-    let product = {
-        let mut create_product = stripe::CreateProduct::new("T-Shirt");
-        create_product.metadata = Some(std::collections::HashMap::from([(
-            String::from("async-stripe"),
-            String::from("true"),
-        )]));
-        stripe::Product::create(&client, create_product)
-            .await
-            .unwrap()
+    {
+        Ok(c) => c,
+        Err(e) => {
+            return Err(DataResponse::error(
+                format!("failed to create customer: {e:?}"),
+                None,
+            ));
+        }
     };
 
-    // and add a price for it in USD
-    let price = {
-        let mut create_price = stripe::CreatePrice::new(stripe::Currency::USD);
-        create_price.product = Some(stripe::IdOrCreate::Id(&product.id));
-        create_price.metadata = Some(std::collections::HashMap::from([(
-            String::from("async-stripe"),
-            String::from("true"),
-        )]));
-        create_price.unit_amount = Some(1000);
-        create_price.expand = &["product"];
-        stripe::Price::create(&client, create_price).await.unwrap()
-    };
+    warn!("created a customer with id: {}", customer.id);
 
-    println!(
-        "created a product {:?} at price {} {}",
-        product.name.unwrap(),
-        price.unit_amount.unwrap() / 100,
-        price.currency.unwrap()
-    );
-
-    // finally, create a checkout session for this product / price
-    let checkout_session = {
+    let checkout_session = match {
         let mut params = stripe::CreateCheckoutSession::new();
         params.cancel_url = Some("http://test.com/cancel");
         params.customer = Some(customer.id);
         params.mode = Some(stripe::CheckoutSessionMode::Payment);
-        params.line_items = Some(items_payload);
+        params.line_items = Some(items);
         params.expand = &["line_items", "line_items.data.price.product"];
 
-        stripe::CheckoutSession::create(&client, params)
-            .await
-            .unwrap()
+        params.success_url = Some("http://localhost:3000/patrol_gear");
+
+        stripe::CheckoutSession::create(&client, params).await
+    } {
+        Ok(session) => session,
+        Err(e) => {
+            return Err(DataResponse::error(
+                format!("failed to create checkout session: {e:?}"),
+                None,
+            ));
+        }
     };
 
     let line_items = checkout_session.line_items;
 
-    println!(
+    if checkout_session.url.is_none() {
+        return Err(DataResponse::error(
+            "Checkout session created, but no url was provided",
+            None,
+        ));
+    }
+
+    warn!(
         "created a {} checkout session for {} {:?} for {} {} at {}",
         checkout_session.payment_status,
         line_items.data[0].quantity.unwrap(),
@@ -102,8 +120,11 @@ pub async fn create_checkout(
         },
         checkout_session.amount_subtotal.unwrap() / 100,
         line_items.data[0].price.as_ref().unwrap().currency.unwrap(),
-        checkout_session.url.unwrap()
+        checkout_session.url.as_ref().unwrap()
     );
-    let response = Response::new(serde_json::json!({"status": "success"} ).to_string());
+
+    let response = Response::new(
+        serde_json::json!({"status": "success", "url": checkout_session.url.unwrap()} ).to_string(),
+    );
     Ok(response)
 }

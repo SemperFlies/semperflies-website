@@ -23,16 +23,29 @@
     }
 
     addToCart() {
-      const cartItems = JSON.parse(localStorage.getItem("cart-items") || `{}`);
-      const { id }  = this.product;
+      /**
+      * @type {ShoppingCart}
+      */
+      const cart = JSON.parse(localStorage.getItem("cart") || `{}`);
+      const { id , images, name, description, default_price}  = this.product;
 
-      if (id in cartItems) {
-        cartItems[id] += 1;
-      } else {
-        cartItems[id] = 1;
+      if (!cart.items) {
+        cart.items = {};
       }
 
-      localStorage.setItem("cart-items", JSON.stringify(cartItems));
+      if (id in cart.items) {
+        cart.items[id].quantity += 1;
+      } else {
+         cart.items[id] = {
+          price: default_price.unit_amount,
+          name: name,
+          description: description,
+          images: images,
+          quantity: 1
+        };
+      }
+
+      localStorage.setItem("cart", JSON.stringify(cart));
 
       // Dispatch an event to notify the shopping cart
       window.dispatchEvent(new Event("storage"));

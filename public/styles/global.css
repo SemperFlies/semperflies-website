@@ -1,7 +1,6 @@
 @font-face {
   font-family: "Tattoo";
-  src: url("/public/fonts/Tattoo/ElvishwildDemoVersion-0WzaP.ttf")
-    format("truetype");
+  src: url("/public/fonts/Tattoo/ElvishwildDemoVersion-0WzaP.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -105,18 +104,20 @@ body {
   padding: 1rem 4rem 4rem 4rem;
 }
 
-.hero > h1 {
+.hero>h1 {
   font-family: "Tattoo";
 }
 
-.hero > h1::after {
+.hero>h1::after {
   content: "";
   display: block;
-  border-bottom: 1.5px solid var(--semper-red); /* Adjust the border style as needed */
-  margin-top: 0.5rem; /* Add some spacing between the h1 and the horizontal rule */
+  border-bottom: 1.5px solid var(--semper-red);
+  /* Adjust the border style as needed */
+  margin-top: 0.5rem;
+  /* Add some spacing between the h1 and the horizontal rule */
 }
 
-.hero > p {
+.hero>p {
   font-size: 1.2rem;
   margin: 0 2rem;
 }
@@ -139,6 +140,7 @@ button.selected {
   color: var(--semper-red);
   border-color: var(--semper-red);
 }
+
 button.selected {
   pointer-events: none;
 }
@@ -152,17 +154,21 @@ button.small {
 .underlined::after {
   content: "";
   display: block;
-  border-bottom: 1px solid var(--semper-orange); /* Adjust the border style as needed */
-  margin-top: 0.5rem; /* Add some spacing between the h1 and the horizontal rule */
+  border-bottom: 1px solid var(--semper-orange);
+  /* Adjust the border style as needed */
+  margin-top: 0.5rem;
+  /* Add some spacing between the h1 and the horizontal rule */
   margin-right: 5rem;
 }
+
 .underlined.center::after {
   margin-right: 3rem;
   margin-left: 3rem;
 }
 
 .underlined.red::after {
-  border-color: var(--semper-red); /* Adjust the border style as needed */
+  border-color: var(--semper-red);
+  /* Adjust the border style as needed */
 }
 
 .bordered-box {
@@ -178,9 +184,11 @@ button.small {
     margin-top: 0.5rem;
     margin-right: 2rem;
   }
-  .hero > p {
+
+  .hero>p {
     margin: 0 1rem;
   }
+
   .hero {
     padding: 1rem 2rem 2rem 2rem;
   }

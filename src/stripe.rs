@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::LazyLock};
+use std::{borrow::BorrowMut, collections::HashMap, sync::LazyLock};
 
 use stripe::{Product, ProductId};
 
@@ -8,6 +8,35 @@ pub const STRIPE_CLIENT: LazyLock<stripe::Client> = LazyLock::new(|| {
     let key = std::env::var("STRIPE_SECRET").expect("STRIPE_SECRET env var must not exist");
     stripe::Client::new(key)
 });
+
+pub fn shopping_cart_to_line_items(
+    product_ids: HashMap<ProductId, usize>,
+) -> Vec<stripe::CreateCheckoutSessionLineItems> {
+    let mut items = vec![];
+    let all_products = get_products();
+
+    for (id, quantity) in product_ids {
+        let product = all_products
+            .get(&id)
+            .expect("got a product ID for a product that does not exist");
+
+        let price = match product
+            .default_price
+            .as_ref()
+            .expect("product did not have price")
+        {
+            stripe::Expandable::Id(id) => id.to_string(),
+            stripe::Expandable::Object(obj) => obj.id.to_string(),
+        };
+        let item = stripe::CreateCheckoutSessionLineItems {
+            quantity: Some(quantity as u64),
+            price: Some(price),
+            ..Default::default()
+        };
+        items.push(item);
+    }
+    items
+}
 
 pub fn products_path() -> std::path::PathBuf {
     match std::env::var("ENVIRONMENT")

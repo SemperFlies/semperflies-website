@@ -1,12 +1,6 @@
 <script src="/public/scripts/shopping-cart.js" defer>
 </script>
 
-<div class="cart-container">
-  <h2>Shopping Cart</h2>
-  <div id="cart-items"></div>
-  <h3 id="cart-total">Total: $0.00</h3>
-</div>
-
 <style>
   .cart-container {
     display: flex;
@@ -43,4 +37,111 @@
     margin-top: 1rem;
     text-align: center;
   }
+
+
+  #customer-form {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    gap: 1rem;
+    margin: 2rem;
+    padding: 1rem;
+    border: 1px solid var(--semper-orange);
+    border-radius: 8px;
+    background-color: var(--primary-dark);
+  }
+
+  label {
+    font-size: 1rem;
+    color: var(--primary-light);
+  }
+
+  input,
+  select {
+    justify-self: right;
+    color: var(--primary-light);
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    background-color: var(--primary-dark);
+    border: 1px solid var(--semper-orange);
+    max-width: 80%;
+  }
+
+  button:disabled {
+    background: grey;
+    color: grey;
+  }
+
+  .spinner {
+    width: 24px;
+    height: 24px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
 </style>
+
+
+<div x-style="flex; flex-col; justify-content: center; flex-grow;">
+  <div x-style="flex; lg|flex-row; flex-col; justify-content: space-around; flex-grow;">
+    <div class="cart-container">
+      <h2>Shopping Cart</h2>
+      <div id="cart"></div>
+      <h3 id="cart-total">Total: $0.00</h3>
+    </div>
+
+    <div x-style="flex; flex-col; m:4;">
+      <h2>Your Information</h2>
+      <form id="customer-form">
+        <label>
+          Name:
+          <input type="text" name="name" required />
+        </label>
+        <label>
+          Email:
+          <input type="email" name="email" required />
+        </label>
+        <label>
+          Address Line 1:
+          <input type="text" name="line1" required />
+        </label>
+        <label>
+          Address Line 2:
+          <input type="text" name="line2" />
+        </label>
+        <label>
+          Zip Code:
+          <input type="text" name="zipCode" required />
+        </label>
+        <label>
+          State:
+          <select name="state" required>
+          </select>
+        </label>
+        <label>
+          City:
+          <input type="text" name="city" required />
+        </label>
+        <button x-style="align-self: end;" type="submit">Submit</button>
+      </form>
+
+    </div>
+  </div>
+
+  <center>
+    <checkout-button>
+    </checkout-button>
+  </center>
+</div>

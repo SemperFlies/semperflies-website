@@ -80,3 +80,33 @@
  * - 'service' is eligible for use with Subscriptions and Plans.
  */
 
+/**
+ * @typedef {Object} ShoppingCart
+ * @property {Object<string, ProductInCart>} items 
+ */
+
+ /**
+ * @typedef {Object} ProductInCart
+ * @property {number}  quantity
+ * @property {number} price - the price of the item in cents
+ * @property {string} name 
+ * @property {Array<string> | undefined} [images] - A list of up to 8 URLs of images for this product.
+ * @property {string | undefined} [description] - The product's description, meant to be displayable to the customer.
+ */
+
+ 
+/**
+ * @typedef {Object} Address
+ * @property {string} Line1 - The first line of the address.
+ * @property {string} Line2 - The second line of the address (optional).
+ * @property {string} ZipCode - The postal code for the address.
+ * @property {string} State - The state abbreviation (e.g., "CA", "NY").
+ * @property {string} City - The city for the address.
+ */
+
+/**
+ * @typedef {Object} customerCredentials
+ * @property {string} name - The customer's name.
+ * @property {string} email - The customer's email address.
+ * @property {Address} address - The customer's address.
+ */

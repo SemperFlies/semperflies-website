@@ -1,6 +1,8 @@
 <link rel="stylesheet" href="/public/styles/patrol_gear.css" />
 
 <div x-style="flex; flex-col;">
+  <shopping-cart>
+  </shopping-cart>
   {% for product in products %}
   <shop-item product='{{product|json}}'></shop-item>
   {% endfor %}

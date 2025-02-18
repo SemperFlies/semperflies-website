@@ -45,7 +45,7 @@ pub fn create_router(state: SharedState) -> Router {
         .route_layer(middleware::from_fn_with_state(state.clone(), admin_auth))
         .route("/auth/login", post(login_admin_handler));
 
-    let stripe_routes = Router::new().route("/checkout", get(stripe::checkout::create_checkout));
+    let stripe_routes = Router::new().route("/checkout", post(stripe::checkout::create_checkout));
 
     Router::new()
         .route("/", get(index::index))
