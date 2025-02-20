@@ -1,51 +1,32 @@
-#shop-items-container {
-  margin: 2rem;
+#products-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 2rem;
-  justify-content: center;
-  align-content: start;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  margin: 0rem 2rem;
 }
 
-#gear-display .merch-grid {
-  margin-top: 2rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 2rem;
-  justify-content: center;
-  align-content: start;
-}
-
-.merch-grid>div {
+/* Style each product item for a consistent grid appearance */
+.category-group {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 2rem;
+}
+
+shop-item {
   width: 100%;
+  /* Add any additional styling for individual products here */
 }
 
-.merch-grid img {
-  justify-self: center;
-  object-fit: contain;
-  /* min-width: 30vw; */
-  /* min-height: 350px; */
-  max-width: 20rem;
-  max-height: 40rem;
-}
-
-.merch-grid h4 {
-  text-align: center;
-  margin-top: 0.25rem;
-  color: var(--semper-orange);
-}
-
-.carousel-image-container h1 {
-  text-align: center;
+#category-filter {
+  display: inline-block;
+  padding: 10px;
   font-size: 1rem;
-  color: var(--semper-orange);
+  border-radius: 8px;
+  background-color: var(--primary-light);
+  border: 1px solid var(--semper-orange);
+  box-sizing: content-box;
 }
 
-@media screen and (max-width: 920px) {
-  #gear-display .merch-grid {
-    grid-auto-rows: minmax(min-content, max-content);
-  }
-}
+@media screen and (max-width: 920px) {}

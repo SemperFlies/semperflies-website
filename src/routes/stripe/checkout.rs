@@ -75,7 +75,7 @@ pub async fn create_checkout(
 
     let checkout_session = match {
         let mut params = stripe::CreateCheckoutSession::new();
-        params.cancel_url = Some("http://test.com/cancel");
+        params.cancel_url = Some("http://localhost:3000/shopping_cart");
         params.customer = Some(customer.id);
         params.mode = Some(stripe::CheckoutSessionMode::Payment);
         params.line_items = Some(items);

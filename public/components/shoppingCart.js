@@ -15,7 +15,6 @@
         disconnectedCallback() {
             window.removeEventListener("storage", () => this.updateCount());
         }
-
         /**
         * @returns {ShoppingCart} the shopping cart in localStorage
         */
@@ -61,7 +60,6 @@
 
             container.addEventListener("click", () => {
               let url = "/shopping_cart"; 
-              // window.history.pushState({}, "", url);
               window.location.assign(url);
             });
 
@@ -73,6 +71,15 @@
                     cursor: pointer;
                     display: inline-flex;
                     align-items: center;
+                    border-radius: 8px;
+                    padding: 5px;
+                    border: 1px solid var(--primary-light);
+                    background-color: var(--primary-dark);
+                    transition: all ease-in-out 200ms;
+                }
+                .cart-container:hover {
+                    background-color: var(--primary-light);
+                    color: var(--primary-dark);
                 }
                 .cart-count {
                     background: red;

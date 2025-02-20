@@ -20,6 +20,5 @@ services:
       - ./.env
     depends_on:
       - postgres
-      - pgAdmin
 volumes:
   progresDB:

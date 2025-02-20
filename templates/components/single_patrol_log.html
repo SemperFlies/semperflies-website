@@ -1,48 +1,25 @@
 <link rel="stylesheet" href="public/styles/patrol_log.css" />
-<div
-  x-data="{ 
+<div x-data="{ 
       admin: {{ admin }},
-    }"
-  x-style="flex; flex-col; flex-grow;"
-  class="subsection-transition"
->
-  <div
-    x-style="flex; lg|flex-row; col-reverse; justify-content: space-between;"
-  >
+    }" x-style="flex; flex-col; flex-grow;" class="subsection-transition">
+  <button x-style="h:fit-content; w:fit-content; align-self:center; m:1rem; my:2rem;" class="small"
+    hx-target="#route-content" hx-swap="innerHTML transition:true" hx-push-url="true" hx-get="/patrol_log">
+    Back To Patrol Log
+  </button>
+  <div x-style="flex; lg|flex-row; col-reverse; justify-content: space-between;">
     <div x-style="flex; lg|mx:5rem; mx:1.5rem; flex-col;">
       <h1 x-style="mb:0; ">{{log.heading}}</h1>
       <small>{{ log.date }}</small>
       <p>{{ log.description }}</p>
     </div>
-    <button
-      x-style="h:fit-content; w:fit-content; align-self:center; m:1rem; my:2rem;"
-      class="small"
-      hx-target="#route-content"
-      hx-swap="innerHTML transition:true"
-      hx-push-url="true"
-      hx-get="/patrol_log"
-    >
-      Back To Patrol Log
-    </button>
   </div>
   <section id="img-grid">
     {% for img in log.carousel.images %}
-    <img
-      loading="lazy"
-      style="width: 100%; height: auto"
-      src="{{ img.src }}"
-      alt="Image description"
-    />
+    <img loading="lazy" style="width: 100%; height: auto" src="{{ img.src }}" alt="Image description" />
     {% endfor %}
   </section>
-  <button
-    x-show="admin"
-    hx-push-url="false"
-    hx-target="#delete-response"
-    hx-swap="innerHTML"
-    hx-delete="/data/auth/delete/{{ PATROL_LOG }}/{{ log.id }}"
-    class="material-symbols-outlined"
-  >
+  <button x-show="admin" hx-push-url="false" hx-target="#delete-response" hx-swap="innerHTML"
+    hx-delete="/data/auth/delete/{{ PATROL_LOG }}/{{ log.id }}" class="material-symbols-outlined">
     close
   </button>
 </div>

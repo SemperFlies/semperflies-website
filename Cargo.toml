@@ -45,4 +45,5 @@ image = "0.25.2"
 webp = "0.3.0"
 kamadak-exif = "0.5.5"
 futures-util = "0.3.31"
+sendgrid = "0.23.0"
 

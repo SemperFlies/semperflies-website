@@ -1,52 +1,52 @@
 <link rel="stylesheet" href="/public/styles/landing.css" />
 <div class="page" x-style="overflow:hidden;">
   <section class="hero hero-transition">
-    <h1>SemperFlies</h1>
-    <p>
-      We are a Non Profit Orginization, 501(c)(3) pending, in the South Lake
-      Tahoe area of California. We participate in, support, & host events
-      raising awareness for Veterans that struggle with PTSD, TBI, and
-      Depression. 100% of the information we provide “is not” from any clinical
-      background we have but rather from our own life experiences battling these
-      conditions. We are not licensed in mental health and encourage anyone
-      struggling with these conditions to seek professional help. We are
-      committed to doing anything we can to Educate, Advocate, & Support any
-      Veteran that served our country.
-    </p>
-
-    <div x-style="lg|mx:5rem; flex; flex-grow; flex-col; color:@semper-orange;">
-      <h2 x-style="text-align:center; font-size:3rem; mb:0.25rem;">
-        "Stay in The Fight!"
-      </h2>
-      <h5 x-style="text-align:center; font-size:1.5rem; my:0.25rem;">
-        -Semper Flies Foundation
-      </h5>
+    <h1 class="tattoo underlined red" x-style="lg|font-size: 5rem;  font-size: 2.5rem; color: @semper-red; mb:0;">
+      SemperFlies</h1>
+    <div x-style='flex; lg|flex-row; col-reverse;'>
+      <div>
+        <p x-style="font-size: 1.5rem;">
+          We are a Non Profit Orginization, 501(c)(3) pending, in the South Lake
+          Tahoe area of California. We participate in, support, & host events
+          raising awareness for Veterans that struggle with PTSD, TBI, and
+          Depression. 100% of the information we provide “is not” from any clinical
+          background we have but rather from our own life experiences battling these
+          conditions. We are not licensed in mental health and encourage anyone
+          struggling with these conditions to seek professional help. We are
+          committed to doing anything we can to Educate, Advocate, & Support any
+          Veteran that served our country.
+        </p>
+        <div x-style="lg|mx:5rem; flex; flex-grow; flex-col; color:@semper-orange;">
+          <h2 x-style="text-align:center; font-size:3rem; mb:0.25rem;">
+            "Stay in The Fight!"
+          </h2>
+          <h5 x-style="text-align:center; font-size:1.5rem; my:0.25rem;">
+            -Semper Flies Foundation
+          </h5>
+        </div>
+      </div>
+      <img loading="lazy" style="
+          place-self: center;
+          object-fit: contain;
+          min-width: 300px;
+          min-height: 300px;
+          max-width: 500px;
+          max-height: 500px;
+          width: 100%;
+          height: auto;
+          aspect-ratio: 1/1;
+        " src="/public/assets/images/1st_forcon.png" />
     </div>
+
   </section>
-  <section
-    class="main-section-transition"
-    x-style="flex; flex-col; lg|mx:4rem; mx:2rem;"
-  >
-    <div
-      x-style="
-      flex;
-      flex-col;
-      justify-content:space-between;
-      bg:@primary-dark;
-      b:1px @primary-light solid;
-      p:1rem;
-      radius:xl;"
-    >
+  <section class="main-section-transition" x-style="flex; flex-col;">
+    <section x-style="align-self:center; m: 4rem;">
+      <h1 class="tattoo underlined orange"
+        x-style="lg|font-size: 2.5rem; font-size: 1.8rem; color: @semper-orange; text-align:left; mb:0;">
+        Our Mission
+      </h1>
       <div x-style="flex; flex-col;  justify-self:center;">
-        <h1
-          class="tattoo underlined red center"
-          x-style="lg|font-size: 2.5rem; font-size: 1.8rem; color: @semper-red; text-align:center;"
-        >
-          Our Mission
-        </h1>
-        <ul
-          x-style="lg|font-size:1.8rem; font-size: 1.3rem; lg|mx:2rem; mx:1rem;"
-        >
+        <ul x-style="lg|font-size:1.8rem; font-size: 1.3rem; lg|mx:2rem; mx:1rem;">
           <li>
             <strong> E.A.S </strong> - <strong>E</strong>ducate,
             <strong>A</strong>dvocate and <strong>S</strong>upport Veterans
@@ -56,25 +56,11 @@
           <li>Support Other Veteran 501(c)(3)'s</li>
         </ul>
       </div>
-      <img
-        loading="lazy"
-        style="
-          place-self: center;
-          object-fit: contain;
-          min-width: 200px;
-          min-height: 300px;
-          width: 25vw;
-          height: auto;
-          aspect-ratio: 1/1;
-        "
-        src="/public/assets/images/1st_forcon.png"
-      />
-    </div>
-    <section id="landing-carousel" x-style="align-self:center; mt: 4rem;">
-      {% if !carousel.images.is_empty() %}
-      <!---->
-      {{ Self::render_carousel(carousel)|safe }}
-      <!---->
+
+      <!-- should never happen -->
+      {% if !images.is_empty() %}
+      <image-slideshow data="{{images|json}}">
+      </image-slideshow>
       {% else %}
       <p>No images</p>
       {% endif %}

@@ -79,8 +79,8 @@ function handleFormSubmit(event) {
 
 function renderCart() {
   /**
-  * @type {ShoppingCart}
-  */
+   * @type {ShoppingCart}
+   */
   const cartData = JSON.parse(localStorage.getItem("cart") || "{}");
   const cartContainer = document.getElementById("cart");
   const totalPriceElement = document.getElementById("cart-total");
@@ -149,9 +149,62 @@ function renderCart() {
     stateSelect.appendChild(option);
   });
 
+  updateFormStatus();
   window.dispatchEvent(new Event("updateCheckoutButton"));
   customerForm.addEventListener("submit", handleFormSubmit);
 }
+
+
+function attachFormListeners() {
+  const customerForm = document.getElementById("customer-form");
+  const inputs = customerForm.querySelectorAll("input, select");
+
+  inputs.forEach(input => {
+    input.addEventListener("input", updateFormStatus);
+  });
+}
+
+/**
+ * Checks if the form values match the stored customer credentials.
+ */
+function updateFormStatus() {
+  const formValues = getCustomerCredentials() || {
+    name: "",
+    email: "",
+    line1: "",
+    line2: "",
+    zipCode: "",
+    state: "",
+    city: ""
+  };
+
+  const customerForm = document.getElementById("customer-form");
+  const inputs = customerForm.querySelectorAll("input, select");
+
+  let isFormUpToDate = true;
+
+  inputs.forEach(input => {
+    if (input.value !== formValues[input.name]) {
+      isFormUpToDate = false;
+    }
+  });
+
+  const statusElement = document.getElementById("form-status");
+  if (!statusElement) {
+    const newStatusElement = document.createElement("span");
+    newStatusElement.id = "form-status";
+    customerForm.appendChild(newStatusElement);
+  }
+
+  const status = document.getElementById("form-status");
+  if (isFormUpToDate) {
+    status.textContent = ""; // Checkmark for up-to-date
+  } else {
+    status.textContent = "You need to resubmit!"; // Exclamation mark for out-of-date
+    status.style.color = "red";
+  }
+}
+
 
 
 /**
@@ -202,3 +255,4 @@ function removeAll(itemId) {
 }
 
 renderCart();
+attachFormListeners();

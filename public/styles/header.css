@@ -18,7 +18,7 @@
 
 .inactive {
   pointer-events: none;
-  opacity: 0.5;
+  opacity: 0.8;
 }
 
 .inactive img {
@@ -26,7 +26,7 @@
   opacity: 1 !important;
 }
 
-#desktop-nav > button {
+#desktop-nav>button {
   margin: 0rem 0.5rem;
   color: var(--primary-light);
   background-color: transparent;
@@ -41,7 +41,7 @@
   align-self: center;
 }
 
-#desktop-nav > button:hover {
+#desktop-nav>button:hover {
   color: var(--primary-dark);
   background-color: var(--primary-light);
 }

@@ -10,7 +10,7 @@ pub struct CarouselTemplate {
     pub show_subtitles: bool,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct Image {
     pub src: String,
     pub alt: String,

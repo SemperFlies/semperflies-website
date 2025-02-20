@@ -1,9 +1,34 @@
 <link rel="stylesheet" href="/public/styles/patrol_gear.css" />
 
-<div x-style="flex; flex-col;">
-  <shopping-cart>
-  </shopping-cart>
-  {% for product in products %}
-  <shop-item product='{{product|json}}'></shop-item>
-  {% endfor %}
+<div class="page" x-data="{category: 'all'}">
+  <section class="hero hero-transition">
+    <h1>
+      Our Gear
+    </h1>
+    <p>
+      Available upon donation
+    </p>
+  </section>
+  <div x-style="flex; lg|justify-content: flex-end; justify-content: space-between; lg|m:4rem; m:2rem;">
+    <select id="category-filter" x-model="category" x-style="mr:1rem;">
+      <option value="all">All Categories</option>
+      {% for (category, items) in products %}
+      {% if !items.is_empty() %}
+      <option value="{{ category }}">{{ category }}</option>
+      {% endif %}
+      {% endfor %}
+    </select>
+    <shopping-cart>
+    </shopping-cart>
+  </div>
+
+  <div id="products-container">
+    {% for (category, items) in products %}
+    {% if !items.is_empty() %}
+    {% for product in items %}
+    <shop-item product='{{product|json}}' x-show="category === 'all' || category === '{{ category }}'"></shop-item>
+    {% endfor %}
+    {% endif %}
+    {% endfor %}
+  </div>
 </div>

@@ -10,7 +10,7 @@
 
   .items-container {
     display: flex;
-    margin: 2rem;
+    margin: 1rem;
     justify-content: center;
     flex-wrap: wrap;
   }
@@ -50,6 +50,12 @@
     border-radius: 8px;
     background-color: var(--primary-dark);
   }
+
+  #form-status {
+    font-size: 1rem;
+    font-weight: bold;
+  }
+
 
   label {
     font-size: 1rem;
@@ -134,7 +140,10 @@
           City:
           <input type="text" name="city" required />
         </label>
-        <button x-style="align-self: end;" type="submit">Submit</button>
+        <div x-style="flex; flex-col;">
+          <span id="form-status" style="margin-left: 2rem; vertical-align: bottom;"></span>
+          <button x-style="align-self: end;" type="submit">Submit</button>
+        </div>
       </form>
 
     </div>

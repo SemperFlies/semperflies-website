@@ -60,6 +60,7 @@
       container.classList.add("shop-item");
 
       const title = document.createElement("h3");
+      title.classList.add('title');
       title.textContent = name;
 
       const desc = document.createElement("p");
@@ -69,7 +70,7 @@
 
       // unit_amount is in cents
       const formattedPrice = (default_price.unit_amount / 100).toFixed(2);
-      priceTag.textContent = `$${formattedPrice}`;
+      priceTag.textContent = `$${formattedPrice} Donation`;
       priceTag.classList.add("price");
 
       const addButton = document.createElement("button");
@@ -86,13 +87,26 @@
       const style = document.createElement("style");
       style.textContent = `
         @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
-        .shop-item {
-          border: 1px solid #ddd;
-          padding: 10px;
-          border-radius: 5px;
-          text-align: center;
-          max-width: 200px;
+
+        :host {
           display: flex;
+          flex-grow: 1;
+          width: 100%;
+        }
+        .title {
+          font-family: "Tattoo";
+          font-weight: 900;
+          color: var(--semper-orange);
+          margin: 0rem;
+        }
+        .shop-item {
+          width: 100%;
+          border: 1px double var(--primary-light);
+          background-color: var(--primary-dark);
+          padding: 25px;
+          text-align: center;
+          display: flex;
+          flex-grow: 1;
           flex-direction: column;
           align-items: center;
         }
@@ -118,20 +132,19 @@
           color: green;
         }
         .add-to-cart {
-          background-color: #007bff;
-          color: white;
-          border: none;
+          background-color: var(--semper-orange);
+          color: var(--primary-dark);
+          border: 1px solid var(--primary-dark);
           padding: 8px;
           cursor: pointer;
           border-radius: 5px;
           margin-top: 5px;
+          transition: all ease-in-out 200ms;
         }
         .add-to-cart:hover {
-          background-color: #0056b3;
-        }
-        button {
-          margin: 5px;
-          padding: 5px 10px;
+          color: var(--semper-orange);
+          background-color: var(--primary-dark);
+          border-color: var(--semper-orange);
         }
       `;
 

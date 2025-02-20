@@ -8,19 +8,15 @@ use crate::components::carousel::{self, CarouselTemplate, HasCarousel, Image};
 #[derive(Template, Debug)]
 #[template(path = "pages/landing.html")]
 pub struct LandingTemplate {
-    carousel: CarouselTemplate,
+    // carousel: CarouselTemplate,
+    images: Vec<Image>,
 }
 
 impl HasCarousel for LandingTemplate {}
 pub async fn landing() -> Html<String> {
     let paths = crate::util::all_images_in_directory("public/assets/images/landing_page").unwrap();
     let images = paths_to_ordered_images(paths);
-    let carousel = CarouselTemplate {
-        show_subtitles: true,
-        images,
-        auto_scroll: true,
-    };
-    let template = LandingTemplate { carousel };
+    let template = LandingTemplate { images };
     match template.render() {
         Ok(r) => Html(r),
         Err(err) => Html(format!("Error rendering Layout: {}", err.to_string())),
@@ -35,7 +31,7 @@ fn paths_to_ordered_images(paths: Vec<PathBuf>) -> Vec<Image> {
         let src = path_str.to_owned();
         let name = src.rsplit_once('.').unwrap().0.rsplit_once('/').unwrap().1;
         if let Some((idx, alt, subtitle)) = map.remove(name) {
-            let subtitle = subtitle.replace('\n', "<br />");
+            // let subtitle = subtitle.replace('\n', "<br />");
             images.push((idx, Image { src, alt, subtitle }))
         }
     }
