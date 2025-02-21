@@ -174,8 +174,8 @@ button.small {
 .bordered-box {
   padding: 1rem;
   margin: 2rem;
-  border: 1px var(--primary-light) solid;
-  border-radius: 15px;
+  border: 3px var(--primary-light) double;
+  /* border-radius: 15px; */
   background-color: var(--primary-dark);
 }
 

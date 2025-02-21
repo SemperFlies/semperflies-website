@@ -109,6 +109,11 @@
           flex-grow: 1;
           flex-direction: column;
           align-items: center;
+          box-shadow: 1px 1px 2px var(--primary-light);
+          transition: all ease-in-out 200ms;
+        }
+        .shop-item:hover {
+          scale: 1.01;
         }
         .carousel-container {
           display: flex;
