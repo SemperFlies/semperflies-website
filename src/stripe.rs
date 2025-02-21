@@ -107,12 +107,25 @@ pub async fn handle_webhook(StripeEvent(event): StripeEvent) {
                 )
                 .await
                 {
-                    Ok(session) => match email_checkout_session_complete(session).await {
-                        Ok(_) => {
-                            warn!("SENT EMAIL");
+                    Ok(session) => match checkout_session_email(session).await {
+                        Ok(Email { subject, content }) => {
+                            dotenv::dotenv().ok();
+                            let mail = sendgrid::Mail::new()
+                                .add_from("eklitsie@gmail.com")
+                                .add_text(&content)
+                                .add_subject(&subject)
+                                .add_to(("voidkandy@gmail.com", "Jamie").into());
+                            let secret =
+                                std::env::var("SENDGRID_SECRET").expect("No sendgrid secret");
+                            match sendgrid::SGClient::new(secret).send(mail).await {
+                                Ok(_) => warn!("SENT EMAIL"),
+                                Err(e) => {
+                                    warn!("FAILED TO SEND EMAIL: {e:#?}");
+                                }
+                            }
                         }
                         Err(e) => {
-                            warn!("FAILED TO SEND EMAIL: {e:#?}");
+                            warn!("No mail returned from checkout session email: {e:#?}")
                         }
                     },
                     Err(e) => {
@@ -144,10 +157,12 @@ fn get_item_as_product<'p>(
     products.get(id)
 }
 
+struct Email {
+    subject: String,
+    content: String,
+}
 /// This function needs to be passed the `CheckoutSession` that is received in order to populate line items
-async fn email_checkout_session_complete(session: stripe::CheckoutSession) -> anyhow::Result<()> {
-    dotenv::dotenv().ok();
-    let secret = std::env::var("SENDGRID_SECRET").expect("No sendgrid secret");
+async fn checkout_session_email(session: stripe::CheckoutSession) -> anyhow::Result<Email> {
     warn!(
         r#"
             ITEMS: {:#?}
@@ -158,6 +173,38 @@ async fn email_checkout_session_complete(session: stripe::CheckoutSession) -> an
     );
     let products = get_products();
     let mut product_info_str = String::new();
+
+    if session.line_items.data.len() == 1
+        && session.line_items.data[0].price.as_ref().is_some_and(|p| {
+            if let Some(stripe::Expandable::Object(obj)) = &p.product {
+                // this could be done with name or id
+                obj.name
+                    .as_ref()
+                    .is_some_and(|s| s == "Donate To Semperflies")
+            } else {
+                false
+            }
+        })
+    {
+        let content = {
+            format!(
+                "You got a donation of ${}!",
+                session
+                    .amount_total
+                    .and_then(|cents| Some(format!("{}", cents / 100)))
+                    .unwrap_or("NO AMT DATA".to_string()),
+            )
+        };
+        return Ok(Email {
+            subject: format!(
+                "NEW DONATION {:?}",
+                chrono::DateTime::from_timestamp(session.created, 0)
+                    .map(|t| t.to_string())
+                    .unwrap_or("NO TIMESTAMP".to_string())
+            ),
+            content,
+        });
+    }
 
     for item in session.line_items.data.iter() {
         match get_item_as_product(item, &products) {
@@ -228,7 +275,7 @@ _____
         "NO CONTACT INFORMATION".to_string(),
     ));
 
-    let email_content = format!(
+    let content = format!(
         r#"
 You Got an Donor Order!
 Order Total: ${}
@@ -255,13 +302,7 @@ ADDRESS:
             .unwrap_or("NO TIMESTAMP".to_string())
     );
 
-    let mail = sendgrid::Mail::new()
-        .add_from("eklitsie@gmail.com")
-        .add_text(&email_content)
-        .add_subject(&subject)
-        .add_to(("voidkandy@gmail.com", "Jamie").into());
-    let _ = sendgrid::SGClient::new(secret).send(mail).await?;
-    Ok(())
+    Ok(Email { content, subject })
 }
 
 pub struct StripeEvent(stripe::Event);
