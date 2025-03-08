@@ -144,7 +144,7 @@ impl FileAttachment {
         for attachment in multiple.into_iter() {
             let attachment_path_str = attachment
                 .save_as_webp(subdir, multipart_type)
-                .expect("failed to save image as webp");
+                .context("failed to save image as webp")?;
             return_params.push(attachment.into_db_image_params(&attachment_path_str));
         }
 
@@ -189,7 +189,7 @@ fn ensure_permissions_and_create_dirs(
 
     // Now ensure the target directory exists
     if !path.exists() {
-        fs::create_dir(path)?;
+        fs::create_dir(path).context("failed to create directory for path")?;
         warn!("Created target directory: {:?}", path);
     }
 

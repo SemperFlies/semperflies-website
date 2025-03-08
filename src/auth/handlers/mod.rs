@@ -26,7 +26,7 @@ pub async fn login_admin_handler(
     State(data): State<SharedState>,
     Form(body): Form<LoginAdminSchema>,
 ) -> Result<impl IntoResponse, DataApiReturn> {
-    info!("Login request Body {:?}", body);
+    // info!("Login request Body {:?}", body);
 
     if ADMIN_CREDENTIALS.password != body.password {
         data.write().await.admin_session_id = None;
