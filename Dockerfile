@@ -36,9 +36,10 @@ RUN chown -R $APP_USER:$APP_USER ${APP}
 WORKDIR ${APP}
 
 USER root
+# COPY public ./public
+COPY --chown=$APP_USER:$APP_USER public ./public
 
-COPY public ./public
-RUN chown -R $APP_USER:$APP_USER ./public
+# RUN chown -R $APP_USER:$APP_USER ./public
 
 USER $APP_USER
 RUN chmod -R 755 ./public  
