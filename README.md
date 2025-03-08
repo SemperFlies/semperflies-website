@@ -89,3 +89,10 @@ sudo docker compose up -d --no-deps --build postgres
 cat /home/jamie/semperflies_backups/sql/dump_2025-02-13_21-27-11.sql | sudo docker exec -i semperfliesDB psql -U admin -d rust_hs256
 ```
 
+## Accessing database for manual manipulation
+
+```shell
+sudo docker exec -it semperfliesDB bash;
+su - postgres # Once in the postgres container
+psql -U admin -d rust_hs256 # to access the database REPL
+```
