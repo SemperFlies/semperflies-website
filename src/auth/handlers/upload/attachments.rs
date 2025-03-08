@@ -11,7 +11,7 @@ use std::{
     ops::Deref,
     os::unix::fs::PermissionsExt,
 };
-use tracing::{error, warn};
+use tracing::{error, instrument::WithSubscriber, warn};
 use webp::WebPMemory;
 
 use super::{multipart::UploadMultipartItemType, IMAGES_DIRECTORY};
@@ -161,14 +161,15 @@ fn ensure_permissions_and_create_dirs(
     let mut current = path;
 
     while let Some(parent) = current.parent() {
-        if parent.parent().is_none() {
+        if parent == std::path::Path::new(".") {
             break;
         }
+
         match fs::metadata(parent) {
             Ok(metadata) => {
                 if !metadata.permissions().readonly() {
                     warn!("Directory {:?} is writable", parent);
-                    break;
+                    // break;
                 } else {
                     metadata.permissions().set_readonly(readonly);
                     warn!("Fixed permissions for {:?}", parent);
