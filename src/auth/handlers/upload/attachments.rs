@@ -8,6 +8,7 @@ use std::{
     fs::{self, File},
     io::Write,
     ops::Deref,
+    os::unix::fs::PermissionsExt,
 };
 use tracing::{error, warn};
 use webp::WebPMemory;
@@ -136,60 +137,7 @@ impl FileAttachment {
 
         let path = std::path::Path::new(&path_str);
         warn!("got path: {path:#?}");
-
-        let mut all_parent_perms = vec![];
-        let mut push_perms_to_all = |fnpath: &std::path::Path| {
-            let metadata = fs::metadata(fnpath)
-                .map_err(|e| {
-                    warn!("probelm getting parent metadata: {e:?}");
-                    e
-                })
-                .expect("failed to get metadata");
-            let mut perms = metadata.permissions();
-            let readonly = perms.readonly();
-            if !fnpath.exists() {
-                perms.set_readonly(false);
-                fs::create_dir_all(fnpath)
-                    .map_err(|err| {
-                        error!(
-                            "there s an error when creating the parent assets directory: {:?}",
-                            err
-                        );
-                        anyhow!(
-                            "there was an error when creating the parent assets directory: {:?}",
-                            err
-                        )
-                    })
-                    .expect("failed to create");
-                perms.set_readonly(readonly);
-            }
-            all_parent_perms.push(perms);
-        };
-
-        push_perms_to_all(path);
-        if let Some(parent) = path.parent() {
-            warn!("got parent: {path:#?}");
-
-            push_perms_to_all(parent);
-        }
-
-        warn!("changing permissions");
-        all_parent_perms
-            .iter_mut()
-            .for_each(|p| p.set_readonly(false));
-
-        if !path.exists() {
-            fs::create_dir(path).map_err(|err| {
-                error!(
-                    "there s an error when creating the posts assets directory: {:?}",
-                    err
-                );
-                anyhow!(
-                    "there was an error when creating the posts assets directory: {:?}",
-                    err
-                )
-            })?;
-        }
+        ensure_permissions_and_create_dirs(path, false)?;
 
         for attachment in multiple.into_iter() {
             let attachment_path_str = attachment
@@ -198,12 +146,46 @@ impl FileAttachment {
             return_params.push(attachment.into_db_image_params(&attachment_path_str));
         }
 
-        all_parent_perms
-            .iter_mut()
-            .for_each(|p| p.set_readonly(true));
-
+        ensure_permissions_and_create_dirs(path, true)?;
         Ok(return_params)
     }
+}
+
+fn ensure_permissions_and_create_dirs(
+    path: &std::path::Path,
+    readonly: bool,
+) -> anyhow::Result<()> {
+    let mut current = path;
+
+    while let Some(parent) = current.parent() {
+        match fs::metadata(parent) {
+            Ok(metadata) => {
+                if !metadata.permissions().readonly() {
+                    warn!("Directory {:?} is writable", parent);
+                } else {
+                    metadata.permissions().set_readonly(readonly);
+                    warn!("Fixed permissions for {:?}", parent);
+                }
+            }
+            Err(e) => {
+                if e.kind() == std::io::ErrorKind::NotFound {
+                    fs::create_dir_all(parent)?;
+                    warn!("Created parent directory: {:?}", parent);
+                } else {
+                    return Err(anyhow!("Error reading metadata for {:?}: {:?}", parent, e));
+                }
+            }
+        }
+        current = parent;
+    }
+
+    // Now ensure the target directory exists
+    if !path.exists() {
+        fs::create_dir(path)?;
+        warn!("Created target directory: {:?}", path);
+    }
+
+    Ok(())
 }
 
 mod tests {

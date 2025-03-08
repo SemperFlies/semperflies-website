@@ -216,8 +216,7 @@ impl UploadItemType<Multipart> for UploadMultipartItemType {
                         attachments,
                         &self,
                         Some(&names.join("-")),
-                    )
-                    .expect("failed to save attachments to filesys");
+                    )?;
                 }
 
                 let bio = bio.expect("expected bio").replace("\n", "<br/>");
