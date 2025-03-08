@@ -139,7 +139,16 @@ impl FileAttachment {
 
         let mut all_parent_perms = vec![];
         let mut push_perms_to_all = |fnpath: &std::path::Path| {
+            let metadata = fs::metadata(fnpath)
+                .map_err(|e| {
+                    warn!("probelm getting parent metadata: {e:?}");
+                    e
+                })
+                .expect("failed to get metadata");
+            let mut perms = metadata.permissions();
+            let readonly = perms.readonly();
             if !fnpath.exists() {
+                perms.set_readonly(false);
                 fs::create_dir_all(fnpath)
                     .map_err(|err| {
                         error!(
@@ -152,14 +161,8 @@ impl FileAttachment {
                         )
                     })
                     .expect("failed to create");
+                perms.set_readonly(readonly);
             }
-            let metadata = fs::metadata(fnpath)
-                .map_err(|e| {
-                    warn!("probelm getting parent metadata: {e:?}");
-                    e
-                })
-                .expect("failed to get metadata");
-            let perms = metadata.permissions();
             all_parent_perms.push(perms);
         };
 
