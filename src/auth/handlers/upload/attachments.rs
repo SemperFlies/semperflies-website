@@ -3,7 +3,7 @@ use crate::{
     routes::pages::{dedications::DEDICATIONS, patrol_log::logs::PATROL_LOG, support::SUPPORT},
     util,
 };
-use anyhow::anyhow;
+use anyhow::{anyhow, Context};
 use std::{
     fmt::Pointer,
     fs::{self, File},
@@ -176,8 +176,9 @@ fn ensure_permissions_and_create_dirs(
             }
             Err(e) => {
                 if e.kind() == std::io::ErrorKind::NotFound {
-                    fs::create_dir_all(parent)?;
-                    warn!("Created parent directory: {:?}", parent);
+                    warn!("parent directory: {parent:?} does not exist");
+                    fs::create_dir_all(parent).context("failed to create directory for parent")?;
+                    warn!("Created parent directory: {parent:?}");
                 } else {
                     return Err(anyhow!("Error reading metadata for {:?}: {:?}", parent, e));
                 }
