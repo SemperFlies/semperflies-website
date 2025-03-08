@@ -5,6 +5,7 @@ use crate::{
 };
 use anyhow::anyhow;
 use std::{
+    fmt::Pointer,
     fs::{self, File},
     io::Write,
     ops::Deref,
@@ -158,6 +159,9 @@ fn ensure_permissions_and_create_dirs(
     let mut current = path;
 
     while let Some(parent) = current.parent() {
+        if parent.parent().is_none() {
+            break;
+        }
         match fs::metadata(parent) {
             Ok(metadata) => {
                 if !metadata.permissions().readonly() {
