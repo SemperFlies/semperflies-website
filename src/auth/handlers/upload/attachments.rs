@@ -138,7 +138,8 @@ impl FileAttachment {
 
         let path = std::path::Path::new(&path_str);
         warn!("got path: {path:#?}");
-        ensure_permissions_and_create_dirs(path, false)?;
+        ensure_permissions_and_create_dirs(path, false)
+            .map_err(|e| anyhow!("failed to ensure write permissions: {e:#?}"))?;
 
         for attachment in multiple.into_iter() {
             let attachment_path_str = attachment
@@ -147,7 +148,8 @@ impl FileAttachment {
             return_params.push(attachment.into_db_image_params(&attachment_path_str));
         }
 
-        ensure_permissions_and_create_dirs(path, true)?;
+        ensure_permissions_and_create_dirs(path, true)
+            .map_err(|e| anyhow!("failed to ensure readonly permissions: {e:#?}"))?;
         Ok(return_params)
     }
 }
@@ -166,6 +168,7 @@ fn ensure_permissions_and_create_dirs(
             Ok(metadata) => {
                 if !metadata.permissions().readonly() {
                     warn!("Directory {:?} is writable", parent);
+                    break;
                 } else {
                     metadata.permissions().set_readonly(readonly);
                     warn!("Fixed permissions for {:?}", parent);
