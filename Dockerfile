@@ -36,10 +36,9 @@ RUN chown -R $APP_USER:$APP_USER ${APP}
 WORKDIR ${APP}
 
 USER root
-# COPY public ./public
 COPY --chown=$APP_USER:$APP_USER public ./public
-
-# RUN chown -R $APP_USER:$APP_USER ./public
+# Otherwise image uploads won't work
+RUN chown -R $APP_USER:$APP_USER ./public/assets/images
 
 USER $APP_USER
 RUN chmod -R 755 ./public  

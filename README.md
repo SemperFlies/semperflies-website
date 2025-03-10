@@ -30,6 +30,7 @@ Then it should be safe to stop the container
 sudo docker compose stop semperflies
 # then remove
 sudo docker rm semperflies-website-semperflies-1
+sudo docker container prune -a
 ```
 (These two steps can also be run on the database)
 ```shell
