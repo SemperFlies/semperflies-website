@@ -58,6 +58,14 @@ to restore the backup up images:
 rm -rf ~/semperflies_backups/imgs_tmp/*
 ```
 
+Finally, change the permissions in the `images` directory. (For some reason attempting to make everything inside `public` owned by `APP_USER` in the Dockerfile doesn't work... this is a *hopefully* temporary solution)
+```shell
+# First, you need to get into the container with root permissions:
+sudo docker exec -u root -it semperflies-website-semperflies-1 /bin/bash
+# Once in the container, run the below to change permissions
+chown -R appuser:appuser /usr/src/app/public/assets/images
+```
+
 
 ## How was this tested
 I tested that both image repopulation and database backup restoration would work with the following scripts:
