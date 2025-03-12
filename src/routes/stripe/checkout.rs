@@ -2,12 +2,7 @@ use crate::{
     error::{DataApiReturn, DataResponse},
     stripe::{shopping_cart_to_line_items, STRIPE_CLIENT},
 };
-use axum::{
-    extract::{Query, Request},
-    http::Response,
-    response::IntoResponse,
-    Json,
-};
+use axum::{http::Response, response::IntoResponse, Json};
 use std::{collections::HashMap, sync::LazyLock};
 use tracing::warn;
 

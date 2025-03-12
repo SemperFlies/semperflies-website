@@ -1,5 +1,8 @@
 use futures_util::StreamExt;
-use semperflies::stripe::{products_path, CachedProducts, STRIPE_CLIENT};
+use semperflies::stripe::{
+    products::{products_path, CachedProducts},
+    STRIPE_CLIENT,
+};
 use std::{collections::HashMap, sync::LazyLock};
 use stripe::ListProducts;
 

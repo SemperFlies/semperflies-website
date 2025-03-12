@@ -1,8 +1,9 @@
 use chrono::NaiveDateTime;
 use std::{collections::HashMap, sync::LazyLock};
 use stripe::{EventObject, EventType, Product, ProductId};
+pub mod products;
+pub mod shipping;
 
-pub type CachedProducts = HashMap<ProductId, Product>;
 pub const STRIPE_CLIENT: LazyLock<stripe::Client> = LazyLock::new(|| {
     dotenv::dotenv().ok();
     let key = std::env::var("STRIPE_SECRET").expect("STRIPE_SECRET env var must not exist");
@@ -13,7 +14,7 @@ pub fn shopping_cart_to_line_items(
     product_ids: HashMap<ProductId, usize>,
 ) -> Vec<stripe::CreateCheckoutSessionLineItems> {
     let mut items = vec![];
-    let all_products = get_products();
+    let all_products = products::get_cached_products();
 
     for (id, quantity) in product_ids {
         let product = all_products
@@ -38,30 +39,9 @@ pub fn shopping_cart_to_line_items(
     items
 }
 
-pub fn products_path() -> std::path::PathBuf {
-    match std::env::var("ENVIRONMENT")
-        .expect("No ENVIRONMENT env variable")
-        .to_lowercase()
-        .as_str()
-    {
-        "prod" => {
-            let home = std::env::var("HOME").expect("No HOME variable?");
-            let pathstr = format!("{home}/semperflies_products.json");
-            std::path::Path::new(&pathstr).to_owned()
-        }
-        _other => std::path::Path::new("./semperflies_products.json").to_owned(),
-    }
-}
-
 /// The server expects a .json file that contains all available products
 /// In production, this is maintained by a cron job that runs the `save_products` binary
 /// In development, this json file is written to manually by running the `save_products` binary
-pub fn get_products() -> CachedProducts {
-    let str = std::fs::read_to_string(products_path()).expect("could not read path to string");
-    let products: CachedProducts = serde_json::from_str(&str).expect("could not coerce to json");
-    products
-}
-
 use axum::{
     async_trait,
     body::Body,
@@ -148,7 +128,7 @@ pub async fn handle_webhook(StripeEvent(event): StripeEvent) {
 
 fn get_item_as_product<'p>(
     item: &stripe::CheckoutSessionItem,
-    products: &'p CachedProducts,
+    products: &'p products::CachedProducts,
 ) -> Option<&'p Product> {
     let id = match item.price.as_ref()?.product.as_ref()? {
         stripe::Expandable::Id(id) => id,
@@ -171,7 +151,7 @@ async fn checkout_session_email(session: stripe::CheckoutSession) -> anyhow::Res
         "#,
         session.line_items, session.customer
     );
-    let products = get_products();
+    let products = products::get_cached_products();
     let mut product_info_str = String::new();
 
     if session.line_items.data.len() == 1

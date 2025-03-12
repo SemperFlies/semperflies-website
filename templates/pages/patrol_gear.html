@@ -27,7 +27,7 @@
     {% for (category, items) in products %}
     {% if !items.is_empty() %}
     {% for product in items %}
-    <shop-item product='{{product|json}}' x-show="category === 'all' || category === '{{ category }}'"></shop-item>
+    <shop-item product='{{product.info|json}}' x-show="category === 'all' || category === '{{ category }}'"></shop-item>
     {% endfor %}
     {% endif %}
     {% endfor %}
