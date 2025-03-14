@@ -39,7 +39,10 @@ pub async fn create_checkout(
 
     let c = STRIPE_CLIENT;
     let client = LazyLock::force(&c);
-    let mut shipping_items = get_shipping_info(&payload.items).to_shipping_line_items();
+    let mut shipping_items = get_shipping_info(&payload.items)
+        .iter()
+        .flat_map(|i| i.to_shipping_line_items())
+        .collect::<Vec<stripe::CreateCheckoutSessionLineItems>>();
     let mut items = shopping_cart_to_line_items(payload.items);
     items.append(&mut shipping_items);
 

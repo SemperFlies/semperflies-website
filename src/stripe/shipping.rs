@@ -124,7 +124,8 @@ impl ShippingInfo {
 }
 
 #[tracing::instrument(name = "get shipping info")]
-pub fn get_shipping_info(items: &HashMap<stripe::ProductId, usize>) -> ShippingInfo {
+pub fn get_shipping_info(items: &HashMap<stripe::ProductId, usize>) -> Vec<ShippingInfo> {
+    let mut all_shipping_info = vec![];
     let cached = get_cached_products();
     let mut total_pct_md = 0.;
     let mut total_pct_lg = 0.;
@@ -140,12 +141,12 @@ pub fn get_shipping_info(items: &HashMap<stripe::ProductId, usize>) -> ShippingI
         )
         .expect("couldn't get internal product from stripe product");
         tracing::debug!("only one item ordered");
-        return ShippingInfo::Single(prod.size_info.shipping_size);
+        return vec![ShippingInfo::Single(prod.size_info.shipping_size)];
     }
 
     let (mut any_item_exceeds_max_percent_md, mut any_item_exceeds_max_percent_lg) = (false, false);
-    for (id, v) in cached.into_iter() {
-        if let (Some(p), Some(amt)) = (Product::try_from(v).ok(), items.get(&id)) {
+    for (id, v) in cached.iter() {
+        if let (Some(p), Some(amt)) = (Product::try_from(v.clone()).ok(), items.get(&id)) {
             let percent_md = ((*amt as f32 / p.size_info.medium as f32) * 100.)
                 * (p.size_info.max_percent.unwrap_or(100) as f32 / 100.);
             let percent_lg = ((*amt as f32 / p.size_info.large as f32) * 100.)
@@ -184,10 +185,10 @@ pub fn get_shipping_info(items: &HashMap<stripe::ProductId, usize>) -> ShippingI
 
     if total_pct_md <= 100. && !any_item_exceeds_max_percent_md {
         tracing::debug!("returning md early");
-        return ShippingInfo::Box { md: 1, lg: 0 };
+        return vec![ShippingInfo::Box { md: 1, lg: 0 }];
     } else if total_pct_lg <= 100. && !any_item_exceeds_max_percent_lg {
         tracing::debug!("returning lg early");
-        return ShippingInfo::Box { md: 0, lg: 1 };
+        return vec![ShippingInfo::Box { md: 0, lg: 1 }];
     }
 
     let mut md = 0;
@@ -195,6 +196,20 @@ pub fn get_shipping_info(items: &HashMap<stripe::ProductId, usize>) -> ShippingI
     let mut prods_to_remove = vec![];
 
     while !prods.is_empty() {
+        if prods.len() == 1 && prods.values().next().is_some_and(|v| v.amt == 1) {
+            let k = items.keys().next().unwrap();
+            let prod = Product::try_from(
+                cached
+                    .get(k)
+                    .cloned()
+                    .expect("didnt get product from cached products?"),
+            )
+            .expect("couldn't get internal product from stripe product");
+            tracing::debug!("only one item ordered");
+            all_shipping_info.push(ShippingInfo::Box { md, lg });
+            all_shipping_info.push(ShippingInfo::Single(prod.size_info.shipping_size));
+            return all_shipping_info;
+        }
         let mut box_filled_pct: f32 = 0.;
         let large_box =
             // total_pct_lg >= 100. &&
@@ -279,7 +294,7 @@ pub fn get_shipping_info(items: &HashMap<stripe::ProductId, usize>) -> ShippingI
         });
     }
 
-    ShippingInfo::Box { md, lg }
+    vec![ShippingInfo::Box { md, lg }]
 }
 
 #[cfg(test)]
@@ -301,34 +316,41 @@ mod tests {
         let mut items = std::collections::HashMap::new();
         items.insert(stripe::ProductId::from_str(hoodie_id).unwrap(), 5);
         items.insert(stripe::ProductId::from_str(shirt_id).unwrap(), 20);
-        let expected = super::ShippingInfo::Box { md: 0, lg: 3 };
+        let expected = vec![super::ShippingInfo::Box { md: 0, lg: 3 }];
         let got = super::get_shipping_info(&items);
         assert_eq!(expected, got);
         let _ = items.drain();
 
-        items.insert(stripe::ProductId::from_str(hat_id).unwrap(), 10);
-        let expected = super::ShippingInfo::Box { md: 1, lg: 1 };
+        items.insert(stripe::ProductId::from_str(hat_id).unwrap(), 13);
+        let expected = vec![super::ShippingInfo::Box { md: 1, lg: 1 }];
         let got = super::get_shipping_info(&items);
         assert_eq!(expected, got);
         let _ = items.drain();
 
         items.insert(stripe::ProductId::from_str(hat_id).unwrap(), 5);
         items.insert(stripe::ProductId::from_str(shirt_id).unwrap(), 3);
-        let expected = super::ShippingInfo::Box { md: 1, lg: 0 };
+        let expected = vec![super::ShippingInfo::Box { md: 1, lg: 0 }];
+        let got = super::get_shipping_info(&items);
+        assert_eq!(expected, got);
+        let _ = items.drain();
+
+        items.insert(stripe::ProductId::from_str(hat_id).unwrap(), 8);
+        items.insert(stripe::ProductId::from_str(shirt_id).unwrap(), 6);
+        let expected = vec![super::ShippingInfo::Box { md: 1, lg: 1 }];
         let got = super::get_shipping_info(&items);
         assert_eq!(expected, got);
         let _ = items.drain();
 
         items.insert(stripe::ProductId::from_str(hat_id).unwrap(), 8);
         items.insert(stripe::ProductId::from_str(shirt_id).unwrap(), 5);
-        let expected = super::ShippingInfo::Box { md: 0, lg: 1 };
+        let expected = vec![super::ShippingInfo::Box { md: 0, lg: 1 }];
         let got = super::get_shipping_info(&items);
         assert_eq!(expected, got);
         let _ = items.drain();
 
         items.insert(stripe::ProductId::from_str(hoodie_id).unwrap(), 1);
         items.insert(stripe::ProductId::from_str(shirt_id).unwrap(), 3);
-        let expected = super::ShippingInfo::Box { md: 1, lg: 0 };
+        let expected = vec![super::ShippingInfo::Box { md: 1, lg: 0 }];
         let got = super::get_shipping_info(&items);
         assert_eq!(expected, got);
         let _ = items.drain();
