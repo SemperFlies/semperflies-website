@@ -144,8 +144,14 @@ class CheckoutButton extends HTMLElement {
       });
 
       if (!response.ok) {
-        let err = await response.text()
-        throw new Error(`Failed to create checkout: ${err}`);
+        /**
+        * @typedef ResponseError
+        * @field {string} status
+        * @field {string} message
+        */
+        /**  @type {ResponseError} */
+        let err = await response.json()
+        throw new Error(`Failed: ${err.message}`);
       }
 
       const data = await response.json();

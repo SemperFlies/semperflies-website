@@ -1,9 +1,11 @@
 use crate::{
     error::{DataApiReturn, DataResponse},
-    stripe::{shopping_cart_to_line_items, STRIPE_CLIENT},
+    stripe::{shipping::get_shipping_info, shopping_cart_to_line_items, STRIPE_CLIENT},
+    LOCALHOST,
 };
 use axum::{http::Response, response::IntoResponse, Json};
 use std::{collections::HashMap, sync::LazyLock};
+use stripe::CreateCheckoutSessionShippingOptions;
 use tracing::warn;
 
 #[derive(Debug, Clone, serde::Deserialize)]
@@ -37,7 +39,9 @@ pub async fn create_checkout(
 
     let c = STRIPE_CLIENT;
     let client = LazyLock::force(&c);
-    let items = shopping_cart_to_line_items(payload.items);
+    let mut shipping_items = get_shipping_info(&payload.items).to_shipping_line_items();
+    let mut items = shopping_cart_to_line_items(payload.items);
+    items.append(&mut shipping_items);
 
     let customer = match stripe::Customer::create(
         &client,
@@ -59,33 +63,36 @@ pub async fn create_checkout(
     {
         Ok(c) => c,
         Err(e) => {
-            return Err(DataResponse::error(
-                format!("failed to create customer: {e:?}"),
-                None,
-            ));
+            let msg = format!("failed to create customer: {e:?}");
+            tracing::error!(msg);
+            return Err(DataResponse::error(msg, None));
         }
     };
 
     warn!("created a customer with id: {}", customer.id);
 
     let checkout_session = match {
+        let origin = std::env::var("ALLOWED_ORIGIN").unwrap_or_else(|_| {
+            warn!("No allowed origin env var, falling back to localhost");
+            format!("{}:{}", LOCALHOST, 3000)
+        });
         let mut params = stripe::CreateCheckoutSession::new();
-        params.cancel_url = Some("http://localhost:3000/shopping_cart");
+        let cancel_url = format!("{origin}/shopping_cart");
+        params.cancel_url = Some(&cancel_url);
         params.customer = Some(customer.id);
         params.mode = Some(stripe::CheckoutSessionMode::Payment);
         params.line_items = Some(items);
         params.expand = &["line_items", "line_items.data.price.product"];
-
-        params.success_url = Some("http://localhost:3000/patrol_gear");
+        let success = format!("{origin}/patrol_gear");
+        params.success_url = Some(&success);
 
         stripe::CheckoutSession::create(&client, params).await
     } {
         Ok(session) => session,
         Err(e) => {
-            return Err(DataResponse::error(
-                format!("failed to create checkout session: {e:?}"),
-                None,
-            ));
+            let msg = format!("failed to create checkout session: {e:?}");
+            tracing::error!(msg);
+            return Err(DataResponse::error(msg, None));
         }
     };
 
@@ -111,7 +118,7 @@ pub async fn create_checkout(
             .unwrap()
         {
             stripe::Expandable::Object(p) => p.name.as_ref().unwrap(),
-            _ => panic!("product not found"),
+            _ => return Err(DataResponse::error("Product Object was not expanded", None,)),
         },
         checkout_session.amount_subtotal.unwrap() / 100,
         line_items.data[0].price.as_ref().unwrap().currency.unwrap(),

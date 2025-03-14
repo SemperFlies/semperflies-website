@@ -1,4 +1,3 @@
-use chrono::NaiveDateTime;
 use std::{collections::HashMap, sync::LazyLock};
 use stripe::{EventObject, EventType, Product, ProductId};
 pub mod products;
@@ -90,11 +89,16 @@ pub async fn handle_webhook(StripeEvent(event): StripeEvent) {
                     Ok(session) => match checkout_session_email(session).await {
                         Ok(Email { subject, content }) => {
                             dotenv::dotenv().ok();
+                            let from = &std::env::var("MAIL_FROM")
+                                .unwrap_or("eklitsie@gmail.com".to_string());
+                            let to = std::env::var("INVOICE_MAIL_TO")
+                                .unwrap_or("voidkandy@gmail.com".to_string());
+                            tracing::warn!("sending email to {to} from {from}");
                             let mail = sendgrid::Mail::new()
-                                .add_from("eklitsie@gmail.com")
+                                .add_from(from)
                                 .add_text(&content)
                                 .add_subject(&subject)
-                                .add_to(("voidkandy@gmail.com", "Jamie").into());
+                                .add_to((to.as_str(), "Jamie").into());
                             let secret =
                                 std::env::var("SENDGRID_SECRET").expect("No sendgrid secret");
                             match sendgrid::SGClient::new(secret).send(mail).await {
@@ -137,12 +141,14 @@ fn get_item_as_product<'p>(
     products.get(id)
 }
 
+#[derive(Debug)]
 struct Email {
     subject: String,
     content: String,
 }
 /// This function needs to be passed the `CheckoutSession` that is received in order to populate line items
 async fn checkout_session_email(session: stripe::CheckoutSession) -> anyhow::Result<Email> {
+    dotenv::dotenv().ok();
     warn!(
         r#"
             ITEMS: {:#?}
@@ -153,14 +159,12 @@ async fn checkout_session_email(session: stripe::CheckoutSession) -> anyhow::Res
     );
     let products = products::get_cached_products();
     let mut product_info_str = String::new();
+    let donation_id = std::env::var("DONATION").expect("No DONATION env variable");
 
     if session.line_items.data.len() == 1
         && session.line_items.data[0].price.as_ref().is_some_and(|p| {
             if let Some(stripe::Expandable::Object(obj)) = &p.product {
-                // this could be done with name or id
-                obj.name
-                    .as_ref()
-                    .is_some_and(|s| s == "Donate To Semperflies")
+                obj.id.as_str() == donation_id.as_str()
             } else {
                 false
             }
@@ -281,8 +285,10 @@ ADDRESS:
             .map(|t| t.to_string())
             .unwrap_or("NO TIMESTAMP".to_string())
     );
+    let email = Email { content, subject };
+    tracing::warn!("created email: {email:#?}");
 
-    Ok(Email { content, subject })
+    Ok(email)
 }
 
 pub struct StripeEvent(stripe::Event);

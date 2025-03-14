@@ -1,12 +1,15 @@
 use std::collections::HashMap;
 use stripe::{Product as StripeProduct, ProductId};
 
+use super::shipping::ShippingSize;
+
 pub type CategorizedProducts = HashMap<ProductCategory, Vec<Product>>;
 /// Stored in a file on the server, intermittently gotten through a cron job
 pub type CachedProducts = HashMap<ProductId, StripeProduct>;
 pub const MD_BOX_KEY: &str = "medium";
 pub const LG_BOX_KEY: &str = "large";
 pub const CATEGORY_KEY: &str = "category";
+pub const SINGLE_KEY: &str = "single";
 /// For products that are not merchandise
 pub const IGNORE_KEY: &str = "ignore";
 
@@ -64,7 +67,28 @@ impl TryFrom<StripeProduct> for Product {
                             .ok()
                     })
                     .unwrap_or(category.size_info().large);
-                Some(SizeInformation { medium, large })
+
+                let shipping_size = map
+                    .get(SINGLE_KEY)
+                    .and_then(|v| match v.as_ref() {
+                        "small" => Some(ShippingSize::Small),
+                        "medium" => Some(ShippingSize::Medium),
+                        "large" => Some(ShippingSize::Large),
+                        other => {
+                            tracing::error!(
+                                "encountered shipping size key that was unexpected: {other}"
+                            );
+                            None
+                        }
+                    })
+                    .unwrap_or(category.size_info().shipping_size);
+
+                Some(SizeInformation {
+                    medium,
+                    large,
+                    max_percent: category.size_info().max_percent,
+                    shipping_size,
+                })
             })
             .unwrap_or(category.size_info());
 
@@ -90,6 +114,10 @@ pub enum ProductCategory {
 pub struct SizeInformation {
     pub medium: u32,
     pub large: u32,
+    /// Some items, such as hats, have a maximum in a given box but do not take up 100% of the box
+    /// this field allows us to denote that
+    pub max_percent: Option<u32>,
+    pub shipping_size: ShippingSize,
 }
 
 impl AsRef<str> for ProductCategory {
@@ -124,28 +152,40 @@ impl ProductCategory {
     pub fn size_info(&self) -> SizeInformation {
         match self {
             Self::Shirt => SizeInformation {
+                shipping_size: ShippingSize::Medium,
+                max_percent: None,
                 medium: 10,
                 large: 15,
             },
             Self::Hoodie => SizeInformation {
+                shipping_size: ShippingSize::Large,
+                max_percent: None,
                 medium: 2,
                 large: 3,
             },
             Self::Hat => SizeInformation {
-                medium: 2,
-                large: 3,
+                shipping_size: ShippingSize::Large,
+                max_percent: Some(65),
+                medium: 5,
+                large: 8,
             },
             Self::Beanie => SizeInformation {
+                shipping_size: ShippingSize::Medium,
+                max_percent: None,
                 medium: 20,
                 large: 30,
             },
             Self::Fly => SizeInformation {
-                medium: 3,
-                large: 2,
+                shipping_size: ShippingSize::Small,
+                max_percent: None,
+                medium: 250,
+                large: 400,
             },
             Self::Misc => SizeInformation {
-                medium: 3,
-                large: 2,
+                shipping_size: ShippingSize::Small,
+                max_percent: None,
+                medium: 250,
+                large: 400,
             },
         }
     }

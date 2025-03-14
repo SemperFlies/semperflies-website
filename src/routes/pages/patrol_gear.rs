@@ -20,7 +20,7 @@ pub async fn patrol_gear() -> Html<String> {
         map
     };
     let template = PatrolGearTemplate { products };
-    warn!("got gear template: {:?}", template);
+    // warn!("got gear template: {:?}", template);
     match template.render() {
         Ok(r) => Html(r),
         Err(err) => Html(format!("Error rendering Layout: {}", err.to_string())),
