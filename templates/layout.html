@@ -1,13 +1,6 @@
 <div x-style="w:100%; h:100%; overflow:auto;">
   {% include "components/header.html" %}
-  <div
-    x-style="overflow:hidden; flex; flex-grow; min-h:80%; min:w:100%"
-    id="route-content"
-    hx-target="this"
-    hx-trigger="load"
-    hx-swap="innerHtml transition:true"
-    hx-get="{{path}}{{params}}"
-    hx-push-url="true"
-  ></div>
+  <div x-style="overflow:hidden; flex; flex-grow; min-h:80%; min:w:100%" id="route-content" hx-target="this"
+    hx-trigger="load" hx-swap="innerHtml transition:true" hx-get="{{path}}{{params}}" hx-push-url="true"></div>
   {% include "components/footer.html" %}
 </div>
