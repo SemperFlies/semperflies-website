@@ -5,7 +5,7 @@ use crate::{
 };
 use axum::{http::Response, response::IntoResponse, Json};
 use std::{collections::HashMap, sync::LazyLock};
-use stripe::CreateCheckoutSessionShippingOptions;
+use stripe::{CreateCheckoutSessionDiscounts, CreateCheckoutSessionShippingOptions};
 use tracing::warn;
 
 #[derive(Debug, Clone, serde::Deserialize)]
@@ -82,7 +82,9 @@ pub async fn create_checkout(
         let mut params = stripe::CreateCheckoutSession::new();
         let cancel_url = format!("{origin}/shopping_cart");
         params.cancel_url = Some(&cancel_url);
+
         params.customer = Some(customer.id);
+        params.allow_promotion_codes = Some(true);
         params.mode = Some(stripe::CheckoutSessionMode::Payment);
         params.line_items = Some(items);
         params.expand = &["line_items", "line_items.data.price.product"];

@@ -1,3 +1,9 @@
+use crate::{
+    auth::middleware::SoftAuthExtension,
+    components::carousel::{CarouselTemplate, HasCarousel, Image},
+    database::models::{DBImage, DBPatrolLog, DBPatrolLogParams},
+    state::SharedState,
+};
 use askama::Template;
 use axum::{
     extract::{Query, State},
@@ -10,15 +16,6 @@ use serde::Deserialize;
 use sqlx::{Pool, Postgres};
 use std::collections::HashMap;
 use tracing::warn;
-use uuid::Uuid;
-
-use crate::{
-    auth::middleware::SoftAuthExtension,
-    components::carousel::{CarouselTemplate, HasCarousel, Image},
-    database::models::{DBImage, DBPatrolLog, DBPatrolLogParams},
-    state::SharedState,
-    util,
-};
 
 #[derive(Template, Debug)]
 #[template(path = "pages/patrol_log.html")]
@@ -102,9 +99,9 @@ pub async fn patrol_log(
         logs_map.insert(l.heading.to_owned(), l);
     }
 
-    for l in generate_activities(5) {
-        logs_map.insert(l.heading.to_owned(), l);
-    }
+    // for l in generate_activities(5) {
+    //     logs_map.insert(l.heading.to_owned(), l);
+    // }
 
     for l in crate::database::builtins::builtin_logs() {
         logs_map.insert(l.heading.to_owned(), l);
