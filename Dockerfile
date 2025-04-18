@@ -15,7 +15,7 @@ RUN cargo fetch
 COPY . .
 
 
-RUN rm ./target/release/semperflies
+# RUN rm ./target/release/semperflies
 RUN cargo build --bin server --release
 RUN cargo build --bin save_products --release
 
