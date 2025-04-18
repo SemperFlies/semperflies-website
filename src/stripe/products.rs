@@ -197,11 +197,11 @@ pub fn products_path() -> std::path::PathBuf {
         .to_lowercase()
         .as_str()
     {
-        "prod" => {
-            let home = std::env::var("HOME").expect("No HOME variable?");
-            let pathstr = format!("{home}/semperflies_products.json");
-            std::path::Path::new(&pathstr).to_owned()
-        }
+        // "prod" => {
+        // let home = std::env::var("HOME").expect("No HOME variable?");
+        // let pathstr = format!("{home}/semperflies_products.json");
+        // std::path::Path::new(&pathstr).to_owned()
+        // }
         _other => std::path::Path::new("./semperflies_products.json").to_owned(),
     }
 }
