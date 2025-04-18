@@ -3,7 +3,7 @@ FROM rust:latest as builder
 RUN USER=root cargo new --bin semperflies
 WORKDIR ./semperflies
 COPY ./Cargo.toml ./Cargo.toml
-RUN cargo build --release
+RUN cargo build --release --jobs 1
 RUN rm src/*.rs
  
 ADD . ./

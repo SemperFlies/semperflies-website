@@ -31,13 +31,14 @@ sudo docker compose stop semperflies
 # then remove
 sudo docker rm semperflies-website-semperflies-1
 ```
-(These two steps can also be run on the database)
+
+**NOT PART OF PULLING!**
+These two steps can also be run on the database
 ```shell
 sudo docker compose stop postgres
 # then remove
 sudo docker rm semperfliesDB
 ```
-
 
 ..and pull from github
 ```shell
