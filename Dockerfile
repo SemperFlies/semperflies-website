@@ -1,16 +1,23 @@
 FROM rust:latest as builder
 
-RUN USER=root cargo new --bin semperflies
-WORKDIR ./semperflies
-COPY ./Cargo.toml ./Cargo.toml
-RUN cargo build --release --jobs 1
-RUN rm src/*.rs
+# RUN USER=root cargo new --lib semperflies
+WORKDIR /semperflies
+# COPY ./Cargo.toml ./Cargo.toml
+# RUN cargo build --release 
+# RUN rm src/*.rs
+
+
+COPY Cargo.toml Cargo.lock ./
+RUN mkdir src && echo "fn main() {}" > src/main.rs
+RUN cargo fetch
+
  
-ADD . ./
+COPY . .
 
 
 RUN rm ./target/release/semperflies
 RUN cargo build --bin server --release
+RUN cargo build --bin save_products --release
 
 
 FROM linuxcontainers/debian-slim:latest
@@ -30,6 +37,7 @@ RUN groupadd $APP_USER \
     && mkdir -p ${APP}
 
 COPY --from=builder /semperflies/target/release/server ${APP}/server
+COPY --from=builder /semperflies/target/release/save_products ${APP}/save_products
 
 RUN chown -R $APP_USER:$APP_USER ${APP}
 

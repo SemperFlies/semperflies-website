@@ -1,6 +1,16 @@
 # Semperflies site readme
 This contains helpful information for backing up and updating the site on the VPS side.
 
+> **REMEMBER**
+A swapfile was used for building the project
+
+```shell
+sudo fallocate -l 2G /swapfile         # Allocate 2GB for swap
+sudo chmod 600 /swapfile              # Secure it
+sudo mkswap /swapfile                 # Format it as swap
+sudo swapon /swapfile                 # Enable it
+```
+
 ## Backup instructions (from the VPS)
 > From [This helpful site](https://sqlbak.com/blog/how-to-automate-postgresql-database-backups-in-linux/)
   And [this stackoverflow](https://stackoverflow.com/questions/24718706/backup-restore-a-dockerized-postgresql-database)
