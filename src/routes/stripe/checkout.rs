@@ -36,15 +36,14 @@ pub async fn create_checkout(
     Json(payload): Json<CheckoutPayload>,
 ) -> anyhow::Result<impl IntoResponse, DataApiReturn> {
     warn!("got payload: {payload:#?}");
-
     let c = STRIPE_CLIENT;
     let client = LazyLock::force(&c);
-    let mut shipping_items = get_shipping_info(&payload.items)
-        .iter()
-        .flat_map(|i| i.to_shipping_line_items())
-        .collect::<Vec<stripe::CreateCheckoutSessionLineItems>>();
-    let mut items = shopping_cart_to_line_items(payload.items);
-    items.append(&mut shipping_items);
+    // let mut shipping_items = get_shipping_info(&payload.items)
+    //     .iter()
+    //     .flat_map(|i| i.to_shipping_line_items())
+    //     .collect::<Vec<stripe::CreateCheckoutSessionLineItems>>();
+    let items = shopping_cart_to_line_items(payload.items);
+    // items.append(&mut shipping_items);
 
     let customer = match stripe::Customer::create(
         &client,
