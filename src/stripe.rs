@@ -50,7 +50,11 @@ use axum::{
 };
 use tracing::warn;
 
-pub async fn handle_webhook(StripeEvent(event): StripeEvent) {
+use crate::error::DataApiReturn;
+
+pub async fn handle_webhook(
+    StripeEvent(event): StripeEvent,
+) -> anyhow::Result<impl IntoResponse, DataApiReturn> {
     match event.type_ {
         EventType::CheckoutSessionCompleted => {
             if let EventObject::CheckoutSession(stripe::CheckoutSession {
@@ -128,6 +132,9 @@ pub async fn handle_webhook(StripeEvent(event): StripeEvent) {
         }
         _ => warn!("Unknown event encountered in webhook: {:?}", event.type_),
     }
+
+    let response = Response::new(serde_json::json!({"status": "success"}  ).to_string());
+    Ok(response)
 }
 
 fn get_item_as_product<'p>(
