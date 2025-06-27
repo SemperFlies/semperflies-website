@@ -155,7 +155,8 @@ impl FileAttachment {
         warn!("changing public permissions");
 
         if !parent_path.exists() {
-            fs::create_dir(parent_path).map_err(|err| {
+            warn!("creating path: {parent_path:?}");
+            fs::create_dir_all(parent_path).map_err(|err| {
                 error!(
                     "there s an error when creating the parent assets directory: {:?}",
                     err
@@ -177,9 +178,10 @@ impl FileAttachment {
         fs::set_permissions(parent_path, parent_perms.clone())?;
 
         let path = std::path::Path::new(&path_str);
-        warn!("got path: {path:?}");
+        tracing::debug!("got path: {path:?}");
         if !path.exists() {
-            fs::create_dir(path).map_err(|err| {
+            warn!("creating path: {path:?}");
+            fs::create_dir_all(path).map_err(|err| {
                 error!(
                     "there was an error when creating the posts assets directory: {:?}",
                     err

@@ -63,7 +63,7 @@ sudo docker compose up -d --no-deps --build semperflies
 
 to restore the backup up images:
 ```shell
-./move_imgs.sh
+./move_images.sh
 # remove the images after this if you want
 rm -rf ~/semperflies_backups/imgs_tmp/*
 ```
