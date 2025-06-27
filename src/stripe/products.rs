@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use stripe::{Product as StripeProduct, ProductId};
+use tracing::warn;
 
 use super::shipping::ShippingSize;
 
@@ -232,8 +233,10 @@ pub fn get_categorized_products() -> CategorizedProducts {
     categorized
 }
 
+#[tracing::instrument(name = "Get Cached Products")]
 pub fn get_cached_products() -> CachedProducts {
     let str = std::fs::read_to_string(products_path()).expect("could not read path to string");
     let products: CachedProducts = serde_json::from_str(&str).expect("could not coerce to json");
+    warn!("GOT PRODUCTS: {:?}", products);
     products
 }

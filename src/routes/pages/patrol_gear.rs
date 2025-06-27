@@ -2,7 +2,6 @@ use crate::stripe::products::*;
 use askama::Template;
 use axum::response::Html;
 use std::collections::HashMap;
-use tracing::warn;
 
 #[derive(Template, Debug)]
 #[template(path = "pages/patrol_gear.html")]

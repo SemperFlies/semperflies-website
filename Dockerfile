@@ -46,8 +46,8 @@ WORKDIR ${APP}
 USER root
 
 ADD public ./public
-
 RUN chown -R $APP_USER:$APP_USER ./public
+RUN chmod u+rwx /usr/src/app/public
 
 
 USER $APP_USER

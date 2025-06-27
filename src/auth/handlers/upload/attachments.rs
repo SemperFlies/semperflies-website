@@ -150,6 +150,8 @@ impl FileAttachment {
         })?;
         let mut public_perms = public_metadata.permissions();
         public_perms.set_readonly(false);
+
+        fs::set_permissions(public_path, public_perms.clone())?;
         warn!("changing public permissions");
 
         if !parent_path.exists() {
@@ -172,13 +174,14 @@ impl FileAttachment {
         let mut parent_perms = parent_metadata.permissions();
         parent_perms.set_readonly(false);
         warn!("changing parent permissions");
+        fs::set_permissions(parent_path, parent_perms.clone())?;
 
         let path = std::path::Path::new(&path_str);
         warn!("got path: {path:?}");
         if !path.exists() {
             fs::create_dir(path).map_err(|err| {
                 error!(
-                    "there s an error when creating the posts assets directory: {:?}",
+                    "there was an error when creating the posts assets directory: {:?}",
                     err
                 );
                 anyhow!(
@@ -196,7 +199,9 @@ impl FileAttachment {
         }
 
         public_perms.set_readonly(true);
+        fs::set_permissions(public_path, public_perms)?;
         parent_perms.set_readonly(true);
+        fs::set_permissions(parent_path, parent_perms)?;
         Ok(return_params)
     }
 }
